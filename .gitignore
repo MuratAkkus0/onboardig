@@ -15,10 +15,8 @@ coverage/
 # local uploads
 uploads/
 
-# graphify (local cache/logs; graph.json may be committed later)
-graphify-out/cache/
-graphify-out/.auto-update.log
-graphify-out/.graphify_*
+# graphify output (local only; graph may contain non-public docs)
+graphify-out/
 
 # os / editor
 .DS_Store
