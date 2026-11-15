@@ -21,7 +21,10 @@ Quellcode für `db:migrate` und `seed:*`).
 
 - Server mit Docker Engine und Docker Compose v2
 - Eine Domain mit HTTPS-Terminierung vor der App (Reverse Proxy wie Caddy, nginx oder Traefik). Die App
-  selbst spricht nur HTTP auf dem Port `APP_PORT`.
+  selbst spricht nur HTTP auf dem Port `APP_PORT`, der nur an `127.0.0.1` gebunden ist (der Proxy läuft
+  auf demselben Host). Der Proxy muss den Header `X-Forwarded-For` überschreiben statt anhängen
+  (nginx: `proxy_set_header X-Forwarded-For $remote_addr;`), sonst greifen die Anmelde-Limits nicht
+  pro Client.
 - Ein SMTP-Zugang für den Versand der Einladungs- und Passwort-Reset-Mails (siehe Abschnitt 7)
 
 ## 3. Installation

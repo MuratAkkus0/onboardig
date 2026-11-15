@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import { describe, expect, it } from "vitest";
-import { templateSteps, userTemplateAssignments } from "@/server/db/schema";
+import { pages, templateSteps, userTemplateAssignments } from "@/server/db/schema";
 import { isAppError } from "@/server/errors";
 import {
   addPlanStep,
@@ -264,6 +264,27 @@ describe("plan management authorization", () => {
     );
     await expectCode(removePlanStep(leadActor, { userId, pageId: page!.id }), "NOT_FOUND");
     expect(await planOf(foreign.id)).toHaveLength(1);
+  });
+
+  it("addPlanStep waits for a concurrent status change of the page and then sees it", async () => {
+    const { adminActor, employee } = await orgFixture();
+    const [page] = await publishedPages(1);
+    let settled = false;
+    let adding: Promise<unknown> = Promise.resolve();
+    await testDb.transaction(async (tx) => {
+      await tx.update(pages).set({ status: "draft" }).where(eq(pages.id, page!.id));
+      adding = addPlanStep(adminActor, {
+        userId: employee.id,
+        pageId: page!.id,
+        phase: "first_day",
+      }).finally(() => {
+        settled = true;
+      });
+      await new Promise((resolve) => setTimeout(resolve, 300));
+      expect(settled).toBe(false);
+    });
+    await expectCode(adding, "VALIDATION");
+    expect(await planOf(employee.id)).toHaveLength(0);
   });
 
   it("a lead may manage their own employee", async () => {

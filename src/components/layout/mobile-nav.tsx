@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/sheet";
 import { APP_CONFIG } from "@/config/app";
 import type { VisibleNavItem } from "@/lib/navigation";
+import { AppLogo } from "./app-logo";
 import { SidebarNav } from "./sidebar-nav";
 
 /** Hamburger button + sheet with the same navigation as the sidebar (below the md breakpoint). */
@@ -29,7 +30,10 @@ export function MobileNav({ items }: { items: VisibleNavItem[] }) {
       </SheetTrigger>
       <SheetContent side="left" className="w-72 overflow-y-auto">
         <SheetHeader>
-          <SheetTitle>{APP_CONFIG.appName}</SheetTitle>
+          <SheetTitle className="flex items-center gap-2">
+            <AppLogo className="size-6 shrink-0" />
+            {APP_CONFIG.appName}
+          </SheetTitle>
           <SheetDescription className="sr-only">{t("menu.title")}</SheetDescription>
         </SheetHeader>
         <SidebarNav items={items} className="px-4 pb-4" onNavigate={() => setOpen(false)} />

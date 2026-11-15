@@ -66,7 +66,7 @@ export default async function Page({ searchParams }: PageProps<"/admin/library">
       {modules.length === 0 ? (
         <EmptyState title={t("admin.emptyTitle")} description={t("admin.emptyDescription")} />
       ) : (
-        <AdminLibrary modules={modules} />
+        <AdminLibrary modules={modules} filtered={status !== undefined} />
       )}
     </>
   );

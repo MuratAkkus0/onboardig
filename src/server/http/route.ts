@@ -5,7 +5,7 @@ import { F2A_CONFIG } from "@/config/app";
 import { env } from "@/config/env";
 import { getActor } from "@/server/auth/actor";
 import type { Actor } from "@/server/auth/types";
-import { AppError, isAppError, pgErrorCode, rethrowDbError } from "@/server/errors";
+import { AppError, describeError, isAppError, pgErrorCode, rethrowDbError } from "@/server/errors";
 import { logger } from "@/server/logger";
 
 type Params = Record<string, string>;
@@ -41,7 +41,7 @@ function toErrorResponse(e: unknown): Response {
       if (isAppError(mapped)) return errorResponse(mapped);
     }
   }
-  logger.error({ err: e instanceof Error ? e.message : "unknown" }, "route failed");
+  logger.error({ err: describeError(e) }, "route failed");
   return errorResponse(new AppError("INTERNAL"));
 }
 

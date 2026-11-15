@@ -34,7 +34,9 @@
     "notPublished": "Nicht veröffentlicht, zählt nicht zum Fortschritt",
     "hiddenTitle": "Seite nicht veröffentlicht",
     "archivedUser": "Dieser Zugang ist archiviert. Der Plan kann nicht mehr bearbeitet werden.",
-    "readOnly": "Du kannst diesen Plan ansehen, aber nicht bearbeiten."
+    "readOnly": "Du kannst diesen Plan ansehen, aber nicht bearbeiten.",
+    "updatedSinceCompletion": "Seit dem Abschluss aktualisiert",
+    "emptyPlanReadOnly": "Für diese Person sind noch keine Seiten zugewiesen."
   },
   "assign": {
     "action": "Vorlagen zuweisen",

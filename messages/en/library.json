@@ -12,7 +12,9 @@
     "statusColumn": "Status",
     "languageColumn": "Languages",
     "editedColumn": "Last edited",
-    "actionsColumn": "Actions"
+    "actionsColumn": "Actions",
+    "noPagesFiltered": "No pages with this status in this module.",
+    "filterHint": "The status filter hides pages. Page order can only be changed without a filter."
   },
   "module": {
     "titleDe": "Title (German)",

@@ -42,7 +42,7 @@ import {
 } from "./invitations";
 import { createNotificationInTx, employeeAssignedRecipientInTx } from "./notifications-core";
 import { recomputeOnboardingStatusInTx } from "./plan-hooks";
-import { lockActiveAdminsInTx, lockUserInTx, type LockedUser } from "./row-locks";
+import { lockActiveAdminsIfAdminInTx, lockUserInTx, type LockedUser } from "./row-locks";
 
 type Role = (typeof ROLES)[number];
 
@@ -236,7 +236,7 @@ async function assertValidLeadInTx(
 
 /**
  * The target is an admin who is about to stop being an active admin: refuse for the last one.
- * `activeAdminIds` must come from `lockActiveAdminsInTx`, taken before the user lock.
+ * `activeAdminIds` must come from `lockActiveAdminsIfAdminInTx`, taken before the user lock.
  */
 function assertNotLastAdmin(activeAdminIds: string[], target: LockedUser): void {
   if (target.role !== "admin") return;
@@ -310,16 +310,27 @@ export async function listLeadCandidates(actor: Actor): Promise<LeadCandidate[]>
     .orderBy(asc(users.lastName), asc(users.firstName), asc(users.id));
 }
 
-/** Admin: the people who currently have this user as their lead (shown before deactivating). */
+/**
+ * Admin: the people who currently have this user as their lead. Before deactivating only active
+ * people count; for an archived user (permanent delete) archived people count too, because they
+ * block the deletion.
+ */
 export async function getUserDeactivationImpact(
   actor: Actor,
   input: UserIdInput,
 ): Promise<DeactivationImpact> {
   assertPermission(actor, "users.manage");
   const { id } = userIdInputSchema.parse(input);
-  const [user] = await db.select({ id: users.id }).from(users).where(eq(users.id, id));
+  const [user] = await db
+    .select({ id: users.id, onboardingStatus: users.onboardingStatus })
+    .from(users)
+    .where(eq(users.id, id));
   if (!user) throw new AppError("NOT_FOUND");
-  return { ledEmployees: await ledEmployeesOf(db, id, { includeArchived: false }) };
+  return {
+    ledEmployees: await ledEmployeesOf(db, id, {
+      includeArchived: user.onboardingStatus === "archived",
+    }),
+  };
 }
 
 // ---- mutations ----
@@ -386,8 +397,10 @@ export async function updateUser(actor: Actor, input: UpdateUserInput): Promise<
   let reinvite: { token: string } | null = null;
   try {
     reinvite = await db.transaction(async (tx) => {
-      // Lock order: active admins (ascending id) -> the user -> the candidate lead.
-      const activeAdminIds = data.role === "admin" ? [] : await lockActiveAdminsInTx(tx);
+      // Lock order: active admins (ascending id, only when the target is an admin) -> the user ->
+      // the candidate lead.
+      const activeAdminIds =
+        data.role === "admin" ? [] : await lockActiveAdminsIfAdminInTx(tx, data.id);
       const locked = await lockUserInTx(tx, data.id);
       if (!locked) throw new AppError("NOT_FOUND");
       const [current] = await tx.select().from(users).where(eq(users.id, data.id));
@@ -474,7 +487,7 @@ export async function deactivateUser(actor: Actor, input: UserIdInput): Promise<
   }
   try {
     await db.transaction(async (tx) => {
-      const activeAdminIds = await lockActiveAdminsInTx(tx);
+      const activeAdminIds = await lockActiveAdminsIfAdminInTx(tx, id);
       const locked = await lockUserInTx(tx, id);
       if (!locked) throw new AppError("NOT_FOUND");
       const transition = applyOnboardingEvent(locked.onboardingStatus, { type: "deactivate" });

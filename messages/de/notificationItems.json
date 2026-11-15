@@ -3,6 +3,7 @@
   "pageUpdated": "Die Seite „{title}“ wurde aktualisiert.",
   "eventAnnounced": "Neue Veranstaltung: {title}",
   "eventRemoved": "Veranstaltung entfernt",
-  "employeeAssigned": "{employeeName} wurde dir als Mitarbeiter zugewiesen.",
-  "onboardingCompleted": "{employeeName} hat das Onboarding abgeschlossen."
+  "employeeAssigned": "{employeeName} wurde dir zugewiesen.",
+  "onboardingCompleted": "{employeeName} hat das Onboarding abgeschlossen.",
+  "pageRemoved": "Eine Seite wurde entfernt."
 }

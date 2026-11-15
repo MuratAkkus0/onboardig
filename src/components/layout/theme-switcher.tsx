@@ -1,5 +1,6 @@
 "use client";
 
+import { useSyncExternalStore } from "react";
 import { useTheme } from "next-themes";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
@@ -17,11 +18,23 @@ import { setThemeAction } from "@/server/actions/preferences";
 
 type Variant = "menu" | "field";
 
+const subscribeNothing = () => () => undefined;
+
+/** False during SSR and hydration, true afterwards (next-themes only knows the theme on the client). */
+function useMounted(): boolean {
+  return useSyncExternalStore(
+    subscribeNothing,
+    () => true,
+    () => false,
+  );
+}
+
 /** Light / dark / system. Applies immediately (next-themes) and persists to the profile. */
 export function ThemeSwitcher({ variant }: { variant: Variant }) {
   const t = useTranslations();
   const { theme, setTheme } = useTheme();
-  const current = THEMES.find((value) => value === theme) ?? "system";
+  const mounted = useMounted();
+  const current = (mounted && THEMES.find((value) => value === theme)) || "system";
 
   async function change(next: string) {
     setTheme(next);

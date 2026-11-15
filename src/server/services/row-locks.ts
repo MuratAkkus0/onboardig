@@ -53,3 +53,15 @@ export async function lockActiveAdminsInTx(tx: Tx): Promise<string[]> {
     .for("update");
   return rows.map((row) => row.id);
 }
+
+/**
+ * Internal: like `lockActiveAdminsInTx`, but only when `userId` is currently an admin (a last-admin
+ * check can only matter then). Employees and leads are changed without touching the admin rows, so
+ * those edits do not serialize against admins' own plans or collide with the plan-hook lock order.
+ * The peek is unlocked: if the role flips to admin afterwards, the caller sees an admin that is not
+ * in the returned set and asks for a retry (see `assertNotLastAdmin`).
+ */
+export async function lockActiveAdminsIfAdminInTx(tx: Tx, userId: string): Promise<string[]> {
+  const [target] = await tx.select({ role: users.role }).from(users).where(eq(users.id, userId));
+  return target?.role === "admin" ? lockActiveAdminsInTx(tx) : [];
+}

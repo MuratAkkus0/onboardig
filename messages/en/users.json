@@ -58,7 +58,9 @@
     "adminHint": "These details are optional for admins.",
     "submitCreate": "Create and send invitation",
     "submitEdit": "Save changes",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "archivedLead": "{name} (archived)",
+    "viewPlan": "View plan and assign templates"
   },
   "toast": {
     "created": "User created, the invitation was sent.",
@@ -110,7 +112,8 @@
       "button": "Delete permanently",
       "description": "The account, progress and all notifications about this person are deleted irreversibly.",
       "title": "Delete \"{name}\" permanently?",
-      "confirm": "Delete permanently"
+      "confirm": "Delete permanently",
+      "blockedByLead": "This account is still the team lead of the people below. Assign them to another lead first, then it can be deleted."
     }
   },
   "errors": {

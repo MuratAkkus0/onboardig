@@ -34,7 +34,9 @@
     "notPublished": "Not published, does not count towards progress",
     "hiddenTitle": "Page not published",
     "archivedUser": "This account is archived. The plan can no longer be edited.",
-    "readOnly": "You can view this plan but not edit it."
+    "readOnly": "You can view this plan but not edit it.",
+    "updatedSinceCompletion": "Updated since completion",
+    "emptyPlanReadOnly": "No pages are assigned to this person yet."
   },
   "assign": {
     "action": "Assign templates",

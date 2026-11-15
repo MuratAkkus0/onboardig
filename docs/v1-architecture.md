@@ -26,7 +26,7 @@ Contents
 11. Foundation (F1, F2a, F2b)
 12. Work breakdown after the foundation (waves, file ownership)
 13. Merge and coordination rules
-14. Proposed `kararlar.md` §12 entries and review notes
+14. Proposed `kararlar.md` §13 entries and review notes
 
 ---
 
@@ -498,7 +498,7 @@ archived ──delete permanently──► (row deleted)
 K§5 draws `completed → active` only for "yeni adım eklendi". The blueprint generalises it to **any** drop of the
 active-step progress below 100 % (new step, undo, a plan page published/restored/unpublished, plan emptied); combined
 with K§5 "her ulaşıldığında", undo + redo of the last step sends the completion notification again (deduped while
-unread). This is proposed otonom karar **P1** (§14) for `kararlar.md` §12.
+unread). This is proposed otonom karar **P1** (§14) for `kararlar.md` §13.
 
 Reactivation (K§5 "arşiv ──yeniden aktive──► aktif"): status becomes `active`, then
 `recomputeOnboardingStatusInTx(tx, { userId, notify: false })` runs, so a user whose plan was already 100 % done
@@ -1791,9 +1791,9 @@ pnpm build` green. Mandatory integration tests as listed.
 
 ---
 
-## 14. Proposed `kararlar.md` §12 entries and review notes
+## 14. Proposed `kararlar.md` §13 entries and review notes
 
-### 14.1 Proposed otonom kararlar (orchestrator adds them to `kararlar.md` §12)
+### 14.1 Proposed otonom kararlar (orchestrator adds them to `kararlar.md` §13)
 
 Units and this blueprint never edit `kararlar.md` (§13). The revision after review introduced these interpretations;
 until the orchestrator records them, this section is their reference.

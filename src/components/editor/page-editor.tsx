@@ -40,7 +40,7 @@ import {
 } from "@/app/(app)/admin/library/pages/[pageId]/edit/actions";
 import { RichTextEditor } from "./rich-text-editor";
 import { EMPTY_DOC, type EditablePage } from "./types";
-import { useEditLock } from "./use-edit-lock";
+import { asDate, useEditLock } from "./use-edit-lock";
 
 interface Snapshot {
   titleDe: string;
@@ -117,13 +117,21 @@ export function PageEditor({ page }: { page: EditablePage }) {
     setFormError(undefined);
     startSaving(async () => {
       const current = latest.current;
-      const result = await savePageAction({
-        id: page.id,
-        titleDe: current.titleDe,
-        titleEn: current.titleEn,
-        contentDe: current.contentDe,
-        contentEn: current.contentEn,
-      });
+      let result: Awaited<ReturnType<typeof savePageAction>>;
+      try {
+        result = await savePageAction({
+          id: page.id,
+          titleDe: current.titleDe,
+          titleEn: current.titleEn,
+          contentDe: current.contentDe,
+          contentEn: current.contentEn,
+        });
+      } catch {
+        // Network failure or rejected request: keep the work locally and stay in the editor.
+        saveLocalDraft(localStorage, page.id, { ...current, savedAt: new Date().toISOString() });
+        setFormError(message("errors.INTERNAL"));
+        return;
+      }
       if (result.ok) {
         clearLocalDraft(localStorage, page.id);
         setDirty(false);
@@ -139,7 +147,11 @@ export function PageEditor({ page }: { page: EditablePage }) {
       if (result.error.code === "LOCK_LOST") {
         // Never overwrite: keep the work as a local draft and fall back to read-only.
         saveLocalDraft(localStorage, page.id, { ...current, savedAt: new Date().toISOString() });
-        lock.markLost(null);
+        const details = result.error.details ?? {};
+        lock.markLost({
+          name: typeof details.holderName === "string" ? details.holderName : null,
+          since: asDate(details.since),
+        });
       }
       setFieldErrors(result.error.fieldErrors ?? {});
       setFormError(message(failureKey(result.error)));

@@ -20,7 +20,12 @@ function createAuth() {
       provider: "pg",
       schema: { user: users, session: sessions, account: accounts, verification: verifications },
     }),
-    advanced: { database: { generateId: "uuid" } },
+    advanced: {
+      database: { generateId: "uuid" },
+      // Rate limits key on the client IP. The reverse proxy must overwrite (not append to)
+      // X-Forwarded-For and the app port must stay unreachable around it (docs/runbook.md §2).
+      ipAddress: { ipAddressHeaders: ["x-forwarded-for"] },
+    },
     disabledPaths: [...APP_CONFIG.auth.disabledPaths],
     emailAndPassword: {
       enabled: true,
@@ -59,6 +64,8 @@ function createAuth() {
         "/sign-in/email": { window: limits.windowSeconds, max: limits.signInMax },
         "/request-password-reset": { window: limits.windowSeconds, max: limits.passwordResetMax },
         "/reset-password": { window: limits.windowSeconds, max: limits.passwordResetMax },
+        "/change-password": { window: limits.windowSeconds, max: limits.signInMax },
+        "/verify-password": { window: limits.windowSeconds, max: limits.signInMax },
       },
     },
     // The admin plugin is kept only for its ban check at sign-in; all its endpoints are disabled.

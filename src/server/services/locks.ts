@@ -102,9 +102,10 @@ export async function acquireLock(actor: Actor, input: { pageId: string }): Prom
 }
 
 /**
- * Extends the lease. An own lock is renewed even when it already expired as long as nobody took
- * it over; a free or expired lock is re-acquired. Only a lock held by someone else yields
- * `held: false` with that holder.
+ * Extends the lease. Only an own row is renewed (even when it already expired, as long as nobody
+ * took it over). A missing row means the lock was taken over, released or the page is gone: the
+ * heartbeat never creates a lease, so a stale editor cannot silently get its lock back and
+ * overwrite a newer save (K§4). `held: false` carries the current holder, if any.
  */
 export async function heartbeat(actor: Actor, input: { pageId: string }): Promise<HeartbeatResult> {
   assertPermission(actor, "content.manage");
@@ -115,18 +116,6 @@ export async function heartbeat(actor: Actor, input: { pageId: string }): Promis
     .where(and(eq(pageEditLocks.pageId, pageId), eq(pageEditLocks.userId, actor.id)))
     .returning({ expiresAt: pageEditLocks.expiresAt });
   if (renewed) return { held: true, expiresAt: renewed.expiresAt };
-  try {
-    if (await tryAcquire(pageId, actor.id)) {
-      const state = await readLockInTx(db, pageId, actor.id);
-      if (state.expiresAt) return { held: true, expiresAt: state.expiresAt };
-    }
-  } catch (e) {
-    // The page was deleted: nothing to hold any more.
-    if (pgErrorCode(e) === PG_ERROR.foreignKeyViolation) {
-      return { held: false, holderName: null, since: null };
-    }
-    throw e;
-  }
   const state = await readLockInTx(db, pageId, actor.id);
   return { held: false, holderName: state.holder?.name ?? null, since: state.since };
 }
@@ -191,5 +180,12 @@ export async function assertLockHeldInTx(
       ),
     )
     .for("update");
-  if (!row) throw new AppError("LOCK_LOST");
+  if (!row) {
+    // Name the new holder (if any) so the previous editor can say who took over.
+    const state = await readLockInTx(tx, input.pageId, input.userId);
+    throw new AppError("LOCK_LOST", {
+      holderName: state.holder?.name ?? null,
+      since: state.since,
+    });
+  }
 }

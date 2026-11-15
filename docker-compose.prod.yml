@@ -51,7 +51,7 @@ services:
     restart: unless-stopped
     environment: *app-env
     ports:
-      - "${APP_PORT:-3000}:3000"
+      - "127.0.0.1:${APP_PORT:-3000}:3000"
     volumes:
       - uploads:/app/uploads
     depends_on:

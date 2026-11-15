@@ -3,7 +3,7 @@ import { ZodError } from "zod";
 import type { ActionResult } from "@/lib/action-result";
 import { getActor } from "@/server/auth/actor";
 import type { Actor } from "@/server/auth/types";
-import { AppError, isAppError, pgErrorCode, rethrowDbError } from "@/server/errors";
+import { AppError, describeError, isAppError, pgErrorCode, rethrowDbError } from "@/server/errors";
 import { logger } from "@/server/logger";
 
 function toFieldErrors(error: ZodError): Record<string, string[]> {
@@ -55,7 +55,7 @@ function toActionError(e: unknown): ActionResult<never> {
       if (isAppError(mapped)) return failure(mapped);
     }
   }
-  logger.error({ err: e instanceof Error ? e.message : "unknown" }, "action failed");
+  logger.error({ err: describeError(e) }, "action failed");
   return failure(new AppError("INTERNAL"));
 }
 

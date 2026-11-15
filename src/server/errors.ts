@@ -83,3 +83,19 @@ export function rethrowDbError(
       throw e;
   }
 }
+
+/**
+ * Log-safe description of an unexpected error. Drizzle's query errors carry the whole SQL text and
+ * every bound parameter (hashes, emails, page content) in their message, so only the error name
+ * and SQLSTATE are logged for them; other errors keep their message.
+ */
+export function describeError(e: unknown): { name: string; code?: string; message?: string } {
+  if (!(e instanceof Error)) return { name: "unknown" };
+  const code = pgErrorCode(e);
+  const fromDatabase = code !== undefined || e.message.startsWith("Failed query:");
+  return {
+    name: e.name,
+    ...(code ? { code } : {}),
+    ...(fromDatabase ? {} : { message: e.message }),
+  };
+}

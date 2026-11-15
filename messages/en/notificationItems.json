@@ -4,5 +4,6 @@
   "eventAnnounced": "New event: {title}",
   "eventRemoved": "Event removed",
   "employeeAssigned": "{employeeName} was assigned to you as an employee.",
-  "onboardingCompleted": "{employeeName} has completed onboarding."
+  "onboardingCompleted": "{employeeName} has completed onboarding.",
+  "pageRemoved": "A page was removed."
 }

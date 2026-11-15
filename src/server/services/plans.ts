@@ -481,6 +481,15 @@ export async function assignTemplates(
   const data = assignTemplatesSchema.parse(input);
   const result = await withDbErrors(() =>
     db.transaction(async (tx) => {
+      // Lock order page -> user (same as the page status hooks): a concurrent status change either
+      // commits before we read the statuses below or waits until this transaction is done.
+      await tx
+        .select({ id: pages.id })
+        .from(templateSteps)
+        .innerJoin(pages, eq(pages.id, templateSteps.pageId))
+        .where(inArray(templateSteps.templateId, data.templateIds))
+        .orderBy(pages.id)
+        .for("share", { of: pages });
       const target = await loadManageableTargetInTx(tx, actor, data.userId);
 
       const selected = await tx
@@ -647,11 +656,14 @@ export async function addPlanStep(actor: Actor, input: AddPlanStepInput): Promis
   const data = addPlanStepSchema.parse(input);
   await withDbErrors(() =>
     db.transaction(async (tx) => {
-      const target = await loadManageableTargetInTx(tx, actor, data.userId);
+      // Lock order page -> user (same as the page status hooks): the status read here stays valid
+      // until commit, so a concurrent unpublish cannot miss this new holder.
       const [page] = await tx
         .select({ status: pages.status })
         .from(pages)
-        .where(eq(pages.id, data.pageId));
+        .where(eq(pages.id, data.pageId))
+        .for("share");
+      const target = await loadManageableTargetInTx(tx, actor, data.userId);
       // A missing page is reported like an unpublished one: leads must not learn that a draft exists.
       if (page?.status !== "published") {
         throw new AppError("VALIDATION", { reasonKey: "plan.errors.pageNotPublished" });

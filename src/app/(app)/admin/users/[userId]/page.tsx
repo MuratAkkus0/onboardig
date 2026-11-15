@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { DateTime } from "@/components/common/date-time";
@@ -7,7 +8,9 @@ import { AccountCard } from "@/components/org/users/account-card";
 import { InvitationCard } from "@/components/org/users/invitation-card";
 import { UserForm } from "@/components/org/users/user-form";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ROUTES } from "@/config/app";
 import { idSchema } from "@/lib/validation/common";
 import { requirePageRole } from "@/server/auth/guards";
 import { isAppError } from "@/server/errors";
@@ -40,12 +43,17 @@ export default async function AdminUserPage({ params }: { params: Promise<{ user
     getTranslations("users.account"),
     listOrgOptions(actor),
     listLeadCandidates(actor),
-    archived
-      ? Promise.resolve({ ledEmployees: [] })
-      : getUserDeactivationImpact(actor, { id: userId }),
+    getUserDeactivationImpact(actor, { id: userId }),
   ]);
   const tEnums = await getTranslations("enums");
   const none = tList("noValue");
+  // An archived lead is no candidate any more, but the form must still show who it is.
+  const formLeadCandidates =
+    user.leadId &&
+    user.leadName &&
+    !leadCandidates.some((candidate) => candidate.id === user.leadId)
+      ? [...leadCandidates, { id: user.leadId, name: t("archivedLead", { name: user.leadName }) }]
+      : leadCandidates;
 
   const summary = [
     { label: tList("columns.email"), value: user.email },
@@ -63,7 +71,14 @@ export default async function AdminUserPage({ params }: { params: Promise<{ user
       <PageHeader
         title={t("editTitle")}
         description={user.name}
-        actions={<StatusBadge kind="onboardingStatus" value={user.onboardingStatus} />}
+        actions={
+          <>
+            <StatusBadge kind="onboardingStatus" value={user.onboardingStatus} />
+            <Button variant="outline" asChild>
+              <Link href={ROUTES.teamMember(user.id)}>{t("viewPlan")}</Link>
+            </Button>
+          </>
+        }
       />
       <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
         {archived ? (
@@ -94,7 +109,7 @@ export default async function AdminUserPage({ params }: { params: Promise<{ user
         ) : (
           <UserForm
             orgOptions={orgOptions}
-            leadCandidates={leadCandidates}
+            leadCandidates={formLeadCandidates}
             emailLocked={user.invitationState === "accepted"}
             initial={{
               id: user.id,

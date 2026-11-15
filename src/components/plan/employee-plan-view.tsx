@@ -66,7 +66,7 @@ function StepItem({ userId, step, canManage, canOpen, showPhase }: StepItemProps
             )}
             {step.isFallback ? <Badge variant="outline">{common("germanOnly")}</Badge> : null}
             {step.updatedSinceCompletion ? (
-              <Badge variant="secondary">{t("updatedSinceCompletion")}</Badge>
+              <Badge variant="secondary">{t("member.updatedSinceCompletion")}</Badge>
             ) : null}
           </div>
         </div>

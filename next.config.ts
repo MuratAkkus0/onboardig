@@ -17,6 +17,8 @@ const contentSecurityPolicy = [
 const nextConfig: NextConfig = {
   output: "standalone",
   serverExternalPackages: ["pino", "pino-pretty"],
+  // Page content (2 MB per language document, see APP_CONFIG.content) is sent through a server action.
+  experimental: { serverActions: { bodySizeLimit: "5mb" } },
   async headers() {
     return [
       {
@@ -26,10 +28,7 @@ const nextConfig: NextConfig = {
           { key: "X-Frame-Options", value: "DENY" },
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
           { key: "X-Content-Type-Options", value: "nosniff" },
-          {
-            key: "Permissions-Policy",
-            value: "camera=(), microphone=(), geolocation=(), interest-cohort=()",
-          },
+          { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
         ],
       },
     ];
