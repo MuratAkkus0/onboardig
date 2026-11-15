@@ -148,10 +148,14 @@ export function PageEditor({ page }: { page: EditablePage }) {
         // Never overwrite: keep the work as a local draft and fall back to read-only.
         saveLocalDraft(localStorage, page.id, { ...current, savedAt: new Date().toISOString() });
         const details = result.error.details ?? {};
-        lock.markLost({
-          name: typeof details.holderName === "string" ? details.holderName : null,
-          since: asDate(details.since),
-        });
+        const holderName = typeof details.holderName === "string" ? details.holderName : null;
+        lock.markLost({ name: holderName, since: asDate(details.since) });
+        if (holderName) {
+          // The lock banner already says who took over; a generic "expired" error would contradict it.
+          setFieldErrors({});
+          setFormError(undefined);
+          return;
+        }
       }
       setFieldErrors(result.error.fieldErrors ?? {});
       setFormError(message(failureKey(result.error)));
