@@ -177,11 +177,7 @@ export function PageEditor({ page }: { page: EditablePage }) {
             </Button>
             {editable ? (
               <>
-                <SubmitButton
-                  variant="outline"
-                  pending={saving}
-                  onClick={() => save(false)}
-                >
+                <SubmitButton variant="outline" pending={saving} onClick={() => save(false)}>
                   {saving ? t("actions.saving") : t("actions.save")}
                 </SubmitButton>
                 <SubmitButton pending={saving} onClick={() => save(true)}>
