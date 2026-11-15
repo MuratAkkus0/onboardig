@@ -103,7 +103,10 @@ export default async function TeamMemberPage({ params }: PageProps<"/team/[userI
           </Alert>
         ) : null}
         {plan.modules.length === 0 ? (
-          <EmptyState title={t("member.emptyPlan")} description={t("member.emptyPlanHint")} />
+          <EmptyState
+            title={t("member.emptyPlan")}
+            description={plan.canManage ? t("member.emptyPlanHint") : t("member.emptyPlanReadOnly")}
+          />
         ) : (
           <EmployeePlanView plan={plan} viewerIsAdmin={actor.role === "admin"} />
         )}

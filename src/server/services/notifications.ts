@@ -31,6 +31,7 @@ const columns = {
   params: notifications.params,
   link: notifications.link,
   eventId: notifications.eventId,
+  pageId: notifications.pageId,
   subjectUserId: notifications.subjectUserId,
   readAt: notifications.readAt,
   occurredAt: notifications.occurredAt,
@@ -45,6 +46,7 @@ type Row = Pick<
   | "params"
   | "link"
   | "eventId"
+  | "pageId"
   | "subjectUserId"
   | "readAt"
   | "occurredAt"
@@ -53,12 +55,18 @@ type Row = Pick<
 function toDto(row: Row): NotificationDto {
   // An announcement whose event was deleted shows "event removed" and links to the plain list.
   const eventRemoved = row.type === "event_announced" && row.eventId === null;
+  // Same for a page update whose page was deleted: no link to a page that returns 404.
+  const pageRemoved = row.type === "page_updated" && row.pageId === null;
   return {
     id: row.id,
     type: row.type,
-    messageKey: eventRemoved ? "notificationItems.eventRemoved" : row.messageKey,
+    messageKey: eventRemoved
+      ? "notificationItems.eventRemoved"
+      : pageRemoved
+        ? "notificationItems.pageRemoved"
+        : row.messageKey,
     params: row.params,
-    link: eventRemoved ? ROUTES.events : row.link,
+    link: eventRemoved ? ROUTES.events : pageRemoved ? ROUTES.plan : row.link,
     subjectUserId: row.subjectUserId,
     read: row.readAt !== null,
     occurredAt: row.occurredAt,

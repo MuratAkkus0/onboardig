@@ -25,11 +25,17 @@ function getRequest(id: string) {
   return new NextRequest(`http://localhost/api/uploads/${id}`);
 }
 
-function postRequest(form: FormData, origin: string | null = new URL(env.APP_URL).origin) {
+async function postRequest(
+  form: FormData,
+  origin: string | null = new URL(env.APP_URL).origin,
+  contentLength?: number,
+) {
+  // Browsers send Content-Length for multipart bodies; the route requires it.
+  const length = contentLength ?? (await new Response(form).arrayBuffer()).byteLength;
   return new NextRequest("http://localhost/api/uploads", {
     method: "POST",
     body: form,
-    headers: origin ? { origin } : {},
+    headers: { ...(origin ? { origin } : {}), "content-length": String(length) },
   });
 }
 
@@ -248,7 +254,7 @@ describe("POST /api/uploads", () => {
   it("answers 401 without a session", async () => {
     getActor.mockResolvedValue(null);
     const page = await createPage();
-    expect((await POST(postRequest(form(page.id, PNG_BYTES)), ctx)).status).toBe(401);
+    expect((await POST(await postRequest(form(page.id, PNG_BYTES)), ctx)).status).toBe(401);
   });
 
   it("answers 403 for a request from a foreign origin", async () => {
@@ -256,21 +262,21 @@ describe("POST /api/uploads", () => {
     getActor.mockResolvedValue(actor);
     const page = await createPage();
     expect(
-      (await POST(postRequest(form(page.id, PNG_BYTES), "https://evil.example"), ctx)).status,
+      (await POST(await postRequest(form(page.id, PNG_BYTES), "https://evil.example"), ctx)).status,
     ).toBe(403);
   });
 
   it("answers 403 for non-admins", async () => {
     getActor.mockResolvedValue(actorOf(await createLead()));
     const page = await createPage();
-    expect((await POST(postRequest(form(page.id, PNG_BYTES)), ctx)).status).toBe(403);
+    expect((await POST(await postRequest(form(page.id, PNG_BYTES)), ctx)).status).toBe(403);
   });
 
   it("creates the upload for an admin", async () => {
     const { actor } = await adminActor();
     getActor.mockResolvedValue(actor);
     const page = await createPage();
-    const response = await POST(postRequest(form(page.id, PNG_BYTES)), ctx);
+    const response = await POST(await postRequest(form(page.id, PNG_BYTES)), ctx);
     expect(response.status).toBe(201);
     const body = (await response.json()) as { id: string; url: string };
     expect(body.url).toBe(`${APP_CONFIG.uploads.urlPrefix}${body.id}`);
@@ -281,10 +287,36 @@ describe("POST /api/uploads", () => {
     getActor.mockResolvedValue(actor);
     const page = await createPage();
     const big = new Uint8Array(APP_CONFIG.uploads.maxBytes + 1);
-    expect((await POST(postRequest(form(page.id, big)), ctx)).status).toBe(413);
-    expect((await POST(postRequest(form(page.id, PDF_BYTES)), ctx)).status).toBe(415);
+    expect((await POST(await postRequest(form(page.id, big)), ctx)).status).toBe(413);
+    expect((await POST(await postRequest(form(page.id, PDF_BYTES)), ctx)).status).toBe(415);
     const empty = new FormData();
     empty.set("pageId", page.id);
-    expect((await POST(postRequest(empty), ctx)).status).toBe(400);
+    expect((await POST(await postRequest(empty), ctx)).status).toBe(400);
+  });
+
+  it("rejects before reading the body when the declared length is missing or too large", async () => {
+    const { actor } = await adminActor();
+    getActor.mockResolvedValue(actor);
+    const page = await createPage();
+    const tooBig = APP_CONFIG.uploads.maxBytes * 100;
+    expect(
+      (await POST(await postRequest(form(page.id, PNG_BYTES), undefined, tooBig), ctx)).status,
+    ).toBe(413);
+    const noLength = new NextRequest("http://localhost/api/uploads", {
+      method: "POST",
+      body: form(page.id, PNG_BYTES),
+      headers: { origin: new URL(env.APP_URL).origin },
+    });
+    noLength.headers.delete("content-length");
+    expect((await POST(noLength, ctx)).status).toBe(413);
+  });
+
+  it("checks the permission before the body: a lead with an oversized declared length gets 403", async () => {
+    getActor.mockResolvedValue(actorOf(await createLead()));
+    const page = await createPage();
+    const tooBig = APP_CONFIG.uploads.maxBytes * 100;
+    expect(
+      (await POST(await postRequest(form(page.id, PNG_BYTES), undefined, tooBig), ctx)).status,
+    ).toBe(403);
   });
 });

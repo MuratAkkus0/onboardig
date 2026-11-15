@@ -5,6 +5,7 @@ import type { JSONContent } from "@tiptap/core";
 import { EditorContent, useEditor } from "@tiptap/react";
 import { CONTENT_CLASSES } from "@/components/content/content-styles";
 import { contentExtensions } from "@/lib/tiptap/extensions";
+import { toPlainJson } from "@/lib/tiptap/plain-json";
 import { cn } from "@/lib/utils";
 import { EditorToolbar } from "./editor-toolbar";
 
@@ -41,11 +42,13 @@ export function RichTextEditor({
         ),
       },
     },
-    onUpdate: ({ editor: current }) => onChange(current.getJSON()),
+    // ProseMirror attrs are null-prototype objects, which React serializes as opaque temporary
+    // references when sent to a server action: hand out a plain-object copy.
+    onUpdate: ({ editor: current }) => onChange(toPlainJson(current.getJSON())),
   });
 
   useEffect(() => {
-    editor?.setEditable(editable);
+    editor?.setEditable(editable, false);
   }, [editor, editable]);
 
   return (

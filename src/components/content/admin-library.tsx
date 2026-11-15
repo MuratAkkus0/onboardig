@@ -55,11 +55,14 @@ function PageRow({
   page,
   index,
   total,
+  filtered,
   otherModules,
 }: {
   page: LibraryPage;
   index: number;
   total: number;
+  /** A status filter hides siblings, so the position among the visible rows is meaningless. */
+  filtered: boolean;
   otherModules: { id: string; title: string }[];
 }) {
   const t = useTranslations("library");
@@ -99,7 +102,7 @@ function PageRow({
             size="icon-sm"
             aria-label={t("page.moveUp")}
             title={t("page.moveUp")}
-            disabled={pending || index === 0}
+            disabled={pending || filtered || index === 0}
             onClick={() => move("up")}
           >
             <ArrowUp />
@@ -109,7 +112,7 @@ function PageRow({
             size="icon-sm"
             aria-label={t("page.moveDown")}
             title={t("page.moveDown")}
-            disabled={pending || index === total - 1}
+            disabled={pending || filtered || index === total - 1}
             onClick={() => move("down")}
           >
             <ArrowDown />
@@ -189,11 +192,13 @@ function ModuleCard({
   module,
   index,
   total,
+  filtered,
   allModules,
 }: {
   module: ModuleWithPages;
   index: number;
   total: number;
+  filtered: boolean;
   allModules: ModuleWithPages[];
 }) {
   const t = useTranslations("library");
@@ -286,7 +291,9 @@ function ModuleCard({
       </CardHeader>
       <CardContent>
         {module.pages.length === 0 ? (
-          <p className="text-sm text-muted-foreground">{t("admin.noPages")}</p>
+          <p className="text-sm text-muted-foreground">
+            {filtered ? t("admin.noPagesFiltered") : t("admin.noPages")}
+          </p>
         ) : (
           <Table>
             <TableHeader>
@@ -307,6 +314,7 @@ function ModuleCard({
                   page={page}
                   index={pageIndex}
                   total={module.pages.length}
+                  filtered={filtered}
                   otherModules={otherModules}
                 />
               ))}
@@ -318,15 +326,29 @@ function ModuleCard({
   );
 }
 
-export function AdminLibrary({ modules }: { modules: ModuleWithPages[] }) {
+export function AdminLibrary({
+  modules,
+  filtered = false,
+}: {
+  modules: ModuleWithPages[];
+  /** A status filter is active: pages are hidden, so page ordering is disabled. */
+  filtered?: boolean;
+}) {
+  const t = useTranslations("library");
   return (
     <div className="space-y-4">
+      {filtered ? (
+        <p role="status" className="text-sm text-muted-foreground">
+          {t("admin.filterHint")}
+        </p>
+      ) : null}
       {modules.map((module, index) => (
         <ModuleCard
           key={module.id}
           module={module}
           index={index}
           total={modules.length}
+          filtered={filtered}
           allModules={modules}
         />
       ))}

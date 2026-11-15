@@ -114,12 +114,26 @@ describe("heartbeat", () => {
     expect((await lockRow(page.id))!.expiresAt.getTime()).toBeGreaterThan(Date.now());
   });
 
-  it("re-acquires when the lock row is gone", async () => {
-    const { actor, user } = await adminActor();
+  it("never re-acquires when the lock row is gone", async () => {
+    const { actor } = await adminActor();
     const page = await createPage();
-    const result = await heartbeat(actor, { pageId: page.id });
-    expect(result.held).toBe(true);
-    expect((await lockRow(page.id))!.userId).toBe(user.id);
+    expect(await heartbeat(actor, { pageId: page.id })).toEqual({
+      held: false,
+      holderName: null,
+      since: null,
+    });
+    expect(await lockRow(page.id)).toBeUndefined();
+  });
+
+  it("does not hand the lock back after a takeover followed by a release", async () => {
+    const owner = await adminActor();
+    const me = await adminActor();
+    const page = await createPage();
+    await acquireLock(owner.actor, { pageId: page.id });
+    await takeOverLock(me.actor, { pageId: page.id });
+    await releaseLock(me.actor, { pageId: page.id });
+    expect((await heartbeat(owner.actor, { pageId: page.id })).held).toBe(false);
+    expect(await lockRow(page.id)).toBeUndefined();
   });
 
   it("reports held:false with the holder when somebody else holds the lock", async () => {
@@ -132,14 +146,14 @@ describe("heartbeat", () => {
     expect((await lockRow(page.id))!.userId).toBe(owner.user.id);
   });
 
-  it("takes over a lock of somebody else once it expired", async () => {
+  it("does not take over an expired lock of somebody else", async () => {
     const owner = await adminActor();
     const me = await adminActor();
     const page = await createPage();
     await acquireLock(owner.actor, { pageId: page.id });
     await expireLock(page.id);
-    expect((await heartbeat(me.actor, { pageId: page.id })).held).toBe(true);
-    expect((await lockRow(page.id))!.userId).toBe(me.user.id);
+    expect((await heartbeat(me.actor, { pageId: page.id })).held).toBe(false);
+    expect((await lockRow(page.id))!.userId).toBe(owner.user.id);
   });
 
   it("reports held:false without holder when the page is gone", async () => {

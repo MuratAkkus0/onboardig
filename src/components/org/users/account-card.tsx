@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
@@ -19,7 +20,7 @@ import { useActionErrorDescriber } from "../use-action-error";
 interface AccountCardProps {
   user: { id: string; name: string; archivedAt: string | null };
   isSelf: boolean;
-  /** People that still have this user as lead (deactivation warning). */
+  /** People that still have this user as lead (deactivation warning; blocks permanent delete). */
   ledEmployees: { id: string; name: string }[];
 }
 
@@ -68,22 +69,45 @@ export function AccountCard({ user, isSelf, ledEmployees }: AccountCardProps) {
                 }}
                 trigger={<Button variant="outline">{t("reactivate.button")}</Button>}
               />
-              <ConfirmDialog
-                title={t("delete.title", { name: user.name })}
-                description={t("delete.description")}
-                confirmLabel={t("delete.confirm")}
-                destructive
-                requireText={user.name}
-                onConfirm={async () => {
-                  const done = await run(
-                    () => deleteUserPermanentlyAction({ id: user.id, confirmName: user.name }),
-                    "deleted",
-                  );
-                  if (done) router.push(ROUTES.adminUsers);
-                }}
-                trigger={<Button variant="destructive">{t("delete.button")}</Button>}
-              />
+              {ledEmployees.length > 0 ? (
+                <Button variant="destructive" disabled>
+                  {t("delete.button")}
+                </Button>
+              ) : (
+                <ConfirmDialog
+                  title={t("delete.title", { name: user.name })}
+                  description={t("delete.description")}
+                  confirmLabel={t("delete.confirm")}
+                  destructive
+                  requireText={user.name}
+                  onConfirm={async () => {
+                    const done = await run(
+                      () => deleteUserPermanentlyAction({ id: user.id, confirmName: user.name }),
+                      "deleted",
+                    );
+                    if (done) router.push(ROUTES.adminUsers);
+                  }}
+                  trigger={<Button variant="destructive">{t("delete.button")}</Button>}
+                />
+              )}
             </div>
+            {ledEmployees.length > 0 ? (
+              <div className="space-y-2 text-sm">
+                <p className="text-muted-foreground">{t("delete.blockedByLead")}</p>
+                <ul className="list-disc space-y-1 pl-5">
+                  {ledEmployees.map((employee) => (
+                    <li key={employee.id}>
+                      <Link
+                        href={ROUTES.adminUser(employee.id)}
+                        className="underline underline-offset-4"
+                      >
+                        {employee.name}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
           </>
         ) : isSelf ? (
           <p className="text-sm text-muted-foreground">{t("self")}</p>

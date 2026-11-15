@@ -3,6 +3,7 @@ import { useTranslations } from "next-intl";
 import { NotificationBell } from "@/components/notifications/notification-bell";
 import { APP_CONFIG, ROUTES } from "@/config/app";
 import type { VisibleNavItem } from "@/lib/navigation";
+import { AppLogo } from "./app-logo";
 import { MobileNav } from "./mobile-nav";
 import { UserMenu } from "./user-menu";
 
@@ -19,8 +20,9 @@ export function TopBar({ items, user }: TopBarProps) {
       <Link
         href={ROUTES.home}
         aria-label={t("home")}
-        className="truncate rounded-md px-1 text-base font-semibold focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none"
+        className="flex items-center gap-2 truncate rounded-md px-1 text-base font-semibold focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none"
       >
+        <AppLogo className="size-6 shrink-0" />
         {APP_CONFIG.appName}
       </Link>
       <div className="ml-auto flex items-center gap-1">

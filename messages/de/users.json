@@ -58,7 +58,9 @@
     "adminHint": "Für Admins sind diese Angaben optional.",
     "submitCreate": "Anlegen und Einladung senden",
     "submitEdit": "Änderungen speichern",
-    "cancel": "Abbrechen"
+    "cancel": "Abbrechen",
+    "archivedLead": "{name} (archiviert)",
+    "viewPlan": "Plan ansehen und Vorlagen zuweisen"
   },
   "toast": {
     "created": "Benutzer angelegt, die Einladung wurde gesendet.",
@@ -110,7 +112,8 @@
       "button": "Endgültig löschen",
       "description": "Konto, Fortschritt und alle Benachrichtigungen über diese Person werden unwiderruflich gelöscht.",
       "title": "„{name}“ endgültig löschen?",
-      "confirm": "Endgültig löschen"
+      "confirm": "Endgültig löschen",
+      "blockedByLead": "Dieses Konto ist noch Teamleitung der folgenden Personen. Weise sie zuerst einer anderen Leitung zu, dann kann es gelöscht werden."
     }
   },
   "errors": {

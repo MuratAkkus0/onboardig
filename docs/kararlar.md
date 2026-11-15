@@ -331,7 +331,7 @@ Uygulama planı ve ayrıntılar: [v1-architecture.md](v1-architecture.md). Aşa�
 
 ---
 
-## 12. Otonom kararlar (mimari blueprint, 15.11.2026)
+## 13. Otonom kararlar (mimari blueprint, 15.11.2026)
 
 Blueprint incelemesi sırasında netleştirilen yorumlar (kaynak: `docs/v1-architecture.md` §14.1).
 
@@ -363,7 +363,7 @@ Blueprint incelemesi sırasında netleştirilen yorumlar (kaynak: `docs/v1-archi
 - **P17** Zengin metin kayıtta izin listesine göre temizlenir; linkler yalnızca http, https, mailto; görseller yalnızca `/api/uploads/<uuid>`. (otonom karar)
 - **P18** Modül/sayfa taşıma, kardeş listesini satır kilidi altında 0..n-1 olarak yeniden numaralar. (otonom karar)
 - **P19** Admin kütüphanesi tüm durumları (arşiv dahil) durum filtresiyle listeler; lider yalnızca yayındaki sayfaları ve bunları içeren modülleri görür. (otonom karar)
-- **P20** Devralma, boşta kalma veya kilit kaybından sonra editör sayfayı yeniden yükler; kaydedilmemiş iş tarayıcıdaki taslakta tutulur ve sonraki açılışta geri yükleme önerilir. (otonom karar)
+- **P20** Devralma sonrası editör sayfayı otomatik yeniden yükler; kilit kaybı veya boşta kalma sonrası yeniden yükleme düğmesi sunar (her iki durumda kilit yeniden alınmaz); kaydedilmemiş iş tarayıcıdaki taslakta tutulur ve sonraki açılışta geri yükleme önerilir. (otonom karar)
 - **P21** Boş içerikli sayfanın yayınlanması engellenmez; zorunlu olan yalnızca DE başlık. (otonom karar)
 - **P22** Kullanımda olan arşivlenmiş bir sayfayı silme girişimi `IN_USE` ile reddedilir. (otonom karar)
 - **P-ev-1** Bildirimlerde okundu işlemleri server action ile yapılır; yalnızca `GET /api/notifications/poll` API ucu vardır. (otonom karar)

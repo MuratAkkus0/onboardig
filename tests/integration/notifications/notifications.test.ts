@@ -1,14 +1,14 @@
 import { eq, sql } from "drizzle-orm";
 import { describe, expect, it } from "vitest";
 import { APP_CONFIG, ROUTES } from "@/config/app";
-import { events, notifications } from "@/server/db/schema";
+import { events, notifications, pages } from "@/server/db/schema";
 import {
   getUnreadSummary,
   listNotifications,
   markAllRead,
   markRead,
 } from "@/server/services/notifications";
-import { createEmployee, createEvent, createNotification } from "../../factories";
+import { createEmployee, createEvent, createNotification, createPage } from "../../factories";
 import { actorOf, testDb } from "../../helpers";
 import { announceEvent, deleteEvent } from "@/server/services/events";
 import { createAdmin } from "../../factories";
@@ -128,6 +128,33 @@ describe("deleted event", () => {
       type: "event_announced",
       messageKey: "notificationItems.eventRemoved",
       link: ROUTES.events,
+    });
+  });
+});
+
+describe("deleted page", () => {
+  it("renders 'page removed' with the plan link instead of a dead page link", async () => {
+    const user = await createEmployee();
+    const page = await createPage();
+    await createNotification({
+      userId: user.id,
+      type: "page_updated",
+      messageKey: "notificationItems.pageUpdated",
+      params: { title: "Alt" },
+      link: ROUTES.page(page.id),
+      pageId: page.id,
+    });
+    const before = await listNotifications(actorOf(user));
+    expect(before.items[0]).toMatchObject({
+      messageKey: "notificationItems.pageUpdated",
+      link: ROUTES.page(page.id),
+    });
+
+    await testDb.delete(pages).where(eq(pages.id, page.id));
+    const after = await listNotifications(actorOf(user));
+    expect(after.items[0]).toMatchObject({
+      messageKey: "notificationItems.pageRemoved",
+      link: ROUTES.plan,
     });
   });
 });

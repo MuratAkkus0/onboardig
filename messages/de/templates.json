@@ -38,7 +38,7 @@
     "team": "Team (optional)",
     "teamNone": "Kein bestimmtes Team",
     "teamHintAll": "Teams sind nur mit einer bestimmten Abteilung möglich.",
-    "jobRole": "Jobrolle (optional)",
+    "jobRole": "Rolle im Unternehmen (optional)",
     "jobRoleNone": "Keine bestimmte Rolle",
     "save": "Speichern",
     "create": "Vorlage anlegen",

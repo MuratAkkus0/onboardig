@@ -26,7 +26,7 @@ interface Options {
 
 const ACTIVITY_EVENTS = ["keydown", "pointerdown", "input", "wheel"] as const;
 
-function asDate(value: unknown): Date | null {
+export function asDate(value: unknown): Date | null {
   return typeof value === "string" || value instanceof Date ? new Date(value) : null;
 }
 

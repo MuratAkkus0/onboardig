@@ -12,7 +12,9 @@
     "statusColumn": "Status",
     "languageColumn": "Sprachen",
     "editedColumn": "Zuletzt bearbeitet",
-    "actionsColumn": "Aktionen"
+    "actionsColumn": "Aktionen",
+    "noPagesFiltered": "Keine Seiten mit diesem Status in diesem Modul.",
+    "filterHint": "Der Statusfilter blendet Seiten aus. Die Reihenfolge der Seiten lässt sich nur ohne Filter ändern."
   },
   "module": {
     "titleDe": "Titel (Deutsch)",
