@@ -23,7 +23,7 @@ Next.js uygulaması. IHK Abschlussprojekt (FIAE, 80 saat, teslim 04.12.2026).
 - Onaysız sistem paketi / global araç kurulumu veya güncellemesi (proje bağımlılıkları serbest).
 - `.env` dosyalarını okumak; sırları sohbete, loga veya repoya yazmak. Repo **herkese açık**.
 - Şirket içi dokümanları (`docs/Projektantrag.docx`) veya gerçek şirket içi bilgiyi commit etmek; demo içerik kurgusal.
-- Arayüzde sabit metin (hepsi `messages/*.json`); renkleri bileşene gömmek (yalnızca `tokens.css`); sabitleri
+- Arayüzde sabit metin (hepsi `messages/{de,en}/*.json`); renkleri bileşene gömmek (yalnızca `tokens.css`); sabitleri
   `src/config/app.ts` dışında tanımlamak.
 - Servis katmanını atlayıp veritabanına route/bileşenden erişmek; yetki kontrolünü yalnızca arayüze bırakmak.
 - Okuma süresi, scroll gibi davranış verisi toplamak (DSGVO / BetrVG).
@@ -45,7 +45,8 @@ Next.js uygulaması. IHK Abschlussprojekt (FIAE, 80 saat, teslim 04.12.2026).
   Tiptap 3, Tailwind 4 + shadcn/ui, Nodemailer + React Email, Vitest, Playwright.
 - Yerel servisler: `docker compose up -d` → Postgres `localhost:5433`, Mailpit SMTP `1025`, UI `http://localhost:8025`.
 - DB erişimi yalnızca `src/server/services/*`; her servis fonksiyonu yetkiyi kendisi kontrol eder.
-- Yeni sabit/varsayılan → `src/config/app.ts`. Yeni metin → `messages/de.json` + `messages/en.json` (ikisi birden).
+- Yeni sabit/varsayılan → `src/config/app.ts`. Yeni metin → kendi namespace dosyan `messages/de/<ns>.json` + `messages/en/<ns>.json` (ikisi birden).
+- Mimari sözleşme: `docs/v1-architecture.md` (şema, servisler, route'lar, dosya sahipliği).
 
 ## graphify
 

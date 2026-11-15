@@ -24,7 +24,7 @@ Sürümler 15.11.2026'da npm ve endoflife.date üzerinden doğrulandı.
 | Auth | Better Auth 1.7: e-posta + şifre, `admin` plugin (kullanıcı oluşturma, rol, ban, oturum iptali), Drizzle adapter |
 | UI | Tailwind CSS 4 + shadcn/ui; tüm renkler `src/styles/tokens.css` içinde CSS değişkeni |
 | Editör | Tiptap 3 (WYSIWYG); içerik Tiptap JSON olarak saklanır |
-| i18n | next-intl 4; `messages/de.json`, `messages/en.json` |
+| i18n | next-intl 4; namespace başına dosya: `messages/de/<namespace>.json`, `messages/en/<namespace>.json` (paralel geliştirmede çakışma olmasın diye — otonom karar) |
 | Mail | Nodemailer (SMTP) + React Email şablonları; yerelde Mailpit |
 | Depolama (görseller) | Yerel disk (`./uploads`), `StorageAdapter` arayüzü arkasında (ileride S3) |
 | Arama | PostgreSQL full-text search (`german` / `english` konfigürasyonları) |
@@ -45,7 +45,7 @@ Sürümler 15.11.2026'da npm ve endoflife.date üzerinden doğrulandı.
 ├─ docker-compose.prod.yml       # app + postgres
 ├─ Dockerfile
 ├─ drizzle/                      # SQL migration'lar
-├─ messages/                     # de.json, en.json (tüm arayüz metinleri)
+├─ messages/                     # de/, en/ altında namespace dosyaları (tüm arayüz metinleri)
 ├─ scripts/                      # seed-admin.ts, seed-demo.ts
 ├─ src/
 │  ├─ app/                       # route'lar (App Router)
@@ -270,7 +270,7 @@ ve kullanıcı öğenin adını yazarak onaylar.
 
 ## 9. Arayüz
 
-- Arayüz dili **Almanca ve İngilizce**; tüm metinler `messages/*.json`'dan. Kullanıcı dilini profilinden seçer.
+- Arayüz dili **Almanca ve İngilizce**; tüm metinler `messages/{de,en}/*.json`'dan. Kullanıcı dilini profilinden seçer.
   URL'de dil öneki yok; dil profil/cookie'den gelir (otonom karar).
 - Uygulama adı: **"Onboarding Portal"** (geçici; logo ve isim tek yerden değişir).
 - Responsive (telefon dahil). Tema: açık / koyu / sistem; renkler yalnızca `tokens.css`'te. Varsayılan palet nötr.
@@ -304,3 +304,27 @@ ve kullanıcı öğenin adını yazarak onaylar.
   etkinlik duyurusu). Az sayıda tutulur, **nadiren** (aşama sonu / teslim öncesi) çalıştırılır; varsayılan CI'da yok.
 - İş mantığı servislerinin (ilerleme, atama/snapshot, kilit, bildirim tekilleştirme, yetki) integration testleri zorunlu.
 - Projektdokumentation'a aktarılabilir çıktılar: ER diyagramı, yetki matrisi (§3), durum makineleri (§4, §5), test planı.
+
+---
+
+## 12. Mimari otonom kararlar
+
+Uygulama planı ve ayrıntılar: [v1-architecture.md](v1-architecture.md). Aşağıdakiler o dokümanla alınan küçük kararlardır.
+
+- Davet linkleri Better Auth `verification` tablosunda değil, ayrı `invitations` tablosunda tutulur (72 sa geçerlilik,
+  token yalnızca hash olarak, yeniden gönderince eski link iptal); şifre sıfırlama Better Auth ile (1 sa). (otonom karar)
+- Tamamlama kayıtları ayrı `page_completions` tablosunda (kullanıcı + sayfa) tutulur; adım plandan çıkarılınca kayıt
+  korunur, adım geri eklenirse tamamlama geri gelir. İlerleme yalnızca aktif adımları sayar. (otonom karar)
+- Plandaki taslak sayfalar çalışana görünmez ve ilerleme hesabına girmez (arşiv gibi). (otonom karar)
+- Kullanılan taslak sayfa silinmek istenirse arşivlenir (`taslak → arşiv` geçişi eklendi); geri al → yayında. Taslak
+  sayfa yeniden yayınlanınca planında olanlara "sayfa güncellendi" bildirimi gider. (otonom karar)
+- Okunmamış bildirim tekilleştirmesi "sayfa güncellendi" dışındaki türlere de uygulanır (yeni adım, etkinlik duyurusu,
+  çalışan atandı, onboarding tamamlandı). (otonom karar)
+- Görsele erişim, görselin ait olduğu sayfayı görme yetkisine bağlıdır (admin hepsini görür). (otonom karar)
+- Modül yalnızca içinde sayfa yokken silinebilir. Sıralama sürükle-bırak değil, yukarı/aşağı butonlarıyla. (otonom karar)
+- Son aktif admin deaktive edilemez, silinemez, rolü düşürülemez; başkasının lideri olan kullanıcı kalıcı silinemez ve
+  rolü `employee`'ye düşürülemez (önce çalışanları başka lidere atanır). (otonom karar)
+- Kullanıcı yönetimi (oluşturma, deaktive = Better Auth `banned` + oturumların silinmesi) servis katmanında Drizzle ile
+  yapılır; Better Auth oturum çerezi önbelleği kapalı tutulur ki deaktivasyon anında etkili olsun. (otonom karar)
+- TypeScript 6.0.x ve ESLint 9.x kullanılır: `typescript-eslint` (<6.1) ve eslint-plugin-react/jsx-a11y/import
+  (eslint ^9) eş bağımlılık aralıkları TypeScript 7 / ESLint 10'u henüz desteklemiyor. (otonom karar)
