@@ -24,3 +24,10 @@ graphify-out/
 
 # Internal IHK documents (repo is public)
 docs/Projektantrag.docx
+
+# generated / tooling
+!.env.prod.example
+next-env.d.ts
+*.tsbuildinfo
+test-results/
+playwright-report/

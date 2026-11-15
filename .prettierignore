@@ -1,0 +1,16 @@
+node_modules
+.next
+out
+build
+coverage
+drizzle
+pnpm-lock.yaml
+graphify-out
+uploads
+test-results
+playwright-report
+next-env.d.ts
+docs
+.claude
+CLAUDE.md
+tsconfig.json

@@ -44,7 +44,7 @@ Contents
 | Time | Store `timestamptz` (UTC). Display Europe/Berlin via next-intl formatter (`timeZone` set in request config). Date-only values (`start_date`) are `date` columns, handled as `YYYY-MM-DD` strings. |
 | IDs | `uuid` everywhere (also Better Auth tables, `advanced.database.generateId: "uuid"`). |
 | Column naming | Every Drizzle column gets an explicit snake_case SQL name, e.g. `firstName: text("first_name")`. Do not rely on Drizzle `casing`. TS property names are camelCase and, for Better Auth tables, must equal Better Auth field names. |
-| Server-only | Every module under `src/server/**` starts with `import "server-only";` **except `src/server/db/schema/**`** (pure table definitions, loaded by drizzle-kit). `server-only@0.0.1` throws on import unless the `react-server` condition applies, so: Vitest aliases it to an empty module (§8); every Node script runs as `tsx --import ./scripts/lib/server-only-shim.mjs scripts/<x>.ts` (package.json scripts **and** the Docker `tools` stage). The shim (F1) uses Node 24 `module.registerHooks()` to resolve `server-only` to an empty `data:` URL. Never use `--conditions=react-server` (it also switches react/react-dom to server builds and breaks react-email `render`). Services must **not** import `next/*` (no `headers()`, `cookies()`, `revalidatePath`) so they stay testable; that is the job of actions/route handlers. |
+| Server-only | Every module under `src/server/**` starts with `import "server-only";` **except `src/server/db/schema/**`** (pure table definitions, loaded by drizzle-kit) **and the isomorphic pure modules `src/server/errors.ts`, `src/server/auth/types.ts`, `src/server/auth/permissions.ts`** (imported by `src/lib/domain/*` and client code; no Node/DB access). `server-only@0.0.1` throws on import unless the `react-server` condition applies, so: Vitest aliases it to an empty module (§8); every Node script runs as `tsx --import ./scripts/lib/server-only-shim.mjs scripts/<x>.ts` (package.json scripts **and** the Docker `tools` stage). The shim (F1) uses Node 24 `module.registerHooks()` to resolve `server-only` to an empty `data:` URL. Never use `--conditions=react-server` (it also switches react/react-dom to server builds and breaks react-email `render`). Services must **not** import `next/*` (no `headers()`, `cookies()`, `revalidatePath`) so they stay testable; that is the job of actions/route handlers. |
 | Logging | `src/server/logger.ts` (pino). Never log passwords, tokens, cookies, invitation links, mail bodies. Redact paths are configured there. Log only errors and mutations (action name, entity id, actor id), never content. **Never** log view/read events, i.e. no user id + page id pairs for reads and no request paths tied to a user (that would be a page-view history, K§5/K§10). No request/access logging middleware. |
 | Behaviour data | Never store reading time, scroll position, page views (K§5). Only completion + timestamp. `sessions.ip_address` / `user_agent` are kept only because Better Auth stores them for security and rate limiting; they disappear with the session row (sign-out, expiry, deactivation). W4 documents this in the Projektdoku, W3-delivery in `docs/runbook.md`. |
 | DB errors | Services catch Postgres errors they can race into and rethrow `AppError` via `rethrowDbError(e, map)` from `src/server/errors.ts` (F1): `23503` (FK) ⇒ `IN_USE` on delete paths / `CONFLICT` on insert/update paths, `23505` (unique) ⇒ `CONFLICT` (or `EMAIL_TAKEN` on users.email), `40P01` (deadlock) ⇒ `CONFLICT`. `runAction`/`withActor` apply the same default mapping to anything uncaught, so races never surface as `INTERNAL`. |
@@ -1070,14 +1070,15 @@ its HTTP endpoints, and the core endpoints that would bypass our services, are d
 /admin/has-permission
 /update-user  /delete-user  /delete-user/callback  /change-email  /link-social  /unlink-account
 /send-verification-email  /verify-email
+/sign-up/email  /sign-in/social  /refresh-token  /get-access-token
 ```
 
 Why: these would let an admin impersonate someone and mark steps "Erledigt" for them (K§3 forbids it for every role),
 and skip last-admin protection, "leader cannot be demoted/deleted" (K§12), the invitation flow, onboarding status,
 IN_USE checks and the NOT NULL name columns (`set-role` could even write `user` into the `user_role` enum);
-`/update-user` would let anyone break `name = first + last`. Enabled are only: sign-in/email, sign-out, get-session,
+`/update-user` would let anyone break `name = first + last`. The last four are added because they exist in `auth.api` (1.7.25) and are unused in v1: sign-up is already off via `disableSignUp`, no social providers are configured. Enabled are only: sign-in/email, sign-out, get-session,
 list-sessions, revoke-session(s), revoke-other-sessions, request-password-reset, reset-password (+ `/reset-password/:token`
-callback), change-password, ok, error. F1 integration test: (a) an admin session POSTing to `/api/auth/admin/set-role`
+callback), change-password, plus the inert/own-data endpoints verify-password, update-session, list-accounts, account-info and `/callback/:id` (no providers configured), ok, error. F1 implements `auth.ts` with a lazy `getAuth()` singleton and a Proxy `auth` export so `next build` and tests need no secrets at import time. F1 integration test: (a) an admin session POSTing to `/api/auth/admin/set-role`
 and `/api/auth/admin/impersonate-user` gets 404; (b) every endpoint path of `auth.api` (from the router) is either in an
 explicit "enabled" list or in `disabledPaths`, so a Better Auth upgrade that adds endpoints fails the test.
 
@@ -1493,6 +1494,8 @@ label, popover, progress, radio-group, scroll-area, select, separator, sheet, sk
 textarea, tooltip`. The CSS variables shadcn writes are moved into `src/styles/tokens.css`; `globals.css` only imports
 Tailwind, `tw-animate-css` and `tokens.css` and maps tokens via `@theme inline`. Units do not add packages or shadcn
 components; if one is truly needed, it is a contract change request (§13).
+
+pnpm 12 blocks dependency build scripts by default: `pnpm-workspace.yaml` (F1) allows only `esbuild` (`allowBuilds`) and denies `@parcel/watcher` and `@swc/core`. `env.ts` supplies a fixed dummy `BETTER_AUTH_SECRET` only when `NODE_ENV=test`.
 
 Not used (by decision): react-hook-form, drag-and-drop libs, dotenv (Node `process.loadEnvFile`), sharp, faker
 (demo data is hand-written fictional content), any external error tracker.
