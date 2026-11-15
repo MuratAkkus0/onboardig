@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:18.7-alpine
+        env:
+          POSTGRES_USER: onboarding
+          POSTGRES_PASSWORD: onboarding
+          POSTGRES_DB: onboarding
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U onboarding -d onboarding"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgres://onboarding:onboarding@localhost:5432/onboarding
+      APP_URL: http://localhost:3000
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - run: pnpm test:unit
+      - run: pnpm test:integration
+      - run: pnpm build
+        env:
+          # Dummy value so the build never needs a real secret.
+          BETTER_AUTH_SECRET: ci-build-secret-ci-build-secret-ci-build-0123
