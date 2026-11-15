@@ -11,10 +11,10 @@ Durum: ⬜ başlamadı · 🔄 devam ediyor · ✅ bitti
 | 1 | Temel: auth, roller, i18n, tema, mail | Benutzeranmeldung und Berechtigungsprüfung | ✅ |
 | 2 | Organizasyon ve kullanıcı yönetimi | Verwaltung von Abteilungen, Rollen | ✅ |
 | 3 | İçerik kütüphanesi ve editör | Verwaltung von Onboarding-Vorlagen (içerik tarafı) | ✅ |
-| 4 | Şablonlar, atama, ilerleme | Vorlagen, Zuweisung und Fortschrittsverfolgung | 🔄 |
+| 4 | Şablonlar, atama, ilerleme | Vorlagen, Zuweisung und Fortschrittsverfolgung | ✅ |
 | 5 | Bildirimler ve etkinlikler | Benachrichtigungsfunktion, Veranstaltungen | ✅ |
-| 6 | Paneller ve arama | Darstellung des Bearbeitungsstandes | ⬜ |
-| 7 | Bitiriş: demo veri, Docker prod, E2E, dokümantasyon girdileri | Test, Bereitstellung | ⬜ |
+| 6 | Paneller ve arama | Darstellung des Bearbeitungsstandes | 🔄 |
+| 7 | Bitiriş: demo veri, Docker prod, E2E, dokümantasyon girdileri | Test, Bereitstellung | 🔄 |
 
 ## 0. Kurulum
 - Next.js 16 + TypeScript strict + pnpm iskeleti; ESLint, Prettier.

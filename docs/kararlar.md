@@ -370,3 +370,13 @@ Blueprint incelemesi sırasında netleştirilen yorumlar (kaynak: `docs/v1-archi
 - **P-ev-2** Geçmiş etkinlik listesi 100 ile sınırlı; başlık 200, açıklama 5000, yer 200 karakter. (otonom karar)
 - **P-ev-3** Etkinlik güncellemesi gönderilmiş bildirimleri değiştirmez; yeniden duyuru okunmamış bildirimi tekilleştirerek tazeler. Etkinlik silme kalıcıdır, eski duyurular "Veranstaltung entfernt" olarak görünür. (otonom karar)
 - **P-tech-1** PostgreSQL `ON DELETE RESTRICT` ihlali (SQLSTATE 23001) merkezi hata eşlemesinde FK ihlali (23503) gibi ele alınır. (otonom karar)
+
+### Dalga 2 otonom kararları
+
+- **P-tpl-1** Şablon silme: hiç atanmamışsa kalıcı silinir; atanmışsa adı yazılarak onaylanan arşivleme yapılır, etki ekranı atama sayısını ve aktif onboarding sayısını gösterir. (otonom karar)
+- **P-tpl-2** Şablon adımları aşama içinde sıralanır; aşama değiştirilen adım hedef aşamanın sonuna eklenir. (otonom karar)
+- **P-tpl-3** Arşivdeki şablonun adımları düzenlenebilir; şablona taslak sayfa eklenebilir (arayüzde işaretli), arşiv sayfa eklenemez. (otonom karar)
+- **P-plan-1** Kopyalamada şablon önceliği: şirket geneli → departman → ekip → iş rolü, sonra ad. (otonom karar)
+- **P-plan-2** Lider plana yayında olmayan bir sayfa eklemeye çalışırsa sayfa yokmuş gibi yanıt alır (taslağın varlığı sızmaz). (otonom karar)
+- **P-plan-3** Tamamlanmış adımı yeniden tamamlamak ilk tamamlama tarihini korur; "Seit deinem Abschluss aktualisiert" rozetini kaldırmak için çalışan adımı geri alıp yeniden tamamlar. (otonom karar)
+- **P-plan-4** Çalışan başkasının planına erişmeye çalışırsa `FORBIDDEN`, lider kendisine atanmamış çalışan için `NOT_FOUND` alır. (otonom karar)
