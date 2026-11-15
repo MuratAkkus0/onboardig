@@ -380,3 +380,11 @@ Blueprint incelemesi sırasında netleştirilen yorumlar (kaynak: `docs/v1-archi
 - **P-plan-2** Lider plana yayında olmayan bir sayfa eklemeye çalışırsa sayfa yokmuş gibi yanıt alır (taslağın varlığı sızmaz). (otonom karar)
 - **P-plan-3** Tamamlanmış adımı yeniden tamamlamak ilk tamamlama tarihini korur; "Seit deinem Abschluss aktualisiert" rozetini kaldırmak için çalışan adımı geri alıp yeniden tamamlar. (otonom karar)
 - **P-plan-4** Çalışan başkasının planına erişmeye çalışırsa `FORBIDDEN`, lider kendisine atanmamış çalışan için `NOT_FOUND` alır. (otonom karar)
+
+### Dalga 3 otonom kararları
+
+- **P-dash-1** Ekip paneli arşivdeki çalışanları göstermez; admin genel bakışı arşivdekileri yalnızca durum filtresi "arşiv" seçilince gösterir. (otonom karar)
+- **P-dash-2** Admin genel bakışı tüm rollerdeki kullanıcıları listeler (ekip liderinin de onboarding'i olabilir); özet sayılar filtrelenmiş satırlardan hesaplanır. (otonom karar)
+- **P-search-1** Arama en az uzunluğun altındaki sorgularda boş sonuç döner, 100 karakterden uzun sorguyu reddeder; snippet vurguları HTML olarak değil, karakter aralığı olarak taşınır ve `<mark>` ile çizilir. (otonom karar)
+- **P-del-1** Demo verisi tamamen kurgusaldır ve çalıştırma tarihine göre göreli tarihlenir; tüm demo hesapları için tek bir rastgele şifre üretilir ve sonda bir kez yazdırılır (`SEED_DEMO_PASSWORD` ile sabitlenebilir). `seed:demo --reset` production'da reddedilir. (otonom karar)
+- **P-del-2** Devir dokümanı (`docs/runbook.md`) şirkete teslim edileceği için Almanca yazılır. (otonom karar)
