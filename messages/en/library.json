@@ -1,1 +1,96 @@
-{}
+{
+  "admin": {
+    "title": "Manage library",
+    "description": "Create, sort, publish and archive modules and pages.",
+    "addModule": "Add module",
+    "emptyTitle": "No modules yet",
+    "emptyDescription": "Create a module and add pages to it.",
+    "noPages": "This module has no pages yet.",
+    "filterLabel": "Filter by status",
+    "filterAll": "All",
+    "pagesColumn": "Page",
+    "statusColumn": "Status",
+    "languageColumn": "Languages",
+    "editedColumn": "Last edited",
+    "actionsColumn": "Actions"
+  },
+  "module": {
+    "titleDe": "Title (German)",
+    "titleEn": "Title (English, optional)",
+    "createTitle": "Add module",
+    "renameTitle": "Edit module",
+    "create": "Create module",
+    "save": "Save",
+    "rename": "Edit module",
+    "moveUp": "Move module up",
+    "moveDown": "Move module down",
+    "delete": "Delete module",
+    "deleteTitle": "Delete module?",
+    "deleteDescription": "The module \"{name}\" will be deleted. This is only possible while it contains no pages.",
+    "addPage": "Add page"
+  },
+  "page": {
+    "createTitle": "Add page",
+    "titleLabel": "Title (German)",
+    "create": "Create page",
+    "edit": "Edit",
+    "preview": "View",
+    "moveUp": "Move page up",
+    "moveDown": "Move page down",
+    "moveToModule": "Move to another module",
+    "moreActions": "More actions for {name}",
+    "englishAvailable": "DE + EN",
+    "germanOnlyBadge": "DE only",
+    "lastEdited": "{name}, {date}",
+    "neverEdited": "Not edited yet"
+  },
+  "actions": {
+    "publish": "Publish",
+    "unpublish": "Back to draft",
+    "archive": "Archive",
+    "restore": "Restore",
+    "delete": "Delete"
+  },
+  "delete": {
+    "simpleTitle": "Delete page?",
+    "simpleDescription": "The page \"{name}\" will be deleted permanently, including its images. It is not used anywhere.",
+    "usedTitle": "Page is in use",
+    "usedDescription": "The page \"{name}\" is in use, so it is archived instead of deleted. It disappears from plans and progress calculations, completions are kept. You can restore it later.",
+    "usedConfirm": "Archive",
+    "headline": "{count, plural, one {# active plan contains this page} other {# active plans contain this page}}",
+    "templates": "{count, plural, one {# template} other {# templates}}",
+    "plans": "{count, plural, one {# plan (any status)} other {# plans (any status)}}",
+    "completions": "{count, plural, one {# completion is kept} other {# completions are kept}}",
+    "loading": "Checking the impact …"
+  },
+  "toast": {
+    "moduleCreated": "Module created.",
+    "moduleSaved": "Module saved.",
+    "moduleDeleted": "Module deleted.",
+    "pageMoved": "Page moved.",
+    "pageDeleted": "Page deleted.",
+    "pageArchived": "Page archived.",
+    "published": "Page published.",
+    "unpublished": "Page set back to draft.",
+    "archived": "Page archived.",
+    "restored": "Page restored."
+  },
+  "errors": {
+    "moduleHasPages": "The module still contains pages and cannot be deleted.",
+    "pageInUse": "The archived page is still in use and cannot be deleted.",
+    "pageBecameUsed": "The page was used in the meantime. Please try again, it will then be archived.",
+    "confirmNameMismatch": "The name you entered does not match the page title."
+  },
+  "view": {
+    "lastEdited": "Last edited on {date}",
+    "lastEditedBy": "Last edited by {name} on {date}",
+    "previewDraft": "Preview: this page is a draft and not visible to employees.",
+    "previewArchived": "Preview: this page is archived and not visible to employees."
+  },
+  "readonly": {
+    "title": "Library",
+    "description": "All published pages for reference.",
+    "emptyTitle": "No published pages yet",
+    "emptyDescription": "Once pages are published you will find them here."
+  }
+}

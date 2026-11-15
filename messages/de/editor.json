@@ -1,1 +1,86 @@
-{}
+{
+  "title": "Seite bearbeiten",
+  "backToLibrary": "Zur Bibliothek",
+  "tabs": { "de": "Deutsch", "en": "Englisch (optional)" },
+  "fields": {
+    "titleDe": "Titel (Deutsch)",
+    "titleEn": "Titel (Englisch)",
+    "contentDe": "Inhalt (Deutsch)",
+    "contentEn": "Inhalt (Englisch)"
+  },
+  "enHint": "Die englische Fassung gilt nur, wenn Titel und Inhalt ausgefüllt sind. Sonst sehen Nutzer mit englischer Oberfläche die deutsche Seite mit dem Hinweis „Nur auf Deutsch verfügbar“.",
+  "actions": {
+    "save": "Speichern",
+    "saveAndClose": "Speichern und schließen",
+    "saving": "Wird gespeichert …"
+  },
+  "status": {
+    "dirty": "Nicht gespeicherte Änderungen",
+    "saved": "Gespeichert",
+    "lastEdited": "Zuletzt gespeichert: {name}, {date}",
+    "acquiring": "Bearbeitung wird vorbereitet …"
+  },
+  "toolbar": {
+    "label": "Formatierung",
+    "bold": "Fett",
+    "italic": "Kursiv",
+    "underline": "Unterstrichen",
+    "strike": "Durchgestrichen",
+    "code": "Code",
+    "link": "Link einfügen",
+    "unlink": "Link entfernen",
+    "heading2": "Überschrift 2",
+    "heading3": "Überschrift 3",
+    "bulletList": "Aufzählung",
+    "orderedList": "Nummerierte Liste",
+    "blockquote": "Zitat",
+    "codeBlock": "Codeblock",
+    "horizontalRule": "Trennlinie",
+    "image": "Bild einfügen",
+    "undo": "Rückgängig",
+    "redo": "Wiederholen"
+  },
+  "link": {
+    "label": "Link-Adresse",
+    "hint": "Erlaubt sind http-, https- und mailto-Adressen.",
+    "apply": "Übernehmen",
+    "cancel": "Abbrechen",
+    "invalid": "Diese Adresse ist nicht erlaubt."
+  },
+  "image": {
+    "uploading": "Bild wird hochgeladen …",
+    "uploaded": "Bild eingefügt.",
+    "failed": "Das Bild konnte nicht hochgeladen werden."
+  },
+  "lock": {
+    "heldBy": "{name} bearbeitet diese Seite seit {time}",
+    "heldByUnknown": "Jemand anderes bearbeitet diese Seite",
+    "takeOver": "Bearbeitung übernehmen",
+    "takeOverTitle": "Bearbeitung übernehmen?",
+    "takeOverDescription": "{name} verliert die Bearbeitung, nicht gespeicherte Änderungen gehen dort verloren.",
+    "takenOver": "{name} hat die Bearbeitung übernommen",
+    "expired": "Sperre abgelaufen",
+    "reload": "Seite neu laden",
+    "readOnly": "Du siehst die Seite nur zum Lesen.",
+    "draftKept": "Deine nicht gespeicherten Änderungen liegen als Entwurf in diesem Browser.",
+    "idleReleased": "Die Bearbeitung wurde wegen Inaktivität beendet. Deine Änderungen liegen als Entwurf in diesem Browser.",
+    "continue": "Weiter bearbeiten"
+  },
+  "idle": {
+    "prompt": "Bist du noch da?",
+    "description": "Ohne Antwort beenden wir die Bearbeitung und sichern deine Änderungen als Entwurf in diesem Browser.",
+    "confirm": "Ja, ich bin noch da"
+  },
+  "draft": {
+    "found": "In diesem Browser liegt ein nicht gespeicherter Entwurf vom {date}.",
+    "restore": "Entwurf wiederherstellen",
+    "discard": "Verwerfen"
+  },
+  "errors": {
+    "foreignImage": "Der Inhalt enthält ein Bild, das nicht zu dieser Seite gehört.",
+    "invalidContent": "Der Inhalt enthält ungültige Elemente und kann nicht gespeichert werden.",
+    "contentTooLarge": "Der Inhalt ist zu umfangreich.",
+    "englishIncomplete": "Englischer Titel und englischer Inhalt müssen beide ausgefüllt oder beide leer sein.",
+    "saveFailed": "Die Seite konnte nicht gespeichert werden."
+  }
+}

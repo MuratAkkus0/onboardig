@@ -242,7 +242,25 @@ export const W1_ORG_CONFIG = {} as const;
 // <<< W1-org
 
 // >>> W1-content (owned by W1-content)
-export const W1_CONTENT_CONFIG = {} as const;
+export const W1_CONTENT_CONFIG = {
+  titleMaxLength: 200,
+  // H1 is the page title itself, so the editor offers H2 and H3 only.
+  headingLevels: [2, 3],
+  allowedLinkProtocols: ["http:", "https:", "mailto:"],
+  maxDocumentBytes: 2 * 1024 * 1024,
+  imageExtensions: {
+    "image/png": "png",
+    "image/jpeg": "jpg",
+    "image/webp": "webp",
+    "image/gif": "gif",
+  },
+  maxUploadNameLength: 120,
+  imageCacheControl: "private, max-age=3600",
+  // Advisory lock key serialising sort_order assignment for new modules.
+  moduleSortLockKey: 7_301_001,
+  // SQLSTATE of a violated ON DELETE RESTRICT foreign key (23503 is only used for NO ACTION).
+  restrictViolationCode: "23001",
+} as const;
 // <<< W1-content
 
 // >>> W1-notify-events (owned by W1-notify-events)

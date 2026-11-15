@@ -1,1 +1,86 @@
-{}
+{
+  "title": "Edit page",
+  "backToLibrary": "Back to library",
+  "tabs": { "de": "German", "en": "English (optional)" },
+  "fields": {
+    "titleDe": "Title (German)",
+    "titleEn": "Title (English)",
+    "contentDe": "Content (German)",
+    "contentEn": "Content (English)"
+  },
+  "enHint": "The English version only counts when both title and content are filled in. Otherwise users with the English interface see the German page with the note \"Only available in German\".",
+  "actions": {
+    "save": "Save",
+    "saveAndClose": "Save and close",
+    "saving": "Saving …"
+  },
+  "status": {
+    "dirty": "Unsaved changes",
+    "saved": "Saved",
+    "lastEdited": "Last saved: {name}, {date}",
+    "acquiring": "Preparing to edit …"
+  },
+  "toolbar": {
+    "label": "Formatting",
+    "bold": "Bold",
+    "italic": "Italic",
+    "underline": "Underline",
+    "strike": "Strikethrough",
+    "code": "Code",
+    "link": "Insert link",
+    "unlink": "Remove link",
+    "heading2": "Heading 2",
+    "heading3": "Heading 3",
+    "bulletList": "Bulleted list",
+    "orderedList": "Numbered list",
+    "blockquote": "Quote",
+    "codeBlock": "Code block",
+    "horizontalRule": "Divider",
+    "image": "Insert image",
+    "undo": "Undo",
+    "redo": "Redo"
+  },
+  "link": {
+    "label": "Link address",
+    "hint": "http, https and mailto addresses are allowed.",
+    "apply": "Apply",
+    "cancel": "Cancel",
+    "invalid": "This address is not allowed."
+  },
+  "image": {
+    "uploading": "Uploading image …",
+    "uploaded": "Image inserted.",
+    "failed": "The image could not be uploaded."
+  },
+  "lock": {
+    "heldBy": "{name} has been editing this page since {time}",
+    "heldByUnknown": "Someone else is editing this page",
+    "takeOver": "Take over editing",
+    "takeOverTitle": "Take over editing?",
+    "takeOverDescription": "{name} loses editing access, unsaved changes there will be lost.",
+    "takenOver": "{name} took over editing",
+    "expired": "Lock expired",
+    "reload": "Reload page",
+    "readOnly": "You are viewing this page read-only.",
+    "draftKept": "Your unsaved changes are kept as a draft in this browser.",
+    "idleReleased": "Editing ended because of inactivity. Your changes are kept as a draft in this browser.",
+    "continue": "Continue editing"
+  },
+  "idle": {
+    "prompt": "Are you still there?",
+    "description": "Without an answer we end editing and keep your changes as a draft in this browser.",
+    "confirm": "Yes, I am still here"
+  },
+  "draft": {
+    "found": "This browser holds an unsaved draft from {date}.",
+    "restore": "Restore draft",
+    "discard": "Discard"
+  },
+  "errors": {
+    "foreignImage": "The content contains an image that does not belong to this page.",
+    "invalidContent": "The content contains invalid elements and cannot be saved.",
+    "contentTooLarge": "The content is too large.",
+    "englishIncomplete": "English title and English content must both be filled in or both be empty.",
+    "saveFailed": "The page could not be saved."
+  }
+}
