@@ -1,1 +1,96 @@
-{}
+{
+  "admin": {
+    "title": "Bibliothek verwalten",
+    "description": "Module und Seiten anlegen, sortieren, veröffentlichen und archivieren.",
+    "addModule": "Modul hinzufügen",
+    "emptyTitle": "Noch keine Module",
+    "emptyDescription": "Lege ein Modul an und füge danach Seiten hinzu.",
+    "noPages": "In diesem Modul gibt es noch keine Seiten.",
+    "filterLabel": "Status filtern",
+    "filterAll": "Alle",
+    "pagesColumn": "Seite",
+    "statusColumn": "Status",
+    "languageColumn": "Sprachen",
+    "editedColumn": "Zuletzt bearbeitet",
+    "actionsColumn": "Aktionen"
+  },
+  "module": {
+    "titleDe": "Titel (Deutsch)",
+    "titleEn": "Titel (Englisch, optional)",
+    "createTitle": "Modul hinzufügen",
+    "renameTitle": "Modul bearbeiten",
+    "create": "Modul anlegen",
+    "save": "Speichern",
+    "rename": "Modul bearbeiten",
+    "moveUp": "Modul nach oben",
+    "moveDown": "Modul nach unten",
+    "delete": "Modul löschen",
+    "deleteTitle": "Modul löschen?",
+    "deleteDescription": "Das Modul „{name}“ wird gelöscht. Das ist nur möglich, solange es keine Seiten enthält.",
+    "addPage": "Seite hinzufügen"
+  },
+  "page": {
+    "createTitle": "Seite hinzufügen",
+    "titleLabel": "Titel (Deutsch)",
+    "create": "Seite anlegen",
+    "edit": "Bearbeiten",
+    "preview": "Ansehen",
+    "moveUp": "Seite nach oben",
+    "moveDown": "Seite nach unten",
+    "moveToModule": "In anderes Modul verschieben",
+    "moreActions": "Weitere Aktionen für {name}",
+    "englishAvailable": "DE + EN",
+    "germanOnlyBadge": "Nur DE",
+    "lastEdited": "{name}, {date}",
+    "neverEdited": "Noch nicht bearbeitet"
+  },
+  "actions": {
+    "publish": "Veröffentlichen",
+    "unpublish": "Zurück in den Entwurf",
+    "archive": "Archivieren",
+    "restore": "Wiederherstellen",
+    "delete": "Löschen"
+  },
+  "delete": {
+    "simpleTitle": "Seite löschen?",
+    "simpleDescription": "Die Seite „{name}“ wird endgültig gelöscht, samt ihrer Bilder. Sie wird nirgends verwendet.",
+    "usedTitle": "Seite wird verwendet",
+    "usedDescription": "Die Seite „{name}“ wird verwendet und deshalb nicht gelöscht, sondern archiviert. Aus Plänen und Fortschrittsberechnung verschwindet sie, Abschlüsse bleiben erhalten. Du kannst sie später wiederherstellen.",
+    "usedConfirm": "Archivieren",
+    "headline": "{count, plural, one {# aktiver Plan enthält diese Seite} other {# aktive Pläne enthalten diese Seite}}",
+    "templates": "{count, plural, one {# Vorlage} other {# Vorlagen}}",
+    "plans": "{count, plural, one {# Plan (alle Status)} other {# Pläne (alle Status)}}",
+    "completions": "{count, plural, one {# Abschluss bleibt erhalten} other {# Abschlüsse bleiben erhalten}}",
+    "loading": "Auswirkungen werden geprüft …"
+  },
+  "toast": {
+    "moduleCreated": "Modul angelegt.",
+    "moduleSaved": "Modul gespeichert.",
+    "moduleDeleted": "Modul gelöscht.",
+    "pageMoved": "Seite verschoben.",
+    "pageDeleted": "Seite gelöscht.",
+    "pageArchived": "Seite archiviert.",
+    "published": "Seite veröffentlicht.",
+    "unpublished": "Seite zurück in den Entwurf gesetzt.",
+    "archived": "Seite archiviert.",
+    "restored": "Seite wiederhergestellt."
+  },
+  "errors": {
+    "moduleHasPages": "Das Modul enthält noch Seiten und kann nicht gelöscht werden.",
+    "pageInUse": "Die archivierte Seite wird noch verwendet und kann nicht gelöscht werden.",
+    "pageBecameUsed": "Die Seite wurde in der Zwischenzeit verwendet. Bitte versuche es erneut, sie wird dann archiviert.",
+    "confirmNameMismatch": "Der eingegebene Name stimmt nicht mit dem Seitentitel überein."
+  },
+  "view": {
+    "lastEdited": "Zuletzt bearbeitet am {date}",
+    "lastEditedBy": "Zuletzt bearbeitet von {name} am {date}",
+    "previewDraft": "Vorschau: Diese Seite ist ein Entwurf und für Mitarbeitende nicht sichtbar.",
+    "previewArchived": "Vorschau: Diese Seite ist archiviert und für Mitarbeitende nicht sichtbar."
+  },
+  "readonly": {
+    "title": "Bibliothek",
+    "description": "Alle veröffentlichten Seiten zum Nachlesen.",
+    "emptyTitle": "Noch keine veröffentlichten Seiten",
+    "emptyDescription": "Sobald Seiten veröffentlicht sind, findest du sie hier."
+  }
+}
