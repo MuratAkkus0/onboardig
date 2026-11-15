@@ -42,6 +42,8 @@ export function isAppError(e: unknown): e is AppError {
 /** PostgreSQL SQLSTATE codes services can race into (blueprint section 1, "DB errors"). */
 export const PG_ERROR = {
   foreignKeyViolation: "23503",
+  /** ON DELETE RESTRICT reports 23001 instead of 23503. */
+  restrictViolation: "23001",
   uniqueViolation: "23505",
   deadlockDetected: "40P01",
 } as const;
@@ -60,7 +62,7 @@ export function pgErrorCode(e: unknown): string | undefined {
 /**
  * Maps a Postgres error to an AppError and throws it. Anything that is not one of the known
  * race errors is rethrown unchanged.
- * - 23503 (FK): `map.fk`, default CONFLICT (use IN_USE on delete paths)
+ * - 23503 (FK) and 23001 (RESTRICT): `map.fk`, default CONFLICT (use IN_USE on delete paths)
  * - 23505 (unique): `map.unique`, default CONFLICT
  * - 40P01 (deadlock): CONFLICT
  */
@@ -71,6 +73,7 @@ export function rethrowDbError(
   if (isAppError(e)) throw e;
   switch (pgErrorCode(e)) {
     case PG_ERROR.foreignKeyViolation:
+    case PG_ERROR.restrictViolation:
       throw new AppError(map.fk ?? "CONFLICT", undefined, "foreign key violation");
     case PG_ERROR.uniqueViolation:
       throw new AppError(map.unique ?? "CONFLICT", undefined, "unique violation");

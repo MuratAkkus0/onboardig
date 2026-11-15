@@ -350,3 +350,23 @@ Blueprint incelemesi sırasında netleştirilen yorumlar (kaynak: `docs/v1-archi
 - **P13** Sayfadaki "son düzenleyen + tarih" yalnızca içerik kaydını yansıtır (`content_updated_at` + `updated_by`); sıralama/durum değişiklikleri bu tarihi değiştirmez. (otonom karar; §2.3 pages)
 - **P14** Kalıcı silinen kullanıcı hakkındaki bildirimler (liderin/adminlerin akışında) de silinir (DSGVO). (otonom karar; §2.3, §4.4 users)
 - **P15** EN başlık ve EN içerik birlikte doldurulur ya da birlikte boş bırakılır (sayfa ve etkinlik); EN "var" sayılması tek bir yardımcıyla (`hasEnglish`) belirlenir. (otonom karar; §2.3)
+
+### Dalga 1 otonom kararları
+
+- **P-org-1** Davet kabul edilmeden e-posta değiştirilirse eski link iptal edilir, yeni adrese yeni davet gider; kabulden sonra e-posta kilitlenir. (otonom karar)
+- **P-org-2** Arşivdeki kullanıcı düzenlenemez; önce yeniden aktive edilmesi gerekir, detay sayfası salt okunur özet gösterir. (otonom karar)
+- **P-org-3** "Birinin lideri mi" kontrolü (rolü çalışana düşürme, kalıcı silme) arşivdeki çalışanları da sayar; deaktivasyon etki listesi yalnızca aktif olanları gösterir. (otonom karar)
+- **P-org-4** Deaktivasyonda ad yazarak onay yalnızca kişi hâlâ lider ise istenir; kalıcı silmede her zaman istenir. (otonom karar)
+- **P-org-5** Kullanıcı listesi varsayılan olarak tüm durumları gösterir; filtreler (ad/e-posta, durum, rol, departman, ekip) URL parametresiyle çalışır. (otonom karar)
+- **P-org-6** Admin değişmezleri için kilit sırası: aktif adminler (artan id) → kullanıcı satırı → aday lider; eşzamanlı döngü oluşturan lider değişikliği deadlock tespitiyle `CONFLICT` olur. (otonom karar)
+- **P16** Editör yalnızca H2 ve H3 sunar (H1 sayfa başlığıdır). (otonom karar)
+- **P17** Zengin metin kayıtta izin listesine göre temizlenir; linkler yalnızca http, https, mailto; görseller yalnızca `/api/uploads/<uuid>`. (otonom karar)
+- **P18** Modül/sayfa taşıma, kardeş listesini satır kilidi altında 0..n-1 olarak yeniden numaralar. (otonom karar)
+- **P19** Admin kütüphanesi tüm durumları (arşiv dahil) durum filtresiyle listeler; lider yalnızca yayındaki sayfaları ve bunları içeren modülleri görür. (otonom karar)
+- **P20** Devralma, boşta kalma veya kilit kaybından sonra editör sayfayı yeniden yükler; kaydedilmemiş iş tarayıcıdaki taslakta tutulur ve sonraki açılışta geri yükleme önerilir. (otonom karar)
+- **P21** Boş içerikli sayfanın yayınlanması engellenmez; zorunlu olan yalnızca DE başlık. (otonom karar)
+- **P22** Kullanımda olan arşivlenmiş bir sayfayı silme girişimi `IN_USE` ile reddedilir. (otonom karar)
+- **P-ev-1** Bildirimlerde okundu işlemleri server action ile yapılır; yalnızca `GET /api/notifications/poll` API ucu vardır. (otonom karar)
+- **P-ev-2** Geçmiş etkinlik listesi 100 ile sınırlı; başlık 200, açıklama 5000, yer 200 karakter. (otonom karar)
+- **P-ev-3** Etkinlik güncellemesi gönderilmiş bildirimleri değiştirmez; yeniden duyuru okunmamış bildirimi tekilleştirerek tazeler. Etkinlik silme kalıcıdır, eski duyurular "Veranstaltung entfernt" olarak görünür. (otonom karar)
+- **P-tech-1** PostgreSQL `ON DELETE RESTRICT` ihlali (SQLSTATE 23001) merkezi hata eşlemesinde FK ihlali (23503) gibi ele alınır. (otonom karar)
