@@ -1,1 +1,126 @@
-{}
+{
+  "list": {
+    "title": "Benutzer",
+    "description": "Konten anlegen, Einladungen verschicken und Zugänge verwalten.",
+    "add": "Benutzer anlegen",
+    "noValue": "–",
+    "count": "{count, plural, =0 {Keine Benutzer} one {# Benutzer} other {# Benutzer}}",
+    "empty": {
+      "title": "Noch keine Benutzer",
+      "description": "Lege den ersten Benutzer an, um eine Einladung zu verschicken.",
+      "filteredTitle": "Keine Treffer",
+      "filteredDescription": "Zu diesen Filtern gibt es keine Benutzer. Passe die Filter an oder setze sie zurück."
+    },
+    "columns": {
+      "name": "Name",
+      "email": "E-Mail",
+      "role": "Rolle",
+      "team": "Team",
+      "jobRole": "Rolle im Unternehmen",
+      "lead": "Teamleitung",
+      "startDate": "Startdatum",
+      "status": "Status"
+    }
+  },
+  "filters": {
+    "search": "Suche",
+    "searchPlaceholder": "Name oder E-Mail",
+    "status": "Status",
+    "role": "Rolle",
+    "department": "Abteilung",
+    "team": "Team",
+    "all": "Alle",
+    "apply": "Filtern",
+    "reset": "Zurücksetzen"
+  },
+  "form": {
+    "createTitle": "Benutzer anlegen",
+    "createDescription": "Die Person erhält eine Einladung per E-Mail und legt damit ihr Passwort fest.",
+    "editTitle": "Benutzer bearbeiten",
+    "sections": {
+      "person": "Person",
+      "assignment": "Zuordnung"
+    },
+    "firstName": "Vorname",
+    "lastName": "Nachname",
+    "email": "E-Mail-Adresse",
+    "emailLocked": "Nach Annahme der Einladung kann die E-Mail-Adresse nicht mehr geändert werden.",
+    "emailReinvite": "Bei einer neuen Adresse wird die Einladung erneut dorthin gesendet.",
+    "role": "Rolle",
+    "locale": "Sprache",
+    "team": "Team",
+    "jobRole": "Rolle im Unternehmen",
+    "lead": "Teamleitung",
+    "startDate": "Startdatum",
+    "none": "Keine Auswahl",
+    "select": "Bitte wählen",
+    "requiredHint": "Für diese Rolle sind Team, Rolle im Unternehmen, Startdatum{lead, select, true { und Teamleitung} other {}} erforderlich.",
+    "adminHint": "Für Admins sind diese Angaben optional.",
+    "submitCreate": "Anlegen und Einladung senden",
+    "submitEdit": "Änderungen speichern",
+    "cancel": "Abbrechen"
+  },
+  "toast": {
+    "created": "Benutzer angelegt, die Einladung wurde gesendet.",
+    "createdNoMail": "Benutzer angelegt, aber die Einladung konnte nicht gesendet werden. Du kannst sie auf der Detailseite erneut senden.",
+    "saved": "Änderungen gespeichert.",
+    "resent": "Einladung wurde erneut gesendet.",
+    "resentFailed": "Die Einladung konnte nicht gesendet werden.",
+    "deactivated": "Benutzer deaktiviert.",
+    "reactivated": "Benutzer wieder aktiviert.",
+    "deleted": "Benutzer endgültig gelöscht."
+  },
+  "invitation": {
+    "title": "Einladung",
+    "state": {
+      "none": "Keine Einladung gesendet",
+      "pending": "Einladung ausstehend",
+      "expired": "Einladung abgelaufen",
+      "accepted": "Einladung angenommen"
+    },
+    "description": {
+      "none": "Sende eine Einladung, damit die Person ein Passwort festlegen kann.",
+      "pending": "Der Link ist {hours} Stunden gültig. Du kannst jederzeit einen neuen senden.",
+      "expired": "Der Link ist abgelaufen. Sende eine neue Einladung.",
+      "accepted": "Die Person hat ihr Passwort festgelegt."
+    },
+    "resend": "Einladung erneut senden"
+  },
+  "account": {
+    "title": "Konto",
+    "self": "Du kannst dein eigenes Konto nicht deaktivieren.",
+    "archivedBanner": "Dieses Konto ist deaktiviert und archiviert. Es kann nicht bearbeitet werden.",
+    "archivedSince": "Archiviert am",
+    "deletionSuggestion": "Archivierte Daten sollten nach {months} Monaten endgültig gelöscht werden.",
+    "deactivate": {
+      "button": "Deaktivieren",
+      "description": "Alle Sitzungen werden sofort beendet, der Zugang wird gesperrt und das Konto wird archiviert. Der Fortschritt bleibt erhalten.",
+      "confirm": "Deaktivieren",
+      "title": "„{name}“ deaktivieren?",
+      "ledEmployee": "{name} hat diese Person weiterhin als Teamleitung, bis eine neue Leitung zugewiesen wird.",
+      "helper": "Weise die genannten Personen vorher einer anderen Teamleitung zu."
+    },
+    "reactivate": {
+      "button": "Wieder aktivieren",
+      "description": "Die Person kann sich wieder anmelden. Hatte sie ihr Passwort noch nicht festgelegt, sende die Einladung erneut.",
+      "title": "„{name}“ wieder aktivieren?",
+      "confirm": "Aktivieren"
+    },
+    "delete": {
+      "button": "Endgültig löschen",
+      "description": "Konto, Fortschritt und alle Benachrichtigungen über diese Person werden unwiderruflich gelöscht.",
+      "title": "„{name}“ endgültig löschen?",
+      "confirm": "Endgültig löschen"
+    }
+  },
+  "errors": {
+    "leadSelf": "Eine Person kann nicht ihre eigene Teamleitung sein.",
+    "leadInvalid": "Die Teamleitung muss eine aktive Teamleitung oder ein aktiver Admin sein.",
+    "leadCycle": "Diese Teamleitung würde einen Kreis in der Leitungskette erzeugen.",
+    "leadsEmployees": "Die Person ist noch Teamleitung folgender Personen. Weise diese zuerst einer anderen Leitung zu:",
+    "emailLocked": "Die E-Mail-Adresse kann nach Annahme der Einladung nicht mehr geändert werden.",
+    "userArchived": "Archivierte Benutzer können nicht bearbeitet werden. Aktiviere das Konto zuerst wieder.",
+    "cannotDeactivateSelf": "Du kannst dein eigenes Konto nicht deaktivieren.",
+    "confirmNameMismatch": "Der eingegebene Name stimmt nicht überein."
+  }
+}

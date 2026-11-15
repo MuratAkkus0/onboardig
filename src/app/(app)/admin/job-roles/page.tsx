@@ -1,6 +1,25 @@
-import { PlaceholderPage } from "@/components/layout/placeholder-page";
+import { getTranslations } from "next-intl/server";
+import { EmptyState } from "@/components/common/empty-state";
+import { PageHeader } from "@/components/common/page-header";
+import { AddJobRoleButton, JobRoleList } from "@/components/org/job-role-list";
+import { requirePageRole } from "@/server/auth/guards";
+import { listJobRoles } from "@/server/services/org";
 
-// Placeholder (F2b): replaced by the owning unit, see docs/v1-architecture.md section 6.
-export default function Page() {
-  return <PlaceholderPage titleKey="adminJobRoles" />;
+export default async function AdminJobRolesPage() {
+  const actor = await requirePageRole(["admin"]);
+  const [t, jobRoles] = await Promise.all([getTranslations("org.jobRoles"), listJobRoles(actor)]);
+  return (
+    <>
+      <PageHeader
+        title={t("title")}
+        description={t("description")}
+        actions={<AddJobRoleButton />}
+      />
+      {jobRoles.length === 0 ? (
+        <EmptyState title={t("empty.title")} description={t("empty.description")} />
+      ) : (
+        <JobRoleList jobRoles={jobRoles} />
+      )}
+    </>
+  );
 }

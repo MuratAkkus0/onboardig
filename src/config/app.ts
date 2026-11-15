@@ -238,7 +238,15 @@ export const F2B_CONFIG = {
 // <<< F2b
 
 // >>> W1-org (owned by W1-org)
-export const W1_ORG_CONFIG = {} as const;
+export const W1_ORG_CONFIG = {
+  nameMaxLength: 100,
+  personNameMaxLength: 100,
+  emailMaxLength: 254,
+  searchMaxLength: 100,
+  // Select value that stands for "no selection" / "no filter" (Radix Select items cannot be "").
+  noneValue: "none",
+  allValue: "all",
+} as const;
 // <<< W1-org
 
 // >>> W1-content (owned by W1-content)

@@ -1,1 +1,88 @@
-{}
+{
+  "departments": {
+    "title": "Abteilungen und Teams",
+    "description": "Lege Abteilungen mit ihren Teams an. Die Abteilung einer Person ergibt sich aus ihrem Team.",
+    "add": "Abteilung hinzufügen",
+    "empty": {
+      "title": "Noch keine Abteilungen",
+      "description": "Lege die erste Abteilung an, um Teams und Personen zuzuordnen."
+    },
+    "teamsHeading": "Teams",
+    "noTeams": "Diese Abteilung hat noch keine Teams.",
+    "addTeam": "Team hinzufügen",
+    "members": "{count, plural, =0 {Keine Personen} one {# Person} other {# Personen}}",
+    "form": {
+      "createTitle": "Abteilung hinzufügen",
+      "editTitle": "Abteilung umbenennen",
+      "nameLabel": "Name der Abteilung"
+    },
+    "teamForm": {
+      "createTitle": "Team hinzufügen",
+      "editTitle": "Team bearbeiten",
+      "nameLabel": "Name des Teams",
+      "departmentLabel": "Abteilung"
+    },
+    "actions": {
+      "edit": "Abteilung „{name}“ bearbeiten",
+      "delete": "Abteilung „{name}“ löschen",
+      "editTeam": "Team „{name}“ bearbeiten",
+      "deleteTeam": "Team „{name}“ löschen"
+    }
+  },
+  "jobRoles": {
+    "title": "Rollen im Unternehmen",
+    "description": "Verwalte die Stellenrollen, die Personen und Vorlagen zugeordnet werden können.",
+    "add": "Rolle hinzufügen",
+    "empty": {
+      "title": "Noch keine Rollen",
+      "description": "Lege die erste Rolle an, zum Beispiel „Frontend Developer“."
+    },
+    "members": "{count, plural, =0 {Keine Personen} one {# Person} other {# Personen}}",
+    "form": {
+      "createTitle": "Rolle hinzufügen",
+      "editTitle": "Rolle umbenennen",
+      "nameLabel": "Name der Rolle"
+    },
+    "columns": {
+      "name": "Rolle",
+      "members": "Personen",
+      "actions": "Aktionen"
+    },
+    "actions": {
+      "edit": "Rolle „{name}“ bearbeiten",
+      "delete": "Rolle „{name}“ löschen"
+    }
+  },
+  "delete": {
+    "checking": "Verwendung wird geprüft …",
+    "confirm": "Löschen",
+    "department": {
+      "title": "Abteilung „{name}“ löschen?",
+      "description": "Die Abteilung wird endgültig gelöscht.",
+      "teamsGoWith": "Diese leeren Teams werden mit gelöscht:"
+    },
+    "team": {
+      "title": "Team „{name}“ löschen?",
+      "description": "Das Team wird endgültig gelöscht."
+    },
+    "jobRole": {
+      "title": "Rolle „{name}“ löschen?",
+      "description": "Die Rolle wird endgültig gelöscht."
+    },
+    "blocked": {
+      "title": "„{name}“ kann nicht gelöscht werden",
+      "description": "Der Eintrag wird noch verwendet. Ändere oder entferne zuerst diese Verknüpfungen.",
+      "users": "Personen",
+      "templates": "Vorlagen",
+      "close": "Schließen"
+    }
+  },
+  "errors": {
+    "nameTaken": "Dieser Name ist bereits vergeben.",
+    "teamHasTemplates": "Das Team wird von Vorlagen verwendet und kann deshalb nicht in eine andere Abteilung verschoben werden:"
+  },
+  "toast": {
+    "saved": "Gespeichert.",
+    "deleted": "Gelöscht."
+  }
+}

@@ -1,1 +1,88 @@
-{}
+{
+  "departments": {
+    "title": "Departments and teams",
+    "description": "Create departments with their teams. A person's department follows from their team.",
+    "add": "Add department",
+    "empty": {
+      "title": "No departments yet",
+      "description": "Create the first department to assign teams and people."
+    },
+    "teamsHeading": "Teams",
+    "noTeams": "This department has no teams yet.",
+    "addTeam": "Add team",
+    "members": "{count, plural, =0 {No people} one {# person} other {# people}}",
+    "form": {
+      "createTitle": "Add department",
+      "editTitle": "Rename department",
+      "nameLabel": "Department name"
+    },
+    "teamForm": {
+      "createTitle": "Add team",
+      "editTitle": "Edit team",
+      "nameLabel": "Team name",
+      "departmentLabel": "Department"
+    },
+    "actions": {
+      "edit": "Edit department \"{name}\"",
+      "delete": "Delete department \"{name}\"",
+      "editTeam": "Edit team \"{name}\"",
+      "deleteTeam": "Delete team \"{name}\""
+    }
+  },
+  "jobRoles": {
+    "title": "Job roles",
+    "description": "Manage the job roles that can be assigned to people and templates.",
+    "add": "Add job role",
+    "empty": {
+      "title": "No job roles yet",
+      "description": "Create the first job role, for example \"Frontend Developer\"."
+    },
+    "members": "{count, plural, =0 {No people} one {# person} other {# people}}",
+    "form": {
+      "createTitle": "Add job role",
+      "editTitle": "Rename job role",
+      "nameLabel": "Job role name"
+    },
+    "columns": {
+      "name": "Job role",
+      "members": "People",
+      "actions": "Actions"
+    },
+    "actions": {
+      "edit": "Edit job role \"{name}\"",
+      "delete": "Delete job role \"{name}\""
+    }
+  },
+  "delete": {
+    "checking": "Checking usage …",
+    "confirm": "Delete",
+    "department": {
+      "title": "Delete department \"{name}\"?",
+      "description": "The department will be deleted permanently.",
+      "teamsGoWith": "These empty teams are deleted with it:"
+    },
+    "team": {
+      "title": "Delete team \"{name}\"?",
+      "description": "The team will be deleted permanently."
+    },
+    "jobRole": {
+      "title": "Delete job role \"{name}\"?",
+      "description": "The job role will be deleted permanently."
+    },
+    "blocked": {
+      "title": "\"{name}\" cannot be deleted",
+      "description": "It is still in use. Change or remove these links first.",
+      "users": "People",
+      "templates": "Templates",
+      "close": "Close"
+    }
+  },
+  "errors": {
+    "nameTaken": "This name is already taken.",
+    "teamHasTemplates": "The team is used by templates and therefore cannot be moved to another department:"
+  },
+  "toast": {
+    "saved": "Saved.",
+    "deleted": "Deleted."
+  }
+}
