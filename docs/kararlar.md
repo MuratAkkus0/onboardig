@@ -328,3 +328,25 @@ Uygulama planı ve ayrıntılar: [v1-architecture.md](v1-architecture.md). Aşa�
   yapılır; Better Auth oturum çerezi önbelleği kapalı tutulur ki deaktivasyon anında etkili olsun. (otonom karar)
 - TypeScript 6.0.x ve ESLint 9.x kullanılır: `typescript-eslint` (<6.1) ve eslint-plugin-react/jsx-a11y/import
   (eslint ^9) eş bağımlılık aralıkları TypeScript 7 / ESLint 10'u henüz desteklemiyor. (otonom karar)
+
+---
+
+## 12. Otonom kararlar (mimari blueprint, 15.11.2026)
+
+Blueprint incelemesi sırasında netleştirilen yorumlar (kaynak: `docs/v1-architecture.md` §14.1).
+
+- **P1** Onboarding `tamamlandı → aktif`, plandaki aktif adımların ilerlemesi %100'ün altına her düştüğünde olur (yeni adım, geri alma, sayfanın yayına alınması/geri alınması/yayından kaldırılması, planın boşalması); geri alıp yeniden tamamlamak bildirimi yeniden gönderir (okunmamışsa tekilleşir). (otonom karar; §3.2)
+- **P2** Arşivden yeniden aktive edilen kullanıcı `aktif` olur, ardından sessizce yeniden hesaplanır (plan %100 ise `tamamlandı`); bu geçiş "onboarding tamamlandı" bildirimi göndermez. (otonom karar; §3.2, §4.4 users)
+- **P3** "Sayfa güncellendi" bildirimi sayfayı düzenleyen kişinin kendisine gitmez. (otonom karar; §4.5)
+- **P4** Başkalarının lideri olan kullanıcı deaktive edilebilir; onay ekranı bu çalışanları listeler, admin onları başka lidere atar. Arşivdeki kullanıcıya hiçbir bildirim yazılmaz; lider kuralı yalnızca lider değiştirilirken kontrol edilir. Lider zinciri döngü oluşturamaz. (otonom karar; §2.3, §4.4 users)
+- **P5** Kişi kendisi hakkında bildirim almaz: "onboarding tamamlandı" konunun kendisine, "çalışan atandı" işlemi yapan admin kendini lider seçtiyse ona gitmez. Alıcılar küme olarak hesaplanır (lider aynı zamanda admin olabilir). (otonom karar; §4.8)
+- **P6** Departman "kullanılıyor" ⇔ ekiplerinde kişi ya da departmana/ekiplerine bağlı şablon var; yalnızca boş ekipleri olan departman, bu ekiplerle birlikte silinir. Şablonu olan ekibin departmanı değiştirilemez. (otonom karar; §2.3, §4.4 org)
+- **P7** Sayfa "kullanılıyor" ⇔ bir şablon adımında, herhangi bir kullanıcının (arşiv dahil) planında veya bir tamamlama kaydında geçiyor. (otonom karar; §4.4 pages)
+- **P8** Arama sayfaları (erişim kuralına göre) ve etkinlikleri (herkes) kapsar. (otonom karar; §4.4 search)
+- **P9** "Şifremi unuttum" maili yalnızca şifresi olan (daveti kabul etmiş) aktif kullanıcıya gider; süresi dolmuş davet yalnızca "daveti yeniden gönder" ile çözülür. (otonom karar; §5.3)
+- **P10** Bir görsel yalnızca yüklendiği sayfada kullanılabilir; başka sayfanın görseli içerikte reddedilir. (otonom karar; §2.3 uploads)
+- **P11** Ekip lideri, çalışanın planındaki yayında olmayan adımları başlıksız, yalnızca durum etiketiyle görür. (otonom karar; §4.4 plans)
+- **P12** Better Auth `admin` plugin yalnızca girişteki ban kontrolü için kullanılır; tüm `/admin/*` uçları ve `update-user`, `delete-user`, `change-email` gibi servisleri atlayan uçlar kapalıdır (404). (otonom karar; §5.3)
+- **P13** Sayfadaki "son düzenleyen + tarih" yalnızca içerik kaydını yansıtır (`content_updated_at` + `updated_by`); sıralama/durum değişiklikleri bu tarihi değiştirmez. (otonom karar; §2.3 pages)
+- **P14** Kalıcı silinen kullanıcı hakkındaki bildirimler (liderin/adminlerin akışında) de silinir (DSGVO). (otonom karar; §2.3, §4.4 users)
+- **P15** EN başlık ve EN içerik birlikte doldurulur ya da birlikte boş bırakılır (sayfa ve etkinlik); EN "var" sayılması tek bir yardımcıyla (`hasEnglish`) belirlenir. (otonom karar; §2.3)
