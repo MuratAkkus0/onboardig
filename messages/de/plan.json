@@ -1,1 +1,77 @@
-{}
+{
+  "title": "Mein Onboarding-Plan",
+  "empty": "Dein Onboarding-Plan wird vorbereitet",
+  "emptyDescription": "Sobald deine Teamleitung dir Inhalte zugewiesen hat, findest du sie hier.",
+  "updatedSinceCompletion": "Seit deinem Abschluss aktualisiert",
+  "progress": {
+    "summary": "{completed} von {total} Schritten erledigt",
+    "completedNotice": "Du hast alle Schritte erledigt. Alle Inhalte bleiben weiterhin für dich lesbar."
+  },
+  "step": {
+    "markDone": "Erledigt",
+    "undo": "Rückgängig",
+    "doneOn": "Erledigt am {date, date, medium}",
+    "open": "Offen",
+    "done": "Erledigt",
+    "actionsLabel": "Fortschritt für diesen Schritt",
+    "allDoneToast": "Glückwunsch, du hast alle Schritte erledigt."
+  },
+  "member": {
+    "title": "Plan von {name}",
+    "startsOn": "Startdatum: {date}",
+    "noStartDate": "Kein Startdatum",
+    "lastActivity": "Letzte Aktivität: {date, date, medium}",
+    "noActivity": "Noch keine Aktivität",
+    "templates": "Zugewiesene Vorlagen",
+    "noTemplates": "Noch keine Vorlage zugewiesen",
+    "assignedOn": "zugewiesen am {date, date, medium}",
+    "viewByModule": "Nach Modul",
+    "viewByPhase": "Nach Phase",
+    "emptyPlan": "Der Plan ist noch leer",
+    "emptyPlanHint": "Weise eine Vorlage zu oder füge Seiten hinzu.",
+    "moduleCount": "{completed} von {total} erledigt",
+    "moduleNoActive": "Keine aktiven Schritte",
+    "notPublished": "Nicht veröffentlicht, zählt nicht zum Fortschritt",
+    "hiddenTitle": "Seite nicht veröffentlicht",
+    "archivedUser": "Dieser Zugang ist archiviert. Der Plan kann nicht mehr bearbeitet werden.",
+    "readOnly": "Du kannst diesen Plan ansehen, aber nicht bearbeiten."
+  },
+  "assign": {
+    "action": "Vorlagen zuweisen",
+    "title": "Vorlagen zuweisen",
+    "description": "Die Schritte der gewählten Vorlagen werden in den Plan kopiert. Seiten, die schon im Plan sind, werden nicht doppelt hinzugefügt.",
+    "suggested": "Empfohlen",
+    "scopeAll": "Alle",
+    "scopeDepartment": "Abteilung: {name}",
+    "scopeTeam": "Team: {name}",
+    "scopeJobRole": "Rolle: {name}",
+    "noTemplates": "Es gibt keine aktiven Vorlagen.",
+    "submit": "Zuweisen",
+    "noneSelected": "Wähle mindestens eine Vorlage.",
+    "success": "{count, plural, =0 {Keine neuen Schritte hinzugefügt} one {# Schritt hinzugefügt} other {# Schritte hinzugefügt}}"
+  },
+  "addStep": {
+    "action": "Seite hinzufügen",
+    "title": "Seite zum Plan hinzufügen",
+    "page": "Seite",
+    "pagePlaceholder": "Seite wählen",
+    "phase": "Phase",
+    "phasePlaceholder": "Phase wählen",
+    "noPages": "Alle veröffentlichten Seiten sind bereits im Plan.",
+    "submit": "Hinzufügen",
+    "success": "Schritt hinzugefügt"
+  },
+  "removeStep": {
+    "action": "Entfernen",
+    "actionLabel": "Schritt „{title}“ entfernen",
+    "title": "Schritt aus dem Plan entfernen?",
+    "description": "Der Schritt verschwindet aus dem Plan. Ein bereits erfasster Abschluss bleibt gespeichert.",
+    "confirm": "Entfernen",
+    "success": "Schritt entfernt"
+  },
+  "errors": {
+    "templateNotAssignable": "Mindestens eine Vorlage ist archiviert oder existiert nicht mehr.",
+    "pageNotPublished": "Nur veröffentlichte Seiten können zum Plan hinzugefügt werden.",
+    "alreadyInPlan": "Diese Seite ist bereits im Plan."
+  }
+}
