@@ -1,0 +1,18 @@
+{
+  "UNAUTHENTICATED": "Bitte melde dich an.",
+  "FORBIDDEN": "Dafür fehlt dir die Berechtigung.",
+  "NOT_FOUND": "Der Eintrag wurde nicht gefunden.",
+  "VALIDATION": "Bitte überprüfe deine Eingaben.",
+  "CONFLICT": "Die Aktion steht im Konflikt mit dem aktuellen Stand. Bitte lade die Seite neu und versuche es erneut.",
+  "IN_USE": "Der Eintrag wird noch verwendet und kann nicht gelöscht werden.",
+  "INVALID_TRANSITION": "Dieser Statuswechsel ist nicht erlaubt.",
+  "LOCK_HELD": "Die Seite wird gerade von jemand anderem bearbeitet.",
+  "LOCK_LOST": "Deine Bearbeitungssperre ist abgelaufen.",
+  "INVITE_INVALID": "Dieser Einladungslink ist ungültig oder wurde bereits verwendet.",
+  "INVITE_EXPIRED": "Dieser Einladungslink ist abgelaufen. Bitte eine Administratorin oder einen Administrator um eine neue Einladung.",
+  "LAST_ADMIN": "Der letzte Administrator kann nicht geändert werden.",
+  "FILE_TOO_LARGE": "Die Datei ist zu groß.",
+  "FILE_TYPE_NOT_ALLOWED": "Dieser Dateityp ist nicht erlaubt.",
+  "EMAIL_TAKEN": "Diese E-Mail-Adresse ist bereits vergeben.",
+  "INTERNAL": "Etwas ist schiefgelaufen. Bitte versuche es später erneut."
+}

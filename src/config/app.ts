@@ -195,11 +195,46 @@ export const NAVIGATION = [
 // ---- unit-owned sections: edit ONLY strictly between your own >>> / <<< markers ----
 
 // >>> F2a (owned by F2a)
-export const F2A_CONFIG = {} as const;
+export const F2A_CONFIG = {
+  invitations: { tokenBytes: 32 },
+  notifications: { maxPageSize: 100 },
+  http: {
+    // Methods that never need the Origin check in route handlers (they must not mutate).
+    safeMethods: ["GET", "HEAD", "OPTIONS"],
+    statusByErrorCode: {
+      UNAUTHENTICATED: 401,
+      FORBIDDEN: 403,
+      NOT_FOUND: 404,
+      VALIDATION: 400,
+      CONFLICT: 409,
+      IN_USE: 409,
+      INVALID_TRANSITION: 409,
+      LOCK_HELD: 423,
+      LOCK_LOST: 423,
+      INVITE_INVALID: 400,
+      INVITE_EXPIRED: 400,
+      LAST_ADMIN: 409,
+      FILE_TOO_LARGE: 413,
+      FILE_TYPE_NOT_ALLOWED: 415,
+      EMAIL_TAKEN: 409,
+      INTERNAL: 500,
+    },
+  },
+} as const;
 // <<< F2a
 
 // >>> F2b (owned by F2b)
-export const F2B_CONFIG = {} as const;
+export const F2B_CONFIG = {
+  queryParams: { next: "next", reason: "reason", token: "token", error: "error" },
+  sessionEndedReason: "session-ended",
+  // Better Auth error codes mapped to message keys by the login form.
+  signInErrorCodes: { banned: "BANNED_USER", rateLimitedStatus: 429 },
+  // Marker for an in-app redirect target ("/x"); anything else is ignored (open-redirect guard).
+  safePathPrefix: "/",
+  dateTime: { localInputFormat: "yyyy-MM-dd'T'HH:mm" },
+  avatarInitialsLength: 2,
+  localeCookieMaxAgeSeconds: 365 * 24 * 60 * 60,
+} as const;
 // <<< F2b
 
 // >>> W1-org (owned by W1-org)

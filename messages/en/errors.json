@@ -1,0 +1,18 @@
+{
+  "UNAUTHENTICATED": "Please sign in.",
+  "FORBIDDEN": "You do not have permission to do this.",
+  "NOT_FOUND": "The entry was not found.",
+  "VALIDATION": "Please check your input.",
+  "CONFLICT": "The action conflicts with the current state. Please reload the page and try again.",
+  "IN_USE": "The entry is still in use and cannot be deleted.",
+  "INVALID_TRANSITION": "This status change is not allowed.",
+  "LOCK_HELD": "The page is currently being edited by someone else.",
+  "LOCK_LOST": "Your edit lock has expired.",
+  "INVITE_INVALID": "This invitation link is invalid or has already been used.",
+  "INVITE_EXPIRED": "This invitation link has expired. Please ask an administrator for a new invitation.",
+  "LAST_ADMIN": "The last administrator cannot be changed.",
+  "FILE_TOO_LARGE": "The file is too large.",
+  "FILE_TYPE_NOT_ALLOWED": "This file type is not allowed.",
+  "EMAIL_TAKEN": "This email address is already taken.",
+  "INTERNAL": "Something went wrong. Please try again later."
+}

@@ -1,0 +1,43 @@
+{
+  "actions": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "back": "Back",
+    "confirm": "Confirm",
+    "close": "Close",
+    "retry": "Try again",
+    "backToStart": "Back to start"
+  },
+  "states": {
+    "emptyTitle": "Nothing here yet",
+    "emptyDescription": "As soon as there is content, you will see it here.",
+    "loading": "Loading …",
+    "errorTitle": "Something went wrong",
+    "errorDescription": "The page could not be loaded. Please try again.",
+    "notFoundTitle": "Page not found",
+    "notFoundDescription": "This page does not exist or you do not have access to it."
+  },
+  "confirm": {
+    "defaultTitle": "Are you sure?",
+    "defaultDescription": "This action cannot be undone.",
+    "impactTitle": "This has the following impact:",
+    "typeToConfirm": "Type \"{name}\" to confirm.",
+    "typeToConfirmLabel": "Confirmation text"
+  },
+  "form": {
+    "submitting": "Submitting …",
+    "required": "Required",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password"
+  },
+  "progress": {
+    "label": "Progress: {percent}%"
+  },
+  "placeholder": {
+    "body": "This area will be available soon."
+  },
+  "skipToContent": "Skip to content",
+  "germanOnly": "Only available in German"
+}

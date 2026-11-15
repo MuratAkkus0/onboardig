@@ -1,0 +1,18 @@
+{
+  "title": "Profile",
+  "account": {
+    "title": "Account",
+    "name": "Name",
+    "email": "Email address",
+    "role": "Role"
+  },
+  "preferences": {
+    "title": "Preferences",
+    "language": "Language",
+    "languageDescription": "Applies to the whole interface and to emails sent to you.",
+    "theme": "Theme",
+    "themeDescription": "Light, dark or matching your device."
+  },
+  "saved": "Preference saved.",
+  "saveFailed": "The preference could not be saved."
+}

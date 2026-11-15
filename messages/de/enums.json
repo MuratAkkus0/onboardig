@@ -1,0 +1,21 @@
+{
+  "role": { "admin": "Admin", "team_lead": "Teamleitung", "employee": "Mitarbeitende" },
+  "onboardingStatus": { "active": "Aktiv", "completed": "Abgeschlossen", "archived": "Archiviert" },
+  "pageStatus": { "draft": "Entwurf", "published": "Veröffentlicht", "archived": "Archiviert" },
+  "templateStatus": { "active": "Aktiv", "archived": "Archiviert" },
+  "phase": {
+    "before_start": "Vor dem Start",
+    "first_day": "Erster Tag",
+    "first_week": "Erste Woche",
+    "first_month": "Erster Monat"
+  },
+  "locale": { "de": "Deutsch", "en": "English" },
+  "theme": { "light": "Hell", "dark": "Dunkel", "system": "System" },
+  "notificationType": {
+    "step_added": "Neuer Schritt",
+    "page_updated": "Seite aktualisiert",
+    "event_announced": "Neue Veranstaltung",
+    "employee_assigned": "Mitarbeiter zugewiesen",
+    "onboarding_completed": "Onboarding abgeschlossen"
+  }
+}

@@ -806,7 +806,7 @@ RETURNING *;   -- no row ⇒ held by someone else ⇒ read holder (retry once if
 - `getImageForServing(actor, { id }) → { stream: ReadableStream, mimeType, sizeBytes }` (admin: any; others:
   `canViewPageInTx(tx, actor, upload.page_id)` must be true; `page_id IS NULL` or not visible ⇒ `NOT_FOUND`)
 
-**`notifications.ts`** (W1-notify-events)
+**`notifications.ts`** (implemented by F2a together with the core, so the core is testable end to end; W1-notify-events builds the route, bell and page on top and does not re-implement it)
 - `listNotifications(actor, { cursor?, limit? }) → { items: NotificationDto[], nextCursor }` (own only; first purges
   own rows with `occurred_at < now() - retentionDays`; keyset cursor `(occurred_at, id)`:
   `WHERE (occurred_at, id) < ($1, $2) ORDER BY occurred_at DESC, id DESC`, so equal timestamps from one bulk insert
@@ -1119,7 +1119,7 @@ credential password exists (§4.4). F2a acceptance covers both.
 (button → `${APP_URL}/set-password?token=…`; expiry text `t("emails.invite.expiry", { hours:
 APP_CONFIG.auth.inviteTokenTtlHours })` — never a literal "72"), `reset-password-email.tsx` (same pattern with the
 reset TTL). Texts from namespace `emails`, loaded with next-intl `createTranslator` and `loadMessages(locale)` (works
-outside requests). Sender `env.MAIL_FROM`.
+outside requests). Sender `env.MAIL_FROM`. Mail templates contain no color values (mail clients cannot resolve the CSS variables of `tokens.css`, and colors may live only there), so they are neutral: the button is an outlined `currentColor` box. `sendInvitationEmail` and `getPasswordResetRecipient` (the "may this user receive a reset mail" rule used by `reset-mail.ts`) live in `invitations.ts`, because `src/server/auth/**` has no DB access. F1 deviation fixed by F2a: `NAMESPACES` was a single space-joined string (and one `messages/<locale>/<joined>.json` file per locale); it is now a proper array with one file per namespace.
 
 ---
 
@@ -1580,7 +1580,8 @@ without interfering (different DB names printed by global setup); no `.env` comm
 ### F2a — invitations, mail, notifications core, shared service helpers
 
 Creates/owns: `src/server/auth/reset-mail.ts` (implement, §5.3 rule), `src/server/http/route.ts`,
-`src/server/mail/**`, `src/server/services/{invitations,notifications-core,row-locks,visibility,plan-hooks}.ts`
+`src/server/mail/**`, `src/server/services/{invitations,notifications-core,notifications,row-locks,visibility,plan-hooks}.ts`,
+`src/lib/domain/notification-params.ts` (`resolveNotificationParams`: `titleDe`/`titleEn` → `title` by viewer locale before `t(messageKey, params)`)
 (plan-hooks as documented no-op stub), `src/lib/validation/common.ts`, messages `errors`, `validation`, `emails`,
 `notificationItems` (de + en), the `F2a` block in `app.ts`, tests in `tests/integration/auth/**`,
 `tests/integration/notifications-core/**`, `tests/integration/visibility/**`, `tests/unit/auth/**`. F2a does **not**
@@ -1599,7 +1600,7 @@ edit `auth.ts`, `actor.ts`, `guards.ts` or `run-action.ts` (F1, frozen).
 Creates/owns: `src/app/layout.tsx` (html `lang`, `NextIntlClientProvider`, `ThemeProvider` with `attribute="class"`,
 default from actor theme, `Toaster`), `src/app/page.tsx` removed in favour of `src/app/(app)/page.tsx` (role
 redirect), `src/app/not-found.tsx`, `src/app/error.tsx`, `src/app/(auth)/**`, `src/app/(app)/layout.tsx`,
-`src/app/(app)/error.tsx`, `src/app/(app)/loading.tsx`, `src/app/(app)/{team,library,admin}/layout.tsx` (guards),
+`src/app/(app)/error.tsx`, `loading.tsx` in each of `src/app/(app)/{plan,events,search,notifications,profile,pages,team,library,admin}/` (not one `(app)/loading.tsx`: a Suspense boundary above the guard layouts would stream a 200 before `notFound()`/`redirect()` run, so employees would get 200 instead of 404 on admin routes), `src/app/(app)/{team,library,admin}/layout.tsx` (guards),
 `src/app/(app)/profile/**`, **placeholder `page.tsx` for every route in §6** (renders `<PlaceholderPage titleKey=…>`),
 `src/proxy.ts`, `src/components/layout/**` (app-shell, sidebar-nav, mobile-nav, top-bar, user-menu, theme-switcher,
 locale-switcher, nav-icons, placeholder-page), `src/components/common/**` (empty-state, error-state, loading-state,
@@ -1607,7 +1608,7 @@ confirm-dialog (simple + type-to-confirm), page-header, progress-bar, status-bad
 date-time display), stub `src/components/notifications/notification-bell.tsx` (bell icon linking to
 `/notifications`, no count — owned later by W1-notify-events), stub `src/components/plan/plan-step-actions.tsx`
 (`export async function PlanStepActions({ pageId }: { pageId: string }) { return null; }` — owned later by W2-plans),
-`src/server/services/profile.ts`, `src/lib/validation/profile.ts`, `src/lib/datetime.ts`, messages `common`, `enums`,
+`src/server/services/profile.ts`, `src/server/actions/preferences.ts` (`setLocaleAction` public: cookie + profile when signed in; `setThemeAction`), `src/lib/validation/profile.ts`, `src/lib/datetime.ts`, `src/lib/navigation.ts` (role filter, `homeRouteFor`, `safeNextPath`), `src/components/layout/{theme-provider,auth-card}.tsx`, `src/components/common/use-message.ts`, messages `common`, `enums`,
 `nav`, `auth`, `profile` (de + en), the `F2b` block in `app.ts`, tests `tests/integration/profile/**`,
 `tests/unit/layout/**`.
 

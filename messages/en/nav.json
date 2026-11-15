@@ -1,0 +1,42 @@
+{
+  "plan": "My plan",
+  "events": "Events",
+  "search": "Search",
+  "team": "My team",
+  "library": "Library",
+  "adminOverview": "Overview",
+  "adminUsers": "Users",
+  "adminOrg": "Organization",
+  "adminJobRoles": "Job roles",
+  "adminLibrary": "Manage library",
+  "adminTemplates": "Templates",
+  "adminEvents": "Manage events",
+  "notifications": "Notifications",
+  "profile": "Profile",
+  "pageView": "Page",
+  "teamMember": "Employee details",
+  "adminUserNew": "Create user",
+  "adminUser": "Edit user",
+  "adminPageEdit": "Edit page",
+  "adminTemplateNew": "Create template",
+  "adminTemplate": "Edit template",
+  "adminEventNew": "Create event",
+  "adminEvent": "Edit event",
+  "sections": { "admin": "Administration" },
+  "menu": {
+    "open": "Open navigation",
+    "title": "Navigation",
+    "main": "Main navigation"
+  },
+  "topBar": {
+    "home": "Go to start page",
+    "notifications": "Notifications"
+  },
+  "userMenu": {
+    "label": "User menu",
+    "profile": "Profile",
+    "theme": "Theme",
+    "language": "Language",
+    "signOut": "Sign out"
+  }
+}

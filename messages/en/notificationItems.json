@@ -1,0 +1,8 @@
+{
+  "stepAdded": "A new step was added to your plan.",
+  "pageUpdated": "The page \"{title}\" was updated.",
+  "eventAnnounced": "New event: {title}",
+  "eventRemoved": "Event removed",
+  "employeeAssigned": "{employeeName} was assigned to you as an employee.",
+  "onboardingCompleted": "{employeeName} has completed onboarding."
+}

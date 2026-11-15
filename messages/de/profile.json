@@ -1,0 +1,18 @@
+{
+  "title": "Profil",
+  "account": {
+    "title": "Konto",
+    "name": "Name",
+    "email": "E-Mail-Adresse",
+    "role": "Rolle"
+  },
+  "preferences": {
+    "title": "Einstellungen",
+    "language": "Sprache",
+    "languageDescription": "Gilt für die gesamte Oberfläche und für E-Mails an dich.",
+    "theme": "Design",
+    "themeDescription": "Hell, dunkel oder passend zu deinem Gerät."
+  },
+  "saved": "Einstellung gespeichert.",
+  "saveFailed": "Die Einstellung konnte nicht gespeichert werden."
+}

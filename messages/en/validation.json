@@ -1,0 +1,11 @@
+{
+  "required": "This field is required.",
+  "tooShort": "The value is too short.",
+  "tooLong": "The value is too long.",
+  "invalid": "The value is invalid.",
+  "invalidEmail": "Please enter a valid email address.",
+  "invalidId": "The identifier is invalid.",
+  "invalidValue": "This value is not allowed.",
+  "passwordTooShort": "The password is too short.",
+  "passwordTooLong": "The password is too long."
+}

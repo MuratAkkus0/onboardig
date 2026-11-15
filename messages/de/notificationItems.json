@@ -1,0 +1,8 @@
+{
+  "stepAdded": "Zu deinem Plan wurde ein neuer Schritt hinzugefügt.",
+  "pageUpdated": "Die Seite „{title}“ wurde aktualisiert.",
+  "eventAnnounced": "Neue Veranstaltung: {title}",
+  "eventRemoved": "Veranstaltung entfernt",
+  "employeeAssigned": "{employeeName} wurde dir als Mitarbeiter zugewiesen.",
+  "onboardingCompleted": "{employeeName} hat das Onboarding abgeschlossen."
+}

@@ -1,0 +1,43 @@
+{
+  "actions": {
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "delete": "Löschen",
+    "edit": "Bearbeiten",
+    "back": "Zurück",
+    "confirm": "Bestätigen",
+    "close": "Schließen",
+    "retry": "Erneut versuchen",
+    "backToStart": "Zur Startseite"
+  },
+  "states": {
+    "emptyTitle": "Noch nichts vorhanden",
+    "emptyDescription": "Sobald es hier Inhalte gibt, siehst du sie an dieser Stelle.",
+    "loading": "Wird geladen …",
+    "errorTitle": "Etwas ist schiefgelaufen",
+    "errorDescription": "Die Seite konnte nicht geladen werden. Bitte versuche es erneut.",
+    "notFoundTitle": "Seite nicht gefunden",
+    "notFoundDescription": "Diese Seite gibt es nicht oder du hast keinen Zugriff darauf."
+  },
+  "confirm": {
+    "defaultTitle": "Bist du sicher?",
+    "defaultDescription": "Diese Aktion kann nicht rückgängig gemacht werden.",
+    "impactTitle": "Das hat folgende Auswirkungen:",
+    "typeToConfirm": "Gib zur Bestätigung „{name}“ ein.",
+    "typeToConfirmLabel": "Bestätigungstext"
+  },
+  "form": {
+    "submitting": "Wird gesendet …",
+    "required": "Pflichtfeld",
+    "showPassword": "Passwort anzeigen",
+    "hidePassword": "Passwort verbergen"
+  },
+  "progress": {
+    "label": "Fortschritt: {percent} %"
+  },
+  "placeholder": {
+    "body": "Dieser Bereich wird in Kürze verfügbar sein."
+  },
+  "skipToContent": "Zum Inhalt springen",
+  "germanOnly": "Nur auf Deutsch verfügbar"
+}

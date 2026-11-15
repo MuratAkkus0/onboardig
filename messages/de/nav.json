@@ -1,0 +1,42 @@
+{
+  "plan": "Mein Plan",
+  "events": "Veranstaltungen",
+  "search": "Suche",
+  "team": "Mein Team",
+  "library": "Bibliothek",
+  "adminOverview": "Übersicht",
+  "adminUsers": "Benutzer",
+  "adminOrg": "Organisation",
+  "adminJobRoles": "Rollen im Unternehmen",
+  "adminLibrary": "Bibliothek verwalten",
+  "adminTemplates": "Vorlagen",
+  "adminEvents": "Veranstaltungen verwalten",
+  "notifications": "Benachrichtigungen",
+  "profile": "Profil",
+  "pageView": "Seite",
+  "teamMember": "Mitarbeiterdetails",
+  "adminUserNew": "Benutzer anlegen",
+  "adminUser": "Benutzer bearbeiten",
+  "adminPageEdit": "Seite bearbeiten",
+  "adminTemplateNew": "Vorlage anlegen",
+  "adminTemplate": "Vorlage bearbeiten",
+  "adminEventNew": "Veranstaltung anlegen",
+  "adminEvent": "Veranstaltung bearbeiten",
+  "sections": { "admin": "Verwaltung" },
+  "menu": {
+    "open": "Navigation öffnen",
+    "title": "Navigation",
+    "main": "Hauptnavigation"
+  },
+  "topBar": {
+    "home": "Zur Startseite",
+    "notifications": "Benachrichtigungen"
+  },
+  "userMenu": {
+    "label": "Benutzermenü",
+    "profile": "Profil",
+    "theme": "Design",
+    "language": "Sprache",
+    "signOut": "Abmelden"
+  }
+}
