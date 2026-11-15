@@ -1,0 +1,28 @@
+# dependencies
+node_modules/
+
+# next.js / build
+.next/
+out/
+build/
+coverage/
+
+# env & secrets
+.env
+.env.*
+!.env.example
+
+# local uploads
+uploads/
+
+# graphify (local cache/logs; graph.json may be committed later)
+graphify-out/cache/
+graphify-out/.auto-update.log
+graphify-out/.graphify_*
+
+# os / editor
+.DS_Store
+*.log
+
+# Internal IHK documents (repo is public)
+docs/Projektantrag.docx
