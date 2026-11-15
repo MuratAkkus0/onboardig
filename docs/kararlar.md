@@ -388,3 +388,10 @@ Blueprint incelemesi sırasında netleştirilen yorumlar (kaynak: `docs/v1-archi
 - **P-search-1** Arama en az uzunluğun altındaki sorgularda boş sonuç döner, 100 karakterden uzun sorguyu reddeder; snippet vurguları HTML olarak değil, karakter aralığı olarak taşınır ve `<mark>` ile çizilir. (otonom karar)
 - **P-del-1** Demo verisi tamamen kurgusaldır ve çalıştırma tarihine göre göreli tarihlenir; tüm demo hesapları için tek bir rastgele şifre üretilir ve sonda bir kez yazdırılır (`SEED_DEMO_PASSWORD` ile sabitlenebilir). `seed:demo --reset` production'da reddedilir. (otonom karar)
 - **P-del-2** Devir dokümanı (`docs/runbook.md`) şirkete teslim edileceği için Almanca yazılır. (otonom karar)
+
+### Dalga 4 otonom kararları
+
+- **P-fin-1** Görünmeyen/var olmayan detay sayfaları içerik göstermez ama Next.js'in akışlı render davranışı nedeniyle HTTP 200 ile "bulunamadı" ekranı döner (soft 404); veri sızıntısı yoktur, kabul edildi. (otonom karar)
+- **P-fin-2** Görsel yükleme, gövde okunmadan önce yetki ve `Content-Length` kontrolü yapar; `Content-Length` göndermeyen (chunked) istemciler 413 alır. (otonom karar)
+- **P-fin-3** Prod compose uygulama portunu yalnızca `127.0.0.1`'e bağlar; dışarıya açmak için aynı sunucuda reverse proxy kullanılır. Rate limiting için istemci IP'si yapılandırılmış proxy başlığından okunur (runbook). (otonom karar)
+- **P-fin-4** Editör kilidi yalnızca devralmada otomatik yeniden yükler; süre aşımı veya boşta kalma sonrası yeniden yükleme önerilir, taslak tarayıcıda saklanır. (otonom karar; P20'nin güncellenmiş hali)

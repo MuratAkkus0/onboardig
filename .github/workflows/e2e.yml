@@ -24,8 +24,8 @@ jobs:
           --health-timeout 3s
           --health-retries 10
     env:
-      DATABASE_URL: postgres://onboarding:onboarding@localhost:5432/onboarding
-      APP_URL: http://localhost:3000
+      # playwright.config.ts recreates, migrates and seeds its own database on this server
+      E2E_DB_SERVER: postgres://onboarding:onboarding@localhost:5432
       BETTER_AUTH_SECRET: ci-e2e-secret-ci-e2e-secret-ci-e2e-0123456
       MAIL_TRANSPORT: memory
     steps:
@@ -37,5 +37,4 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm exec playwright install --with-deps chromium
-      - run: pnpm db:migrate
       - run: pnpm test:e2e

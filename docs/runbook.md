@@ -177,11 +177,20 @@ Die Volumes `pgdata` und `uploads` bleiben bei `down` erhalten. `down -v` lösch
 ## 9. Datenschutz: Sitzungen
 
 Die Anwendung speichert keine Nutzungsdaten (keine Lesezeit, keine Scrolltiefe, keine Seitenaufrufe),
-sondern nur, ob und wann ein Schritt abgeschlossen wurde. Die Sitzungstabelle enthält IP-Adresse und
-User-Agent, weil Better Auth sie für Sicherheitsprüfungen und die Begrenzung der Anmeldeversuche
-(Rate Limiting) benötigt. Sie dienen nur diesem Zweck. Die Daten verschwinden mit der Sitzungszeile:
-bei Abmeldung, bei Ablauf (7 Tage) und bei Deaktivierung des Benutzers. Es gibt keine Auswertung dieser
-Felder.
+sondern nur, ob und wann ein Schritt abgeschlossen wurde. Die Sitzungstabelle (`sessions`) enthält
+IP-Adresse und User-Agent der Anmeldung; Better Auth legt sie zur Nachvollziehbarkeit und Absicherung
+von Sitzungen an. Die Begrenzung der Anmeldeversuche (Rate Limiting) nutzt die IP der jeweiligen Anfrage
+nur im Arbeitsspeicher und nicht diese Felder. Es gibt keine Auswertung dieser Felder.
+
+Eine Sitzungszeile wird bei Abmeldung und bei Deaktivierung des Benutzers sofort gelöscht. Eine
+abgelaufene Sitzung (nach 7 Tagen) entfernt Better Auth erst, wenn ihr Cookie erneut gesendet wird.
+Damit abgelaufene Sitzungen nicht liegen bleiben, sollten sie regelmäßig (z. B. wöchentlich per Cron)
+gelöscht werden:
+
+```bash
+docker compose --env-file .env.prod -f docker-compose.prod.yml exec -T postgres \
+  sh -c 'psql -U "$POSTGRES_USER" "$POSTGRES_DB" -c "DELETE FROM sessions WHERE expires_at < now();"'
+```
 
 ## 10. Entwicklung und mehrere Arbeitskopien (Worktrees)
 
