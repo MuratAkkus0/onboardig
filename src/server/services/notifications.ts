@@ -1,8 +1,7 @@
 import "server-only";
 import { and, desc, eq, isNull, lt, sql } from "drizzle-orm";
-import { z } from "zod";
-import { APP_CONFIG, F2A_CONFIG, ROUTES } from "@/config/app";
-import { idSchema } from "@/lib/validation/common";
+import { APP_CONFIG, ROUTES } from "@/config/app";
+import { listNotificationsSchema, markReadSchema } from "@/lib/validation/notifications";
 import type { Actor } from "@/server/auth/types";
 import { db } from "@/server/db/client";
 import { notifications } from "@/server/db/schema";
@@ -24,18 +23,6 @@ export interface NotificationPage {
   items: NotificationDto[];
   nextCursor: string | null;
 }
-
-// Postgres timestamptz text with microseconds ("2026-11-15 22:12:01.123456+00"). The cursor keeps
-// the exact text so rows with equal or sub-millisecond timestamps are neither skipped nor repeated.
-const CURSOR_TIMESTAMP = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}(\.\d{1,6})?[+-]\d{2}(:\d{2})?$/;
-const cursorSchema = z
-  .string()
-  .transform((value) => value.split("|"))
-  .pipe(z.tuple([z.string().regex(CURSOR_TIMESTAMP), idSchema]));
-const listInput = z.object({
-  cursor: cursorSchema.optional(),
-  limit: z.number().int().min(1).max(F2A_CONFIG.notifications.maxPageSize).optional(),
-});
 
 const columns = {
   id: notifications.id,
@@ -98,7 +85,7 @@ export async function listNotifications(
   actor: Actor,
   input: { cursor?: string; limit?: number } = {},
 ): Promise<NotificationPage> {
-  const parsed = listInput.parse(input);
+  const parsed = listNotificationsSchema.parse(input);
   const limit = parsed.limit ?? APP_CONFIG.notifications.pageSize;
   await purgeExpired(actor.id);
 
@@ -140,7 +127,7 @@ export async function getUnreadSummary(
 
 /** Marks one of the actor's own notifications as read (idempotent). Others' rows are NOT_FOUND. */
 export async function markRead(actor: Actor, input: { id: string }): Promise<void> {
-  const { id } = z.object({ id: idSchema }).parse(input);
+  const { id } = markReadSchema.parse(input);
   const own = and(eq(notifications.id, id), eq(notifications.userId, actor.id));
   const updated = await db
     .update(notifications)

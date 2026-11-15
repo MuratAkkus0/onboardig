@@ -1,6 +1,26 @@
-import { PlaceholderPage } from "@/components/layout/placeholder-page";
+import { getTranslations } from "next-intl/server";
+import { EmptyState } from "@/components/common/empty-state";
+import { PageHeader } from "@/components/common/page-header";
+import { NotificationList } from "@/components/notifications/notification-list";
+import { toClientNotification } from "@/components/notifications/types";
+import { requirePageActor } from "@/server/auth/guards";
+import { listNotifications } from "@/server/services/notifications";
 
-// Placeholder (F2b): replaced by the owning unit, see docs/v1-architecture.md section 6.
-export default function Page() {
-  return <PlaceholderPage titleKey="notifications" />;
+export default async function NotificationsPage() {
+  const actor = await requirePageActor();
+  const t = await getTranslations("notifications");
+  const page = await listNotifications(actor);
+  return (
+    <>
+      <PageHeader title={t("title")} />
+      {page.items.length === 0 ? (
+        <EmptyState title={t("list.emptyTitle")} description={t("list.emptyDescription")} />
+      ) : (
+        <NotificationList
+          initialItems={page.items.map(toClientNotification)}
+          initialCursor={page.nextCursor}
+        />
+      )}
+    </>
+  );
 }

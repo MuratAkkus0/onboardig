@@ -1,1 +1,26 @@
-{}
+{
+  "title": "Notifications",
+  "bell": {
+    "label": "Notifications",
+    "labelUnread": "Notifications, {count} unread",
+    "unreadCount": "{count} unread",
+    "empty": "No notifications",
+    "viewAll": "View all",
+    "panelTitle": "Latest notifications"
+  },
+  "list": {
+    "label": "Notifications",
+    "emptyTitle": "No notifications",
+    "emptyDescription": "When there is something new for you, it will show up here.",
+    "loadMore": "Load older",
+    "loadingMore": "Loading …",
+    "unread": "Unread"
+  },
+  "actions": {
+    "markRead": "Mark as read",
+    "markAllRead": "Mark all as read"
+  },
+  "errors": {
+    "actionFailed": "The action could not be completed. Please try again."
+  }
+}

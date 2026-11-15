@@ -1,1 +1,61 @@
-{}
+{
+  "title": "Veranstaltungen",
+  "upcoming": "Anstehend",
+  "past": "Vergangen",
+  "emptyUpcomingTitle": "Keine anstehenden Veranstaltungen",
+  "emptyUpcomingDescription": "Sobald eine Veranstaltung geplant ist, siehst du sie hier.",
+  "emptyPast": "Keine vergangenen Veranstaltungen.",
+  "location": "Ort",
+  "when": "Zeitpunkt",
+  "until": "bis",
+  "admin": {
+    "title": "Veranstaltungen verwalten",
+    "newTitle": "Veranstaltung anlegen",
+    "editTitle": "Veranstaltung bearbeiten",
+    "create": "Veranstaltung anlegen",
+    "emptyTitle": "Noch keine Veranstaltungen",
+    "emptyDescription": "Lege die erste Veranstaltung an.",
+    "columns": {
+      "title": "Titel",
+      "startsAt": "Beginn",
+      "endsAt": "Ende",
+      "announced": "Angekündigt",
+      "actions": "Aktionen"
+    },
+    "notAnnounced": "Noch nicht angekündigt",
+    "listLabel": "Veranstaltungen"
+  },
+  "form": {
+    "sectionDe": "Deutsch",
+    "sectionEn": "Englisch (optional)",
+    "sectionEnHint": "Englischer Titel und englische Beschreibung gehören zusammen. Ohne beides wird die deutsche Fassung angezeigt.",
+    "titleDe": "Titel (Deutsch)",
+    "descriptionDe": "Beschreibung (Deutsch)",
+    "titleEn": "Titel (Englisch)",
+    "descriptionEn": "Beschreibung (Englisch)",
+    "startsAt": "Beginn",
+    "endsAt": "Ende",
+    "timeHint": "Zeiten in Berliner Zeit.",
+    "location": "Ort (optional)",
+    "save": "Speichern",
+    "saved": "Gespeichert.",
+    "edit": "Bearbeiten"
+  },
+  "announce": {
+    "action": "Ankündigen",
+    "title": "Veranstaltung ankündigen?",
+    "description": "Alle aktiven Benutzer erhalten eine Benachrichtigung. Ungelesene frühere Ankündigungen werden aktualisiert statt doppelt angezeigt.",
+    "confirm": "Ankündigen",
+    "success": "Angekündigt an {count} Benutzer."
+  },
+  "delete": {
+    "action": "Löschen",
+    "title": "Veranstaltung löschen?",
+    "description": "Bereits versendete Benachrichtigungen zeigen danach „Veranstaltung entfernt“. Das kann nicht rückgängig gemacht werden.",
+    "confirm": "Löschen"
+  },
+  "errors": {
+    "endBeforeStart": "Das Ende darf nicht vor dem Beginn liegen.",
+    "invalidDateTime": "Bitte gib ein gültiges Datum mit Uhrzeit an."
+  }
+}
