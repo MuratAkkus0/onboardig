@@ -303,7 +303,18 @@ export const W3_DASHBOARDS_CONFIG = {} as const;
 // <<< W3-dashboards
 
 // >>> W3-search (owned by W3-search)
-export const W3_SEARCH_CONFIG = {} as const;
+export const W3_SEARCH_CONFIG = {
+  queryMaxLength: 100,
+  /** ts_headline control-character delimiters (never present in rendered text). */
+  headline: {
+    startSel: "\u0002",
+    stopSel: "\u0003",
+    fragmentDelimiter: "\u0001",
+    minWords: 10,
+    maxWords: 25,
+    maxFragments: 2,
+  },
+} as const;
 // <<< W3-search
 
 // >>> W3-delivery (owned by W3-delivery)

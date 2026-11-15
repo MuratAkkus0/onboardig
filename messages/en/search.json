@@ -1,1 +1,18 @@
-{}
+{
+  "title": "Search",
+  "description": "Search pages and events.",
+  "label": "Search term",
+  "placeholder": "Enter a search term",
+  "submit": "Search",
+  "tooManyChars": "The search term is too long (at most {max} characters).",
+  "promptTitle": "What are you looking for?",
+  "promptDescription": "Enter at least {min} characters to search pages and events.",
+  "noResultsTitle": "No results",
+  "noResultsDescription": "Nothing was found for \"{query}\". Check the spelling or try a different term.",
+  "pages": "Pages",
+  "events": "Events",
+  "inModule": "Module: {module}",
+  "noPageResults": "No matching pages.",
+  "noEventResults": "No matching events.",
+  "resultCount": "{count, plural, one {# result} other {# results}}"
+}
