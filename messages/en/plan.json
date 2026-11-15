@@ -1,1 +1,77 @@
-{}
+{
+  "title": "My onboarding plan",
+  "empty": "Your onboarding plan is being prepared",
+  "emptyDescription": "As soon as your team lead has assigned content to you, you will find it here.",
+  "updatedSinceCompletion": "Updated since you completed it",
+  "progress": {
+    "summary": "{completed} of {total} steps done",
+    "completedNotice": "You have completed all steps. All content stays available for you to read."
+  },
+  "step": {
+    "markDone": "Done",
+    "undo": "Undo",
+    "doneOn": "Done on {date, date, medium}",
+    "open": "Open",
+    "done": "Done",
+    "actionsLabel": "Progress for this step",
+    "allDoneToast": "Congratulations, you have completed all steps."
+  },
+  "member": {
+    "title": "{name}'s plan",
+    "startsOn": "Start date: {date}",
+    "noStartDate": "No start date",
+    "lastActivity": "Last activity: {date, date, medium}",
+    "noActivity": "No activity yet",
+    "templates": "Assigned templates",
+    "noTemplates": "No template assigned yet",
+    "assignedOn": "assigned on {date, date, medium}",
+    "viewByModule": "By module",
+    "viewByPhase": "By phase",
+    "emptyPlan": "The plan is still empty",
+    "emptyPlanHint": "Assign a template or add pages.",
+    "moduleCount": "{completed} of {total} done",
+    "moduleNoActive": "No active steps",
+    "notPublished": "Not published, does not count towards progress",
+    "hiddenTitle": "Page not published",
+    "archivedUser": "This account is archived. The plan can no longer be edited.",
+    "readOnly": "You can view this plan but not edit it."
+  },
+  "assign": {
+    "action": "Assign templates",
+    "title": "Assign templates",
+    "description": "The steps of the selected templates are copied into the plan. Pages that are already in the plan are not added twice.",
+    "suggested": "Suggested",
+    "scopeAll": "All",
+    "scopeDepartment": "Department: {name}",
+    "scopeTeam": "Team: {name}",
+    "scopeJobRole": "Role: {name}",
+    "noTemplates": "There are no active templates.",
+    "submit": "Assign",
+    "noneSelected": "Select at least one template.",
+    "success": "{count, plural, =0 {No new steps added} one {# step added} other {# steps added}}"
+  },
+  "addStep": {
+    "action": "Add page",
+    "title": "Add page to the plan",
+    "page": "Page",
+    "pagePlaceholder": "Select a page",
+    "phase": "Phase",
+    "phasePlaceholder": "Select a phase",
+    "noPages": "All published pages are already in the plan.",
+    "submit": "Add",
+    "success": "Step added"
+  },
+  "removeStep": {
+    "action": "Remove",
+    "actionLabel": "Remove step \"{title}\"",
+    "title": "Remove step from the plan?",
+    "description": "The step disappears from the plan. A completion that was already recorded is kept.",
+    "confirm": "Remove",
+    "success": "Step removed"
+  },
+  "errors": {
+    "templateNotAssignable": "At least one template is archived or no longer exists.",
+    "pageNotPublished": "Only published pages can be added to the plan.",
+    "alreadyInPlan": "This page is already in the plan."
+  }
+}
