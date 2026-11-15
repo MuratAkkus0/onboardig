@@ -1,1 +1,46 @@
-{}
+{
+  "team": {
+    "title": "My team",
+    "description": "Your assigned employees and how far they are in their onboarding.",
+    "count": "{count, plural, =0 {No employees} one {# employee} other {# employees}}",
+    "empty": {
+      "title": "No employees assigned yet",
+      "description": "As soon as an administrator assigns employees to you, they appear here."
+    }
+  },
+  "admin": {
+    "title": "Overview",
+    "description": "Onboarding progress of all employees.",
+    "empty": {
+      "title": "No employees yet",
+      "description": "Create users under User management to see their onboarding progress here.",
+      "filteredTitle": "No matching employees",
+      "filteredDescription": "Change or reset the filters to see more employees."
+    }
+  },
+  "summary": {
+    "label": "Summary",
+    "total": "Employees",
+    "averageProgress": "Average progress"
+  },
+  "filters": {
+    "department": "Department",
+    "team": "Team",
+    "status": "Status",
+    "all": "All",
+    "apply": "Apply filters",
+    "reset": "Reset"
+  },
+  "list": {
+    "label": "Employees",
+    "noValue": "-",
+    "columns": {
+      "name": "Name",
+      "team": "Team",
+      "progress": "Progress",
+      "startDate": "Start date",
+      "lastActivity": "Last activity",
+      "status": "Status"
+    }
+  }
+}

@@ -1,1 +1,46 @@
-{}
+{
+  "team": {
+    "title": "Mein Team",
+    "description": "Deine zugewiesenen Mitarbeitenden und ihr Fortschritt im Onboarding.",
+    "count": "{count, plural, =0 {Keine Mitarbeitenden} one {# Mitarbeitende:r} other {# Mitarbeitende}}",
+    "empty": {
+      "title": "Noch keine Mitarbeitenden zugewiesen",
+      "description": "Sobald dir ein Admin Mitarbeitende zuweist, erscheinen sie hier."
+    }
+  },
+  "admin": {
+    "title": "Übersicht",
+    "description": "Onboarding-Fortschritt aller Mitarbeitenden.",
+    "empty": {
+      "title": "Noch keine Mitarbeitenden",
+      "description": "Lege Benutzer in der Benutzerverwaltung an, um ihren Fortschritt hier zu sehen.",
+      "filteredTitle": "Keine passenden Mitarbeitenden",
+      "filteredDescription": "Ändere oder setze die Filter zurück, um mehr Mitarbeitende zu sehen."
+    }
+  },
+  "summary": {
+    "label": "Zusammenfassung",
+    "total": "Mitarbeitende",
+    "averageProgress": "Durchschnittlicher Fortschritt"
+  },
+  "filters": {
+    "department": "Abteilung",
+    "team": "Team",
+    "status": "Status",
+    "all": "Alle",
+    "apply": "Filter anwenden",
+    "reset": "Zurücksetzen"
+  },
+  "list": {
+    "label": "Mitarbeitende",
+    "noValue": "-",
+    "columns": {
+      "name": "Name",
+      "team": "Team",
+      "progress": "Fortschritt",
+      "startDate": "Startdatum",
+      "lastActivity": "Letzte Aktivität",
+      "status": "Status"
+    }
+  }
+}
