@@ -1,1 +1,26 @@
-{}
+{
+  "title": "Benachrichtigungen",
+  "bell": {
+    "label": "Benachrichtigungen",
+    "labelUnread": "Benachrichtigungen, {count} ungelesen",
+    "unreadCount": "{count} ungelesen",
+    "empty": "Keine Benachrichtigungen",
+    "viewAll": "Alle anzeigen",
+    "panelTitle": "Neueste Benachrichtigungen"
+  },
+  "list": {
+    "label": "Benachrichtigungen",
+    "emptyTitle": "Keine Benachrichtigungen",
+    "emptyDescription": "Sobald es etwas Neues für dich gibt, erscheint es hier.",
+    "loadMore": "Ältere laden",
+    "loadingMore": "Wird geladen …",
+    "unread": "Ungelesen"
+  },
+  "actions": {
+    "markRead": "Als gelesen markieren",
+    "markAllRead": "Alle als gelesen markieren"
+  },
+  "errors": {
+    "actionFailed": "Die Aktion konnte nicht ausgeführt werden. Bitte versuche es erneut."
+  }
+}

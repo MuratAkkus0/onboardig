@@ -272,7 +272,19 @@ export const W1_CONTENT_CONFIG = {
 // <<< W1-content
 
 // >>> W1-notify-events (owned by W1-notify-events)
-export const W1_NOTIFY_EVENTS_CONFIG = {} as const;
+export const W1_NOTIFY_EVENTS_CONFIG = {
+  notifications: {
+    pollPath: "/api/notifications/poll",
+    changedEvent: "notifications:changed",
+    badgeMaxCount: 9,
+  },
+  events: {
+    pastLimit: 100,
+    titleMaxLength: 200,
+    descriptionMaxLength: 5000,
+    locationMaxLength: 200,
+  },
+} as const;
 // <<< W1-notify-events
 
 // >>> W2-templates (owned by W2-templates)

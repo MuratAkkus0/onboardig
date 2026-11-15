@@ -1,1 +1,61 @@
-{}
+{
+  "title": "Events",
+  "upcoming": "Upcoming",
+  "past": "Past",
+  "emptyUpcomingTitle": "No upcoming events",
+  "emptyUpcomingDescription": "As soon as an event is planned, you will see it here.",
+  "emptyPast": "No past events.",
+  "location": "Location",
+  "when": "Time",
+  "until": "until",
+  "admin": {
+    "title": "Manage events",
+    "newTitle": "Create event",
+    "editTitle": "Edit event",
+    "create": "Create event",
+    "emptyTitle": "No events yet",
+    "emptyDescription": "Create the first event.",
+    "columns": {
+      "title": "Title",
+      "startsAt": "Starts",
+      "endsAt": "Ends",
+      "announced": "Announced",
+      "actions": "Actions"
+    },
+    "notAnnounced": "Not announced yet",
+    "listLabel": "Events"
+  },
+  "form": {
+    "sectionDe": "German",
+    "sectionEn": "English (optional)",
+    "sectionEnHint": "English title and English description belong together. Without both, the German version is shown.",
+    "titleDe": "Title (German)",
+    "descriptionDe": "Description (German)",
+    "titleEn": "Title (English)",
+    "descriptionEn": "Description (English)",
+    "startsAt": "Starts",
+    "endsAt": "Ends",
+    "timeHint": "Times are in Berlin time.",
+    "location": "Location (optional)",
+    "save": "Save",
+    "saved": "Saved.",
+    "edit": "Edit"
+  },
+  "announce": {
+    "action": "Announce",
+    "title": "Announce event?",
+    "description": "All active users will receive a notification. Earlier unread announcements are refreshed instead of shown twice.",
+    "confirm": "Announce",
+    "success": "Announced to {count} users."
+  },
+  "delete": {
+    "action": "Delete",
+    "title": "Delete event?",
+    "description": "Notifications already sent will then show \"Event removed\". This cannot be undone.",
+    "confirm": "Delete"
+  },
+  "errors": {
+    "endBeforeStart": "The end must not be before the start.",
+    "invalidDateTime": "Please enter a valid date and time."
+  }
+}
