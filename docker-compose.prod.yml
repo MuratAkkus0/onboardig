@@ -1,0 +1,80 @@
+# Production stack: app + PostgreSQL 18 + one-shot migrations.
+# Always pass the env file:  docker compose --env-file .env.prod -f docker-compose.prod.yml up -d --build
+# One-off tools (first admin, demo seed):
+#   docker compose --env-file .env.prod -f docker-compose.prod.yml run --rm tools scripts/seed-admin.ts
+
+x-app-env: &app-env
+  APP_URL: ${APP_URL:?set APP_URL in .env.prod}
+  BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:?set BETTER_AUTH_SECRET in .env.prod}
+  DATABASE_URL: postgres://${POSTGRES_USER:?}:${POSTGRES_PASSWORD:?}@postgres:5432/${POSTGRES_DB:?}
+  LOG_LEVEL: ${LOG_LEVEL:-info}
+  MAIL_TRANSPORT: ${MAIL_TRANSPORT:-smtp}
+  MAIL_FROM: ${MAIL_FROM:?set MAIL_FROM in .env.prod}
+  SMTP_HOST: ${SMTP_HOST:?set SMTP_HOST in .env.prod}
+  SMTP_PORT: ${SMTP_PORT:-587}
+  SMTP_SECURE: ${SMTP_SECURE:-false}
+  SMTP_USER: ${SMTP_USER:-}
+  SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+
+services:
+  postgres:
+    image: postgres:18.7-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:?}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?}
+      POSTGRES_DB: ${POSTGRES_DB:?}
+    volumes:
+      # PostgreSQL 18 images keep PGDATA at /var/lib/postgresql/18/docker; mount the parent directory.
+      - pgdata:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  migrate:
+    build:
+      context: .
+      target: tools
+    restart: "no"
+    environment: *app-env
+    command: ["scripts/db-migrate.ts"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  app:
+    build:
+      context: .
+      target: runner
+    restart: unless-stopped
+    environment: *app-env
+    ports:
+      - "${APP_PORT:-3000}:3000"
+    volumes:
+      - uploads:/app/uploads
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
+  # Not started by `up`: run on demand with `docker compose run --rm tools <script>`.
+  tools:
+    build:
+      context: .
+      target: tools
+    profiles: ["tools"]
+    environment:
+      <<: *app-env
+      SEED_ADMIN_EMAIL: ${SEED_ADMIN_EMAIL:-}
+      SEED_ADMIN_PASSWORD: ${SEED_ADMIN_PASSWORD:-}
+      SEED_ADMIN_FIRST_NAME: ${SEED_ADMIN_FIRST_NAME:-}
+      SEED_ADMIN_LAST_NAME: ${SEED_ADMIN_LAST_NAME:-}
+      SEED_DEMO_PASSWORD: ${SEED_DEMO_PASSWORD:-}
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
+volumes:
+  pgdata:
+  uploads:
