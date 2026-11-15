@@ -1,1 +1,105 @@
-{}
+{
+  "title": "Vorlagen",
+  "description": "Vorlagen bündeln Seiten aus der Bibliothek in Phasen und werden Mitarbeitenden zugewiesen.",
+  "add": "Vorlage anlegen",
+  "empty": {
+    "title": "Noch keine Vorlagen",
+    "description": "Lege eine Vorlage an und füge Seiten aus der Bibliothek hinzu."
+  },
+  "filter": {
+    "label": "Status filtern",
+    "all": "Alle",
+    "active": "Aktiv",
+    "archived": "Archiviert"
+  },
+  "list": {
+    "name": "Name",
+    "scope": "Zielgruppe",
+    "steps": "Schritte",
+    "assigned": "Zugewiesen",
+    "status": "Status",
+    "open": "Vorlage {name} öffnen"
+  },
+  "scope": {
+    "allDepartments": "Alle Abteilungen",
+    "anyTeam": "Alle Teams",
+    "anyRole": "Alle Rollen",
+    "separator": " · "
+  },
+  "form": {
+    "createTitle": "Neue Vorlage",
+    "editTitle": "Vorlage bearbeiten",
+    "name": "Name",
+    "description": "Beschreibung (optional)",
+    "department": "Abteilung",
+    "departmentPlaceholder": "Abteilung wählen",
+    "departmentAll": "Alle (unternehmensweit)",
+    "departmentHint": "Pflichtfeld: Wähle eine Abteilung oder „Alle“ für eine unternehmensweite Vorlage.",
+    "team": "Team (optional)",
+    "teamNone": "Kein bestimmtes Team",
+    "teamHintAll": "Teams sind nur mit einer bestimmten Abteilung möglich.",
+    "jobRole": "Jobrolle (optional)",
+    "jobRoleNone": "Keine bestimmte Rolle",
+    "save": "Speichern",
+    "create": "Vorlage anlegen",
+    "saved": "Gespeichert.",
+    "cancel": "Abbrechen"
+  },
+  "detail": {
+    "back": "Zurück zu den Vorlagen",
+    "stepsHeading": "Schritte",
+    "stepsDescription": "Seiten aus der Bibliothek, gruppiert nach Phase. Die Reihenfolge gilt innerhalb einer Phase.",
+    "assignedInfo": "Bei {count} Mitarbeitenden zugewiesen. Änderungen betreffen bestehende Pläne nicht."
+  },
+  "steps": {
+    "emptyPhase": "Keine Schritte in dieser Phase.",
+    "moveUp": "{title} nach oben",
+    "moveDown": "{title} nach unten",
+    "remove": "{title} entfernen",
+    "phaseLabel": "Phase von {title}",
+    "draft": "Entwurf",
+    "archived": "Archiviert",
+    "archivedHint": "Diese Seite ist archiviert und wird bei Zuweisungen übersprungen.",
+    "draftHint": "Diese Seite ist noch ein Entwurf und wird erst nach der Veröffentlichung in Pläne übernommen."
+  },
+  "addStep": {
+    "button": "Schritt hinzufügen",
+    "title": "Schritt hinzufügen",
+    "page": "Seite",
+    "pagePlaceholder": "Seite wählen",
+    "phase": "Phase",
+    "submit": "Hinzufügen",
+    "noPages": "Keine weiteren Seiten verfügbar."
+  },
+  "status": {
+    "archive": "Archivieren",
+    "restore": "Wiederherstellen",
+    "archivedNotice": "Diese Vorlage ist archiviert und wird bei Zuweisungen nicht angeboten."
+  },
+  "delete": {
+    "button": "Löschen",
+    "unusedTitle": "Vorlage „{name}“ löschen?",
+    "unusedDescription": "Die Vorlage wurde noch niemandem zugewiesen und wird endgültig gelöscht.",
+    "usedTitle": "Vorlage „{name}“ archivieren?",
+    "usedDescription": "Die Vorlage ist zugewiesen und kann deshalb nicht gelöscht werden. Sie wird archiviert; bestehende Pläne bleiben unverändert.",
+    "impactAssigned": "Zugewiesen an {count} Mitarbeitende",
+    "impactActive": "{count} davon mit aktivem Onboarding",
+    "confirmUnused": "Endgültig löschen",
+    "confirmUsed": "Archivieren"
+  },
+  "toast": {
+    "created": "Vorlage angelegt.",
+    "archived": "Vorlage archiviert.",
+    "restored": "Vorlage wiederhergestellt.",
+    "deleted": "Vorlage gelöscht.",
+    "stepAdded": "Schritt hinzugefügt.",
+    "stepRemoved": "Schritt entfernt."
+  },
+  "errors": {
+    "teamNotInDepartment": "Das Team gehört nicht zur gewählten Abteilung.",
+    "teamNeedsDepartment": "Ein Team kann nur mit einer bestimmten Abteilung gewählt werden.",
+    "pageArchived": "Archivierte Seiten können nicht hinzugefügt werden.",
+    "duplicatePage": "Diese Seite ist bereits in der Vorlage enthalten.",
+    "confirmNameMismatch": "Der eingegebene Name stimmt nicht überein."
+  }
+}

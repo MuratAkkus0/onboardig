@@ -1,1 +1,105 @@
-{}
+{
+  "title": "Templates",
+  "description": "Templates group library pages into phases and are assigned to employees.",
+  "add": "Create template",
+  "empty": {
+    "title": "No templates yet",
+    "description": "Create a template and add pages from the library."
+  },
+  "filter": {
+    "label": "Filter by status",
+    "all": "All",
+    "active": "Active",
+    "archived": "Archived"
+  },
+  "list": {
+    "name": "Name",
+    "scope": "Audience",
+    "steps": "Steps",
+    "assigned": "Assigned",
+    "status": "Status",
+    "open": "Open template {name}"
+  },
+  "scope": {
+    "allDepartments": "All departments",
+    "anyTeam": "All teams",
+    "anyRole": "All roles",
+    "separator": " · "
+  },
+  "form": {
+    "createTitle": "New template",
+    "editTitle": "Edit template",
+    "name": "Name",
+    "description": "Description (optional)",
+    "department": "Department",
+    "departmentPlaceholder": "Choose a department",
+    "departmentAll": "All (company-wide)",
+    "departmentHint": "Required: choose a department, or \"All\" for a company-wide template.",
+    "team": "Team (optional)",
+    "teamNone": "No specific team",
+    "teamHintAll": "Teams are only available with a specific department.",
+    "jobRole": "Job role (optional)",
+    "jobRoleNone": "No specific role",
+    "save": "Save",
+    "create": "Create template",
+    "saved": "Saved.",
+    "cancel": "Cancel"
+  },
+  "detail": {
+    "back": "Back to templates",
+    "stepsHeading": "Steps",
+    "stepsDescription": "Library pages grouped by phase. The order applies within a phase.",
+    "assignedInfo": "Assigned to {count} people. Changes do not affect existing plans."
+  },
+  "steps": {
+    "emptyPhase": "No steps in this phase.",
+    "moveUp": "Move {title} up",
+    "moveDown": "Move {title} down",
+    "remove": "Remove {title}",
+    "phaseLabel": "Phase of {title}",
+    "draft": "Draft",
+    "archived": "Archived",
+    "archivedHint": "This page is archived and is skipped when the template is assigned.",
+    "draftHint": "This page is still a draft and only joins plans once it is published."
+  },
+  "addStep": {
+    "button": "Add step",
+    "title": "Add step",
+    "page": "Page",
+    "pagePlaceholder": "Choose a page",
+    "phase": "Phase",
+    "submit": "Add",
+    "noPages": "No more pages available."
+  },
+  "status": {
+    "archive": "Archive",
+    "restore": "Restore",
+    "archivedNotice": "This template is archived and is not offered for assignment."
+  },
+  "delete": {
+    "button": "Delete",
+    "unusedTitle": "Delete template \"{name}\"?",
+    "unusedDescription": "The template has not been assigned to anyone and will be deleted permanently.",
+    "usedTitle": "Archive template \"{name}\"?",
+    "usedDescription": "The template is assigned, so it cannot be deleted. It will be archived instead; existing plans stay unchanged.",
+    "impactAssigned": "Assigned to {count} people",
+    "impactActive": "{count} of them with active onboarding",
+    "confirmUnused": "Delete permanently",
+    "confirmUsed": "Archive"
+  },
+  "toast": {
+    "created": "Template created.",
+    "archived": "Template archived.",
+    "restored": "Template restored.",
+    "deleted": "Template deleted.",
+    "stepAdded": "Step added.",
+    "stepRemoved": "Step removed."
+  },
+  "errors": {
+    "teamNotInDepartment": "The team does not belong to the selected department.",
+    "teamNeedsDepartment": "A team can only be chosen with a specific department.",
+    "pageArchived": "Archived pages cannot be added.",
+    "duplicatePage": "This page is already part of the template.",
+    "confirmNameMismatch": "The name you typed does not match."
+  }
+}

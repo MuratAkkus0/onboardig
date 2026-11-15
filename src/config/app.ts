@@ -288,7 +288,10 @@ export const W1_NOTIFY_EVENTS_CONFIG = {
 // <<< W1-notify-events
 
 // >>> W2-templates (owned by W2-templates)
-export const W2_TEMPLATES_CONFIG = {} as const;
+export const W2_TEMPLATES_CONFIG = {
+  nameMaxLength: 120,
+  descriptionMaxLength: 1000,
+} as const;
 // <<< W2-templates
 
 // >>> W2-plans (owned by W2-plans)
