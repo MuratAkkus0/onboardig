@@ -1,1 +1,18 @@
-{}
+{
+  "title": "Suche",
+  "description": "Durchsuche Seiten und Veranstaltungen.",
+  "label": "Suchbegriff",
+  "placeholder": "Suchbegriff eingeben",
+  "submit": "Suchen",
+  "tooManyChars": "Der Suchbegriff ist zu lang (höchstens {max} Zeichen).",
+  "promptTitle": "Wonach suchst du?",
+  "promptDescription": "Gib mindestens {min} Zeichen ein, um Seiten und Veranstaltungen zu durchsuchen.",
+  "noResultsTitle": "Keine Treffer",
+  "noResultsDescription": "Für „{query}“ wurde nichts gefunden. Prüfe die Schreibweise oder versuche einen anderen Begriff.",
+  "pages": "Seiten",
+  "events": "Veranstaltungen",
+  "inModule": "Modul: {module}",
+  "noPageResults": "Keine passenden Seiten.",
+  "noEventResults": "Keine passenden Veranstaltungen.",
+  "resultCount": "{count, plural, one {# Treffer} other {# Treffer}}"
+}
