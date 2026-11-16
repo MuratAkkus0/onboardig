@@ -1,6 +1,7 @@
 import { useTranslations } from "next-intl";
 import { getVisibleNavigation, initialsOf } from "@/lib/navigation";
 import type { Actor } from "@/server/auth/types";
+import { NavigationTracker } from "./navigation-tracker";
 import { SidebarNav } from "./sidebar-nav";
 import { TopBar } from "./top-bar";
 
@@ -10,6 +11,7 @@ export function AppShell({ actor, children }: { actor: Actor; children: React.Re
   const items = getVisibleNavigation(actor.role);
   return (
     <div className="flex min-h-screen flex-col">
+      <NavigationTracker />
       <a
         href="#main-content"
         className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded-md focus:bg-background focus:px-3 focus:py-2 focus:text-sm focus:shadow"
