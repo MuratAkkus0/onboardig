@@ -1,8 +1,8 @@
 # Systemarchitektur
 
-Überblick über Aufbau, Schichten und Laufzeitverhalten des Onboarding Portals (Stand v1). Die
-ausführliche technische Spezifikation steht in `docs/v1-architecture.md`. Dieses Dokument beschreibt den
-umgesetzten Stand.
+Überblick über Aufbau, Schichten und Laufzeitverhalten des Onboarding Portals (Stand v1.1). Die
+ausführliche technische Spezifikation steht in `docs/v1-architecture.md` (Erweiterungen v1.1: Abschnitt 15).
+Dieses Dokument beschreibt den umgesetzten Stand.
 
 ## 1. Technologie-Überblick
 
@@ -15,7 +15,7 @@ umgesetzten Stand.
 | Validierung        | Zod 4: dieselben Schemas für Formulare und Server-Eingaben                                      |
 | Oberfläche         | Tailwind CSS 4, shadcn/ui (Radix), Theme hell/dunkel/System über `next-themes`                  |
 | Editor             | Tiptap 3, Inhalte als Tiptap-JSON                                                               |
-| Mehrsprachigkeit   | next-intl 4, Texte in `messages/{de,en}/<namespace>.json` (19 Namespaces)                       |
+| Mehrsprachigkeit   | next-intl 4, Texte in `messages/{de,en}/<namespace>.json` (20 Namespaces)                       |
 | Mail               | Nodemailer (SMTP) + React Email; lokal Mailpit                                                  |
 | Suche              | PostgreSQL-Volltextsuche (`german` / `english`)                                                 |
 | Logging            | pino (strukturiertes JSON, sensible Felder maskiert)                                            |
@@ -95,6 +95,67 @@ Sie rufen definierte Hooks (`plan-hooks.ts`) in ihrer eigenen Transaktion auf, z
 geändert“ oder „veröffentlichter Inhalt geändert“. Die Hooks berechnen Fortschritte neu und erzeugen
 Benachrichtigungen.
 
+### 2.1 Services
+
+| Service                                   | Aufgabe                                                                                                       |
+| ----------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `org.ts`, `users.ts`, `invitations.ts`    | Abteilungen, Teams, Stellenrollen (seit v1.1 je Abteilung), Benutzer, Einladungen                             |
+| `modules.ts`, `pages.ts`, `uploads.ts`, `locks.ts` | Inhaltsbibliothek, Editor-Speichern, Bilder, Bearbeitungssperre                                      |
+| `visibility.ts`                           | die einzige Sichtbarkeitsregel für Seiten                                                                     |
+| **`content-access.ts`** (neu in v1.1)     | Redaktionsbereich: ermittelt die Abteilung einer Teamleitung in der laufenden Transaktion (`editorDepartmentIdInTx`) und entscheidet über Bearbeitungsrechte an Modulen, Seiten und Vorlagen (`canEditModule`, `canEditPage`, `canViewTemplate`, `canManageTemplate`) einschließlich der Wahl zwischen `FORBIDDEN` und `NOT_FOUND`. Wird von `modules.ts`, `pages.ts`, `uploads.ts`, `locks.ts`, `templates.ts` und `feedback.ts` genutzt, damit die Regel nur an einer Stelle steht. |
+| `templates.ts`, `plans.ts`, `plan-hooks.ts` | Vorlagen (seit v1.1 auch von Teamleitungen, `lead_managed`), Zuweisung, Fortschritt, Hooks                  |
+| `dashboards.ts`, `search.ts`              | Übersichten, Volltextsuche                                                                                    |
+| `notifications-core.ts`, `notifications.ts`, `events.ts` | Benachrichtigungen erzeugen und lesen, Veranstaltungen                                         |
+| **`feedback.ts`** (neu in v1.1)           | „Problem melden“: Meldung anlegen (mit Rate Limit über eine Advisory-Sperre je Person), Liste und Zähler je Zuständigkeitsbereich, Status und Antwortnotiz, Löschen (nur Admin), Aufbewahrung 180 Tage. Erzeugt beim Erledigen die Benachrichtigung `feedback_resolved` über `notifications-core.ts`. |
+| `profile.ts`, `health.ts`, `bootstrap.ts`, `row-locks.ts` | Profil, Healthcheck, erster Admin, gemeinsame Zeilensperren                                      |
+
+### 2.2 Bereichsparametrisierte Oberfläche (v1.1)
+
+Teamleitungen nutzen für Bibliothek, Editor und Vorlagen dieselben Komponenten wie der Admin. Die
+Komponenten erhalten einen Parameter `area` (`"admin"` oder `"lead"`); `src/lib/area-routes.ts` liefert
+dazu die passenden Routen. Die Server Actions sind rollenunabhängig; welche Operation erlaubt ist,
+entscheiden allein die Services. Die Oberfläche blendet nur die Steuerelemente aus, die laut Service
+ohnehin abgelehnt würden (z. B. Bearbeitungsflags je Modul, `canManage` je Vorlage).
+
+```mermaid
+flowchart LR
+    subgraph AdminRoutes["Admin-Bereich"]
+        A1["/admin/library"]
+        A2["/admin/library/pages/id/edit"]
+        A3["/admin/templates"]
+        A4["/admin/reports"]
+    end
+    subgraph LeadRoutes["Teamleitungs-Bereich"]
+        L1["/library"]
+        L2["/library/pages/id/edit"]
+        L3["/templates"]
+        L4["/reports"]
+    end
+    C1["AdminLibrary area"]
+    C2["EditPageRoute area"]
+    C3["TemplateListView / TemplateDetailView area"]
+    C4["ReportsView"]
+    ACT["gemeinsame Server Actions"]
+    SVC["Services<br/>content-access.ts, feedback.ts"]
+
+    A1 --> C1
+    L1 --> C1
+    A2 --> C2
+    L2 --> C2
+    A3 --> C3
+    L3 --> C3
+    A4 --> C4
+    L4 --> C4
+    C1 --> ACT
+    C2 --> ACT
+    C3 --> ACT
+    C4 --> ACT
+    ACT --> SVC
+```
+
+Öffnet ein Admin `/library` oder `/templates`, wird er auf seine Admin-Seite umgeleitet. Der Menüpunkt
+„Vorlagen“ erscheint nur bei Teamleitungen; der Admin erreicht Vorlagen und Meldungen über „Verwaltung“.
+
 ## 3. Ablauf einer Anfrage: Server Action → Service → Datenbank
 
 Beispiel: Eine Person markiert einen Schritt als erledigt.
@@ -132,10 +193,10 @@ sequenceDiagram
 ```
 
 Fehlerbehandlung: Services werfen `AppError` mit einem Code (`FORBIDDEN`, `NOT_FOUND`, `VALIDATION`,
-`CONFLICT`, `LOCK_LOST` …) und einem i18n-Meldungsschlüssel. `runAction` wandelt sie in
+`CONFLICT`, `LOCK_LOST`, seit v1.1 `RATE_LIMITED` …) und einem i18n-Meldungsschlüssel. `runAction` wandelt sie in
 `{ ok: false, error }` um, Zod-Fehler in Feldfehler, bekannte PostgreSQL-Fehler (Unique, Fremdschlüssel)
 in fachliche Codes. Route Handler bilden dieselben Codes auf HTTP-Status ab (z. B. 401, 403, 404, 409,
-413, 415, 423). Unbekannte Fehler werden geloggt und als `INTERNAL` gemeldet, ohne Details preiszugeben.
+413, 415, 423, 429). Unbekannte Fehler werden geloggt und als `INTERNAL` gemeldet, ohne Details preiszugeben.
 
 Lesende Seiten (Server Components) rufen die Services direkt auf. Bei `NOT_FOUND` wird die 404-Seite
 gezeigt.
@@ -153,7 +214,8 @@ gezeigt.
 - **Deaktivierung** setzt `banned`, archiviert die Person und löscht ihre Sitzungen in derselben
   Transaktion. `getActor` behandelt gesperrte und archivierte Personen als nicht angemeldet.
 - **Rate Limiting** (Better Auth, im Speicher): Anmeldung 5 Versuche pro Minute, Passwort-Reset 3 pro
-  Minute, sonst 100 pro Minute.
+  Minute, sonst 100 pro Minute. „Problem melden“ ist unabhängig davon in der Datenbank begrenzt:
+  höchstens 5 Meldungen je Person in einer rollierenden Stunde (`RATE_LIMITED`).
 - **Rechteprüfung** siehe `berechtigungskonzept.md`.
 
 ## 5. Mehrsprachigkeit (i18n)
@@ -194,9 +256,10 @@ sequenceDiagram
 - **Deduplizierung:** Existiert für dieselbe Person und denselben Schlüssel (z. B. `page_updated:<id>`)
   eine ungelesene Meldung, wird sie aufgefrischt (Zeitpunkt, Parameter) statt verdoppelt. Ein partieller
   Unique-Index sichert das in der Datenbank ab.
-- **Auslöser:** neuer Planschritt (`step_added`), veröffentlichte Planseite geändert (`page_updated`),
-  Veranstaltung angekündigt (`event_announced`), neue Person zugeordnet (`employee_assigned`),
-  Onboarding abgeschlossen (`onboarding_completed`).
+- **Auslöser:** neuer Planschritt (`step_added`), veröffentlichte Planseite geändert (`page_updated`,
+  gleich ob Admin oder Teamleitung gespeichert hat), Veranstaltung angekündigt (`event_announced`), neue
+  Person zugeordnet (`employee_assigned`), Onboarding abgeschlossen (`onboarding_completed`) und seit
+  v1.1 Meldung erledigt (`feedback_resolved`, an die meldende Person, mit Antwortnotiz).
 - **Kein Echtzeitkanal** (kein WebSocket / SSE) und **keine E-Mail-Benachrichtigung** in v1.
 - **Aufbewahrung:** 90 Tage. Ältere Zeilen werden beim Lesen der eigenen Liste gelöscht; ein Cronjob ist
   nicht nötig.
@@ -206,8 +269,8 @@ sequenceDiagram
 
 ```mermaid
 flowchart LR
-    E["Editor (Admin)"] -- "POST /api/uploads<br/>multipart: file, pageId" --> R1["Route Handler<br/>withActor, Origin, 5 MB"]
-    R1 --> U["uploads.uploadImage<br/>content.manage, Magic-Byte-Prüfung"]
+    E["Editor (Admin / Teamleitung)"] -- "POST /api/uploads<br/>multipart: file, pageId" --> R1["Route Handler<br/>withActor, Origin, 5 MB"]
+    R1 --> U["uploads.uploadImage<br/>content.edit + Seite bearbeitbar, Magic-Byte-Prüfung"]
     U --> SA["StorageAdapter.put(key)"]
     SA --> D[("LocalDiskStorage<br/>UPLOAD_DIR / Volume")]
     U --> DB[("Tabelle uploads")]
@@ -230,8 +293,9 @@ flowchart LR
 
 ## 8. Bearbeitungssperre (Lease)
 
-Damit zwei Admins eine Seite nicht gleichzeitig überschreiben, gibt es eine Sperre je Seite als Zeile in
-`page_edit_locks`. Es wird keine Datenbankverbindung gehalten.
+Damit zwei Bearbeitende (Admins oder seit v1.1 Teamleitungen der zuständigen Abteilung) eine Seite nicht
+gleichzeitig überschreiben, gibt es eine Sperre je Seite als Zeile in `page_edit_locks`. Es wird keine
+Datenbankverbindung gehalten.
 
 1. Beim Öffnen des Editors holt eine Server Action die Sperre mit einer einzigen atomaren
    Upsert-Anweisung. Ist sie fremd und gültig, öffnet der Editor schreibgeschützt mit Name und Uhrzeit
@@ -241,7 +305,7 @@ Damit zwei Admins eine Seite nicht gleichzeitig überschreiben, gibt es eine Spe
 3. Beim Verlassen der Seite wird die Sperre per `sendBeacon` freigegeben.
 4. Nach 15 Minuten ohne Eingabe fragt der Editor „Noch da?“. Ohne Antwort binnen 60 s wird der Stand
    lokal im Browser gesichert und die Sperre freigegeben.
-5. Ein anderer Admin kann die Bearbeitung nach Bestätigung übernehmen. Der bisherige Inhaber merkt es
+5. Eine andere berechtigte Person kann die Bearbeitung nach Bestätigung übernehmen. Der bisherige Inhaber merkt es
    beim nächsten Heartbeat oder Speichern, sein Stand wird lokal gesichert.
 6. Speichern prüft in derselben Transaktion per `SELECT … FOR UPDATE`, dass die Sperre noch gültig beim
    Speichernden liegt. Andernfalls wird abgelehnt (`LOCK_LOST`).
@@ -254,6 +318,11 @@ Zustände und Übergänge: `zustandsdiagramme.md`, Abschnitt 4.
   sperren zuerst die Benutzerzeile (`FOR UPDATE`). Bei mehreren Zeilen gilt eine feste Sperrreihenfolge
   (Seite vor Benutzern, Benutzer nach aufsteigender ID), um Deadlocks zu vermeiden.
 - Invarianten wie „mindestens ein aktiver Admin“ werden unter Sperre der Admin-Zeilen geprüft.
+- Schreibt eine Teamleitung an einer Seite, wird die Modulzeile mit `FOR SHARE` gesperrt. Hängt der Admin
+  das Modul gleichzeitig in eine andere Abteilung um, wird das serialisiert; die Rechteprüfung sieht
+  immer den Stand, mit dem auch geschrieben wird.
+- Meldungen einer Person werden über eine transaktionsgebundene Advisory-Sperre nacheinander angelegt,
+  damit parallele Anfragen das Stundenlimit nicht überschreiten.
 - Die Datenbank sichert zusätzlich ab: Unique-Constraints (E-Mail, eine Seite je Plan, eine Sperre je
   Seite), CHECK-Bedingungen (Zeitraum, Sprachvarianten, keine Selbstleitung) und Fremdschlüssel mit
   `RESTRICT`.

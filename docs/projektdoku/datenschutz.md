@@ -22,6 +22,15 @@ selbst; niemand kann Schritte für andere als erledigt markieren.
 
 Die „letzte Aktivität“ in den Übersichten ist ausschließlich der Zeitpunkt des letzten Erledigt-Vermerks.
 
+Seit v1.1 wird zusätzlich gespeichert, wann eine Person den Hinweis „Seit deinem Abschluss aktualisiert“
+selbst geschlossen hat (`page_completions.update_seen_at`). Das ist wie der Erledigt-Vermerk eine bewusste
+Handlung der Person, keine Messung des Leseverhaltens; der Zeitpunkt fließt weder in den Fortschritt noch
+in die „letzte Aktivität“ ein und wird nicht angezeigt.
+
+Auch die Funktion „Problem melden“ (seit v1.1) erhebt keine Verhaltensdaten: Gespeichert wird nur, was
+die Person selbst eingibt, und der Pfad der Seite, von der aus sie meldet (Abschnitt 2a). Browser,
+Gerät, Bildschirmgröße, Klickverlauf oder Bildschirmfotos werden nicht erfasst.
+
 ## 2. Verarbeitete personenbezogene Daten
 
 | Daten                                                      | Speicherort                                    | Zweck                                                                                     | Sichtbar für                                                     |
@@ -31,6 +40,8 @@ Die „letzte Aktivität“ in den Übersichten ist ausschließlich der Zeitpunk
 | Onboarding-Status, Abschlusszeitpunkt, Archivierungszeitpunkt | `users`                                     | Darstellung des Bearbeitungsstands, Kontoverwaltung                                       | Person, eigene Teamleitung, Admin                                |
 | Persönlicher Plan (zugewiesene Seiten, Vorlagen, wer sie zugewiesen hat) | `user_plan_steps`, `user_template_assignments` | Onboarding-Plan                                                                 | Person, eigene Teamleitung, Admin                                |
 | Erledigt-Vermerk mit Zeitpunkt                             | `page_completions`                             | Fortschritt                                                                               | Person, eigene Teamleitung, Admin                                |
+| Zeitpunkt „Hinweis auf Aktualisierung geschlossen“ (v1.1)   | `page_completions.update_seen_at`              | Hinweis nicht erneut anzeigen, bis die Seite wieder geändert wird                         | niemand als Wert; wirkt nur auf die Anzeige des Hinweises        |
+| Meldungen „Problem melden“ (v1.1): meldende Person, Art, Betreff, Beschreibung, App-Pfad, ggf. Seite, Status, Antwortnotiz, bearbeitende Person, Zeitpunkte | `feedback_reports`  | Fehler und veraltete Inhalte melden und bearbeiten                                        | Admin; Teamleitung nur für Inhaltsmeldungen zu Seiten ihrer Abteilung; die meldende Person erhält bei Erledigung eine Benachrichtigung |
 | Passwort (nur als Hash)                                    | `accounts`                                     | Anmeldung                                                                                 | niemand im Klartext                                              |
 | Einladungs-Token (nur als SHA-256-Hash), Ablauf, Annahme   | `invitations`                                  | erstmaliges Festlegen des Passworts                                                       | Admin (nur Status: ausstehend, abgelaufen, angenommen)           |
 | Sitzung: Token, Ablauf, IP-Adresse, User-Agent             | `sessions`                                     | Anmeldung aufrechterhalten, Sicherheit (siehe Abschnitt 3)                                | niemand über die Oberfläche; keine Auswertung                    |
@@ -40,6 +51,25 @@ Die „letzte Aktivität“ in den Übersichten ist ausschließlich der Zeitpunk
 
 Im Anwendungslog werden Passwörter, Tokens, Cookies, Links und Mailinhalte maskiert. Personenbezug
 besteht nur über die interne Benutzer-ID. Wie lange Container-Logs aufbewahrt werden, legt der Betrieb fest.
+
+## 2a. Meldungen („Problem melden“)
+
+- **Gespeicherte Felder:** meldende Person (Benutzer-ID), Art (Fehler in der App, Inhalt falsch oder
+  veraltet, Sonstiges), Betreff (max. 120 Zeichen), Beschreibung (max. 2000 Zeichen), der Pfad innerhalb
+  der Anwendung, von dem aus gemeldet wurde (ohne Abfrageparameter), ggf. die betroffene Seite, Status,
+  Antwortnotiz (max. 1000 Zeichen), die zuletzt bearbeitende Person sowie Zeitpunkte für Anlage,
+  Änderung und Erledigung. Die Seite wird nur verknüpft, wenn die Person sie sehen darf.
+- **Nicht gespeichert:** IP-Adresse, Browser, Gerät, Bildschirmfoto, Verlauf oder sonstige technische bzw.
+  Verhaltensdaten. Die Meldung wird im Dialog vor dem Absenden vollständig angezeigt (inkl. Pfad).
+- **Freitext:** Betreff und Beschreibung sind Freitext. Personen sollten dort keine Daten Dritter
+  eintragen; der Admin kann einzelne Meldungen jederzeit löschen.
+- **Missbrauchsschutz:** höchstens 5 Meldungen je Person in einer rollierenden Stunde. Dafür werden die
+  vorhandenen Meldungen gezählt; zusätzliche Daten werden nicht gespeichert.
+- **Benachrichtigung:** Wird eine Meldung erledigt, erhält die meldende Person eine
+  anwendungsinterne Benachrichtigung mit Betreff und ggf. Antwortnotiz (Aufbewahrung wie alle
+  Benachrichtigungen, 90 Tage). Archivierte oder gelöschte Personen erhalten keine.
+- **Keine Auswertung je Person:** Es gibt keine Statistik darüber, wer wie oft meldet. Die Liste dient
+  ausschließlich der Bearbeitung der gemeldeten Probleme.
 
 ## 3. Sitzungen: IP-Adresse und User-Agent
 
@@ -70,6 +100,7 @@ besteht nur über die interne Benutzer-ID. Wie lange Container-Logs aufbewahrt w
 | Einladungen              | Link 72 Stunden gültig, danach unbrauchbar. Zeilen bleiben als Nachweis bis zum Löschen der Person.                                                                                                                    |
 | Passwort-Reset-Tokens    | 1 Stunde gültig.                                                                                                                                                                                                       |
 | Erledigt-Vermerke        | Solange die Person existiert. Beim Entfernen eines Schritts aus dem Plan bleibt der Vermerk erhalten (er zählt wieder, wenn der Schritt zurückkommt).                                                                    |
+| Meldungen (v1.1)         | Erledigte Meldungen werden **180 Tage** nach ihrer Erledigung gelöscht, sobald jemand die Meldungsliste öffnet (ohne Cronjob). Offene und in Bearbeitung befindliche Meldungen bleiben bis zur Erledigung oder Löschung durch den Admin. Wird eine erledigte Meldung wieder geöffnet, beginnt die Frist bei erneuter Erledigung neu. |
 | Ausgeschiedene Personen  | zweistufig, siehe unten                                                                                                                                                                                                |
 
 **Ausgeschiedene Personen:**
@@ -84,6 +115,10 @@ besteht nur über die interne Benutzer-ID. Wie lange Container-Logs aufbewahrt w
    Einladungen, Plan, Vorlagenzuweisungen, Erledigt-Vermerke, eigene Benachrichtigungen sowie alle
    Benachrichtigungen anderer über diese Person. Autorverweise auf Inhalten werden auf „unbekannt“
    (`NULL`) gesetzt. Voraussetzung: Die Person leitet niemanden mehr (ggf. vorher neue Teamleitung zuweisen).
+   Von der Person verfasste **Meldungen bleiben erhalten**, weil sie ein sachliches Problem der Anwendung
+   oder eines Inhalts beschreiben; der Verweis auf die meldende bzw. bearbeitende Person wird auf `NULL`
+   gesetzt, die Meldung erscheint mit „gelöschter Benutzer“. Personenbezogene Angaben im Freitext
+   entfernt das nicht; solche Meldungen kann der Admin löschen.
 
 Die Detailseite einer archivierten Person zeigt das Archivierungsdatum und empfiehlt, die Daten nach
 **6 Monaten** endgültig zu löschen. Die Löschung erfolgt in v1 manuell durch den Admin; eine automatische
@@ -111,6 +146,8 @@ Alle Einträge dienen ausschließlich dem Betrieb der Anwendung; Tracking-Cookie
   Passworts 12 Zeichen; Begrenzung der Anmelde- und Reset-Versuche.
 - Keine Selbstregistrierung; Konten legt ausschließlich der Admin an.
 - Bilder nur über eine geschützte Route mit Rechteprüfung, keine öffentlichen URLs.
+- Meldungen sieht nur der Admin und für Inhaltsmeldungen die Teamleitung der betroffenen Abteilung;
+  Löschen nur durch den Admin; Begrenzung auf 5 Meldungen je Person und Stunde.
 - HTTP-Sicherheitsheader (CSP, `X-Frame-Options`, `Referrer-Policy` u. a.); Transportverschlüsselung über
   den vorgeschalteten HTTPS-Reverse-Proxy.
 - Daten liegen ausschließlich in der eigenen PostgreSQL-Datenbank und im eigenen Upload-Volume; Mails
@@ -125,13 +162,17 @@ Prozent, Zeitpunkt des letzten Erledigt-Vermerks). Technische Einrichtungen, die
 Verhalten oder Leistung von Beschäftigten zu überwachen, unterliegen der Mitbestimmung des Betriebsrats
 (§ 87 Abs. 1 Nr. 6 BetrVG). Die Anwendung ist deshalb bewusst datensparsam gestaltet (Abschnitt 1): Es
 werden keine Nutzungs- oder Verhaltensdaten erfasst, und der Fortschritt beruht allein auf der eigenen
-Angabe der Person.
+Angabe der Person. Auch die seit v1.1 erweiterten Funktionen ändern daran nichts: Teamleitungen erhalten
+zusätzliche Redaktionsrechte an Inhalten; an Beschäftigtendaten sehen sie zusätzlich nur den Namen der
+meldenden Person bei Inhaltsmeldungen zu Seiten ihrer Abteilung. Meldungen werden nicht je Person
+ausgewertet.
 
 Vor dem Produktivbetrieb sind durch das Unternehmen insbesondere zu klären:
 
 - Information bzw. Beteiligung des Betriebsrats (ggf. Betriebsvereinbarung)
 - Eintrag im Verzeichnis von Verarbeitungstätigkeiten (Art. 30 DSGVO) und Festlegung der Rechtsgrundlage
 - Information der Beschäftigten (Art. 13 DSGVO)
-- Löschfristen für archivierte Personen, Sitzungen, Logs und Datensicherungen
+- Löschfristen für archivierte Personen, Sitzungen, Logs und Datensicherungen; Bestätigung der
+  technisch voreingestellten Frist von 180 Tagen für erledigte Meldungen
 
 Diese Schritte sind organisatorische Aufgaben des Unternehmens und nicht Teil der technischen Umsetzung.

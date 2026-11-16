@@ -15,7 +15,7 @@ Durum: ⬜ başlamadı · 🔄 devam ediyor · ✅ bitti
 | 5 | Bildirimler ve etkinlikler | Benachrichtigungsfunktion, Veranstaltungen | ✅ |
 | 6 | Paneller ve arama | Darstellung des Bearbeitungsstandes | ✅ |
 | 7 | Bitiriş: demo veri, Docker prod, E2E, dokümantasyon girdileri | Test, Bereitstellung | ✅ |
-| 8 | v1.1: departmana bağlı roller, lider editörlüğü, Problem melden | Erweiterung / Zusatzfunktion | 🔄 |
+| 8 | v1.1: departmana bağlı roller, lider editörlüğü, Problem melden | Erweiterung / Zusatzfunktion | ✅ |
 
 ## 0. Kurulum
 - Next.js 16 + TypeScript strict + pnpm iskeleti; ESLint, Prettier.
