@@ -55,4 +55,15 @@
   body {
     @apply bg-background text-foreground;
   }
+  /* Tailwind 4 dropped the pointer cursor on buttons; restore it for every clickable control. */
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
+  [role="menuitem"]:not([data-disabled]),
+  [role="option"]:not([data-disabled]),
+  [role="tab"]:not([data-disabled]),
+  [role="checkbox"]:not(:disabled),
+  [role="switch"]:not(:disabled),
+  summary {
+    cursor: pointer;
+  }
 }
