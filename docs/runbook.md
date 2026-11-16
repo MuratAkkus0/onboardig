@@ -109,7 +109,7 @@ Schutzmechanismen:
   `tools`-Container läuft immer mit `NODE_ENV=production`; ein Zurücksetzen ist dort also nicht möglich.
   Für eine Demo-Datenbank im Entwicklungsmodus: `pnpm seed:demo --reset`.
 - Nicht auf einer Datenbank mit echten Daten einsetzen. Die Demo-Konten haben Adressen unter
-  `muster-moebel.example` und sollten vor dem Produktivbetrieb nicht existieren.
+  `demo.test` (für Tests reservierte Domain) und sollten vor dem Produktivbetrieb nicht existieren.
 
 ## 7. Echten SMTP-Server anbinden
 

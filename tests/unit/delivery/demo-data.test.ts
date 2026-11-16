@@ -81,7 +81,8 @@ describe("demo data integrity", () => {
     expect(DEMO_EVENTS.some((e) => e.startOffsetDays > 0)).toBe(true);
     expect(DEMO_EVENTS.some((e) => e.startOffsetDays < 0)).toBe(true);
     for (const email of [DEMO_ADMIN.email, ...DEMO_PEOPLE.map((p) => p.email)]) {
-      expect(email.endsWith(".example")).toBe(true);
+      // Reserved test TLDs (RFC 2606) never reach a real mailbox.
+      expect(email.endsWith(".example") || email.endsWith(".test")).toBe(true);
     }
   });
 });

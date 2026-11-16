@@ -14,9 +14,7 @@ test("an admin creates an employee and assigns a template to the plan", async ({
 
   await page.getByLabel("Vorname").fill("Erika");
   await page.getByLabel("Nachname").fill(lastName);
-  await page
-    .getByLabel("E-Mail-Adresse")
-    .fill(`erika.${lastName.toLowerCase()}@muster-moebel.example`);
+  await page.getByLabel("E-Mail-Adresse").fill(`erika.${lastName.toLowerCase()}@demo.test`);
   await choose(page, /^Rolle \*/, "Mitarbeitende");
   await choose(page, /^Team \*/, "Backend");
   await choose(page, /^Rolle im Unternehmen \*/, "Backend-Entwickler/in");

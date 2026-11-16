@@ -8,6 +8,6 @@ export const E2E_DATABASE_URL = `${SERVER}/${E2E_DB_NAME}`;
 export const E2E_PASSWORD = "E2e-Passw0rd-demo-2026";
 export const E2E_AUTH_SECRET = "e2e-secret-e2e-secret-e2e-secret-0123456789";
 
-export const ADMIN = { email: "birgit.hoffmann@muster-moebel.example", password: E2E_PASSWORD };
+export const ADMIN = { email: "birgit@demo.test", password: E2E_PASSWORD };
 /** Paul Becker: German, employee with a started plan and open steps. */
-export const EMPLOYEE = { email: "paul.becker@muster-moebel.example", password: E2E_PASSWORD };
+export const EMPLOYEE = { email: "paul@demo.test", password: E2E_PASSWORD };

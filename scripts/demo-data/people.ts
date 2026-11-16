@@ -1,12 +1,13 @@
 import type { DemoPerson } from "./types";
 
-const DOMAIN = "muster-moebel.example";
+/** Reserved `.test` TLD (RFC 2606): short demo addresses that can never reach a real mailbox. */
+const DOMAIN = "demo.test";
 
 /** The demo admin is created first (bootstrap); everybody else is created through it. */
 export const DEMO_ADMIN = {
   firstName: "Birgit",
   lastName: "Hoffmann",
-  email: `birgit.hoffmann@${DOMAIN}`,
+  email: `birgit@${DOMAIN}`,
 } as const;
 
 export const DEMO_PEOPLE: DemoPerson[] = [
@@ -15,7 +16,7 @@ export const DEMO_PEOPLE: DemoPerson[] = [
     role: "team_lead",
     firstName: "Jonas",
     lastName: "Keller",
-    email: `jonas.keller@${DOMAIN}`,
+    email: `jonas@${DOMAIN}`,
     locale: "de",
     teamKey: "backend",
     jobRoleKey: "eng-lead",
@@ -30,7 +31,7 @@ export const DEMO_PEOPLE: DemoPerson[] = [
     role: "team_lead",
     firstName: "Sabine",
     lastName: "Lehmann",
-    email: `sabine.lehmann@${DOMAIN}`,
+    email: `sabine@${DOMAIN}`,
     locale: "en",
     teamKey: "people",
     jobRoleKey: "hr-lead",
@@ -45,7 +46,7 @@ export const DEMO_PEOPLE: DemoPerson[] = [
     role: "employee",
     firstName: "Lena",
     lastName: "Fischer",
-    email: `lena.fischer@${DOMAIN}`,
+    email: `lena@${DOMAIN}`,
     locale: "de",
     teamKey: "frontend",
     jobRoleKey: "frontend-dev",
@@ -60,7 +61,7 @@ export const DEMO_PEOPLE: DemoPerson[] = [
     role: "employee",
     firstName: "Tim",
     lastName: "Wagner",
-    email: `tim.wagner@${DOMAIN}`,
+    email: `tim@${DOMAIN}`,
     locale: "en",
     teamKey: "backend",
     jobRoleKey: "backend-dev",
@@ -75,7 +76,7 @@ export const DEMO_PEOPLE: DemoPerson[] = [
     role: "employee",
     firstName: "Paul",
     lastName: "Becker",
-    email: `paul.becker@${DOMAIN}`,
+    email: `paul@${DOMAIN}`,
     locale: "de",
     teamKey: "backend",
     jobRoleKey: "backend-dev",
@@ -90,7 +91,7 @@ export const DEMO_PEOPLE: DemoPerson[] = [
     role: "employee",
     firstName: "Mia",
     lastName: "Schneider",
-    email: `mia.schneider@${DOMAIN}`,
+    email: `mia@${DOMAIN}`,
     locale: "de",
     teamKey: "brand",
     jobRoleKey: "marketing-manager",
@@ -105,7 +106,7 @@ export const DEMO_PEOPLE: DemoPerson[] = [
     role: "employee",
     firstName: "Clara",
     lastName: "Neumann",
-    email: `clara.neumann@${DOMAIN}`,
+    email: `clara@${DOMAIN}`,
     locale: "de",
     teamKey: "people",
     jobRoleKey: "hr-generalist",
