@@ -123,6 +123,13 @@ export const ROUTES = {
   adminReports: "/admin/reports",
 } as const;
 
+/** Where the page view's "Back" leads when the page was opened directly (no in-app history). */
+export const PAGE_BACK_FALLBACK = {
+  employee: ROUTES.plan,
+  team_lead: ROUTES.library,
+  admin: ROUTES.adminLibrary,
+} as const;
+
 export const ROUTE_ACCESS = [
   { prefix: "/admin", roles: ["admin"] },
   { prefix: "/team", roles: ["team_lead", "admin"] },

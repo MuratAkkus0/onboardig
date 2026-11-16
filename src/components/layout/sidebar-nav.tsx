@@ -79,7 +79,7 @@ export function SidebarNav({ items, className, onNavigate }: SidebarNavProps) {
         ) : null}
       </nav>
       <div className="border-t pt-4">
-        <ReportProblemDialog />
+        <ReportProblemDialog onSubmitted={onNavigate} />
       </div>
     </div>
   );

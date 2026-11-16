@@ -39,7 +39,8 @@ export function defaultTypeFor(pathname: string): FeedbackType {
 }
 
 /** Sidebar button + dialog for "Problem melden" (all roles). */
-export function ReportProblemDialog() {
+/** `onSubmitted` lets the mobile navigation sheet close itself after a report was sent. */
+export function ReportProblemDialog({ onSubmitted }: { onSubmitted?: () => void } = {}) {
   const t = useTranslations("feedback");
   const tEnums = useTranslations("enums");
   const message = useMessage();
@@ -75,6 +76,7 @@ export function ReportProblemDialog() {
         setSubject("");
         setBody("");
         setOpen(false);
+        onSubmitted?.();
         return;
       }
       if (result.error.fieldErrors) setFieldErrors(result.error.fieldErrors);

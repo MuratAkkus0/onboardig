@@ -9,9 +9,8 @@ import { PageHeader } from "@/components/common/page-header";
 import { StatusBadge } from "@/components/common/status-badge";
 import { PlanStepActions } from "@/components/plan/plan-step-actions";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { ROUTES } from "@/config/app";
+import { PAGE_BACK_FALLBACK } from "@/config/app";
 import { requirePageActor } from "@/server/auth/guards";
-import type { Role } from "@/server/auth/types";
 import { isAppError } from "@/server/errors";
 import { getPageForView } from "@/server/services/pages";
 
@@ -25,13 +24,6 @@ const loadPage = cache(async (pageId: string) => {
     throw e;
   }
 });
-
-/** Where "Back" leads when the page was opened directly: the place pages are usually opened from. */
-const BACK_FALLBACK: Record<Role, string> = {
-  employee: ROUTES.plan,
-  team_lead: ROUTES.library,
-  admin: ROUTES.adminLibrary,
-};
 
 export async function generateMetadata({
   params,
@@ -52,7 +44,7 @@ export default async function Page({ params }: PageProps<"/pages/[pageId]">) {
   return (
     <article className="mx-auto max-w-3xl">
       <div className="mb-2">
-        <BackButton fallbackHref={BACK_FALLBACK[actor.role]} />
+        <BackButton fallbackHref={PAGE_BACK_FALLBACK[actor.role]} />
       </div>
       <PageHeader
         title={page.title}
