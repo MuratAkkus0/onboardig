@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { NONE_VALUE, type TemplateFormState } from "@/components/templates/types";
 import { ROUTES } from "@/config/app";
+import { areaOf, areaRoutes } from "@/lib/area-routes";
 import type { ActionResult } from "@/lib/action-result";
 import type {
   AddTemplateStepInput,
@@ -58,6 +59,7 @@ function readForm(formData: FormData): {
 /** Lists, the detail pages and the plan assignment dialogs all read template data. */
 function revalidateTemplates() {
   revalidatePath(ROUTES.adminTemplates, "layout");
+  revalidatePath(ROUTES.templates, "layout");
 }
 
 export async function createTemplateAction(
@@ -65,10 +67,14 @@ export async function createTemplateAction(
   formData: FormData,
 ): Promise<TemplateFormState> {
   const { values, input } = readForm(formData);
-  const result = await runAction((actor) => createTemplate(actor, input));
+  // Shared by the admin and the lead form: the service enforces what each role may create.
+  const result = await runAction(async (actor) => {
+    const created = await createTemplate(actor, input);
+    return { id: created.id, area: areaOf(actor.role) };
+  });
   if (result.ok) {
     revalidateTemplates();
-    redirect(ROUTES.adminTemplate(result.data.id));
+    redirect(areaRoutes(result.data.area).template(result.data.id));
   }
   return { result: result.ok ? { ok: true, data: undefined } : result, values };
 }

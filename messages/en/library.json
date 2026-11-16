@@ -29,7 +29,14 @@
     "delete": "Delete module",
     "deleteTitle": "Delete module?",
     "deleteDescription": "The module \"{name}\" will be deleted. This is only possible while it contains no pages.",
-    "addPage": "Add page"
+    "addPage": "Add page",
+    "department": "Department",
+    "departmentNone": "Company-wide",
+    "departmentHint": "“Company-wide” means the module belongs to no department and only admins can edit it.",
+    "owner": "Owner: {name}",
+    "companyWide": "Company-wide",
+    "readOnly": "Read only",
+    "noPublishedPages": "No published pages in this module."
   },
   "page": {
     "createTitle": "Add page",
@@ -94,5 +101,10 @@
     "description": "All published pages for reference.",
     "emptyTitle": "No published pages yet",
     "emptyDescription": "Once pages are published you will find them here."
+  },
+  "lead": {
+    "title": "Library",
+    "description": "Edit the modules and pages of your department here. All other modules are read-only.",
+    "emptyDescription": "There are no modules or pages yet."
   }
 }

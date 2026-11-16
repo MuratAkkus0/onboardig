@@ -34,6 +34,13 @@ describe("permissions", () => {
     }
   });
 
+  it("keeps hard-delete style operations admin-only while leads may edit content and templates", () => {
+    expect(PERMISSIONS["content.manage"]).toEqual(["admin"]);
+    expect(PERMISSIONS["templates.manage"]).toEqual(["admin"]);
+    expect(PERMISSIONS["content.edit"]).toEqual(["team_lead", "admin"]);
+    expect(PERMISSIONS["templates.edit"]).toEqual(["team_lead", "admin"]);
+  });
+
   it("throws FORBIDDEN when a permission is missing", () => {
     expect(() => assertPermission(actor("employee"), "org.manage")).toThrow(AppError);
     expect(() => assertPermission(actor("admin"), "org.manage")).not.toThrow();
@@ -67,6 +74,10 @@ describe("canAccessRoute", () => {
     expect(canAccessRoute("employee", "/team")).toBe(false);
     expect(canAccessRoute("team_lead", "/library")).toBe(true);
     expect(canAccessRoute("employee", "/library")).toBe(false);
+    expect(canAccessRoute("team_lead", "/templates")).toBe(true);
+    expect(canAccessRoute("team_lead", "/templates/new")).toBe(true);
+    expect(canAccessRoute("admin", "/templates")).toBe(true);
+    expect(canAccessRoute("employee", "/templates")).toBe(false);
   });
 
   it("leaves other routes open and does not match on partial prefixes", () => {

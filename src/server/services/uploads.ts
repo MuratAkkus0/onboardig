@@ -8,10 +8,11 @@ import { idInputSchema, uploadImageSchema } from "@/lib/validation/content";
 import { assertPermission } from "@/server/auth/permissions";
 import type { Actor } from "@/server/auth/types";
 import { db } from "@/server/db/client";
-import { pages, uploads } from "@/server/db/schema";
+import { uploads } from "@/server/db/schema";
 import { AppError, pgErrorCode, PG_ERROR } from "@/server/errors";
 import { logger } from "@/server/logger";
 import { getStorage } from "@/server/storage";
+import { assertCanEditPageInTx } from "./content-access";
 import { canViewPageInTx } from "./visibility";
 
 type AllowedMime = (typeof APP_CONFIG.uploads.allowedMimeTypes)[number];
@@ -41,7 +42,7 @@ export async function uploadImage(
   actor: Actor,
   input: { pageId: string; fileName: string; bytes: Uint8Array },
 ): Promise<{ id: string; url: string }> {
-  assertPermission(actor, "content.manage");
+  assertPermission(actor, "content.edit");
   const data = uploadImageSchema.parse(input);
   if (data.bytes.byteLength > APP_CONFIG.uploads.maxBytes) throw new AppError("FILE_TOO_LARGE");
   if (data.bytes.byteLength === 0) throw new AppError("FILE_TYPE_NOT_ALLOWED");
@@ -49,24 +50,28 @@ export async function uploadImage(
   const detected = await fileTypeFromBuffer(data.bytes);
   if (!detected || !isAllowedMime(detected.mime)) throw new AppError("FILE_TYPE_NOT_ALLOWED");
 
-  const [page] = await db.select({ id: pages.id }).from(pages).where(eq(pages.id, data.pageId));
-  if (!page) throw new AppError("NOT_FOUND");
+  // Fail before storing a file; the check is repeated in the insert transaction below.
+  await db.transaction((tx) => assertCanEditPageInTx(tx, actor, data.pageId));
 
   const storage = getStorage();
   const storageKey = storageKeyFor(detected.mime, new Date());
   await storage.put(storageKey, data.bytes);
   try {
-    const [row] = await db
-      .insert(uploads)
-      .values({
-        pageId: data.pageId,
-        storageKey,
-        originalName: sanitizeFileName(data.fileName),
-        mimeType: detected.mime,
-        sizeBytes: data.bytes.byteLength,
-        uploadedBy: actor.id,
-      })
-      .returning({ id: uploads.id });
+    const row = await db.transaction(async (tx) => {
+      await assertCanEditPageInTx(tx, actor, data.pageId);
+      const [inserted] = await tx
+        .insert(uploads)
+        .values({
+          pageId: data.pageId,
+          storageKey,
+          originalName: sanitizeFileName(data.fileName),
+          mimeType: detected.mime,
+          sizeBytes: data.bytes.byteLength,
+          uploadedBy: actor.id,
+        })
+        .returning({ id: uploads.id });
+      return inserted;
+    });
     if (!row) throw new AppError("INTERNAL");
     return { id: row.id, url: uploadUrl(row.id) };
   } catch (e) {
@@ -92,7 +97,7 @@ export interface ServedImage {
 
 /**
  * Admins may read every upload. Everybody else needs to be allowed to see the page the image
- * belongs to (`visibility.ts`); uploads without a page and hidden pages answer NOT_FOUND.
+ * belongs to (`visibility.ts`; archived pages count for the leads of their department); uploads without a page and hidden pages answer NOT_FOUND.
  */
 export async function getImageForServing(
   actor: Actor,
@@ -104,7 +109,7 @@ export async function getImageForServing(
     if (!row) return null;
     if (actor.role === "admin") return row;
     if (row.pageId === null) return null;
-    return (await canViewPageInTx(tx, actor, row.pageId)) ? row : null;
+    return (await canViewPageInTx(tx, actor, row.pageId, { includeArchived: true })) ? row : null;
   });
   if (!upload) throw new AppError("NOT_FOUND");
   const stored = await getStorage().get(upload.storageKey);

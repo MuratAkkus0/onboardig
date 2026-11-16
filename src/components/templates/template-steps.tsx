@@ -40,10 +40,12 @@ interface TemplateStepsProps {
   phases: TemplateDetail["phases"];
   /** Library pages that may be added (the dialog hides the ones already in the template). */
   pages: PickerPage[];
+  /** False renders the steps read-only (no add, move, phase change or remove). Default true. */
+  canManage?: boolean;
 }
 
 /** Steps of a template grouped by phase with add, remove, up/down and phase change. */
-export function TemplateSteps({ templateId, phases, pages }: TemplateStepsProps) {
+export function TemplateSteps({ templateId, phases, pages, canManage = true }: TemplateStepsProps) {
   const t = useTranslations("templates");
   const tPhase = useTranslations("enums.phase");
   const usedPageIds = new Set(phases.flatMap((entry) => entry.steps.map((step) => step.pageId)));
@@ -58,7 +60,7 @@ export function TemplateSteps({ templateId, phases, pages }: TemplateStepsProps)
           </h2>
           <p className="text-sm text-muted-foreground">{t("detail.stepsDescription")}</p>
         </div>
-        <AddStepDialog templateId={templateId} pages={addable} />
+        {canManage ? <AddStepDialog templateId={templateId} pages={addable} /> : null}
       </div>
       <div className="grid gap-4 lg:grid-cols-2">
         {phases.map(({ phase, steps }) => (
@@ -78,6 +80,7 @@ export function TemplateSteps({ templateId, phases, pages }: TemplateStepsProps)
                       phase={phase}
                       isFirst={index === 0}
                       isLast={index === steps.length - 1}
+                      canManage={canManage}
                     />
                   ))}
                 </ol>
@@ -95,7 +98,9 @@ function StepRow({
   phase,
   isFirst,
   isLast,
+  canManage,
 }: {
+  canManage: boolean;
   step: TemplateStepDto;
   phase: Phase;
   isFirst: boolean;
@@ -105,6 +110,9 @@ function StepRow({
   const tPhase = useTranslations("enums.phase");
   const run = useActionFeedback();
   const [pending, startTransition] = useTransition();
+  // null: the viewer may not see this page, only its status.
+  const hidden = step.title === null;
+  const title = step.title ?? t("steps.hidden");
 
   function act(action: () => ReturnType<typeof moveTemplateStepAction>, success?: string) {
     startTransition(async () => {
@@ -115,8 +123,14 @@ function StepRow({
   return (
     <li className="flex flex-col gap-2 p-3 sm:flex-row sm:items-center sm:justify-between">
       <div className="min-w-0 space-y-1">
-        <p className="font-medium break-words">{step.title}</p>
-        <p className="text-sm break-words text-muted-foreground">{step.moduleTitle}</p>
+        <p className={hidden ? "font-medium break-words italic" : "font-medium break-words"}>
+          {title}
+        </p>
+        {hidden ? (
+          <p className="text-sm break-words text-muted-foreground">{t("steps.hiddenHint")}</p>
+        ) : (
+          <p className="text-sm break-words text-muted-foreground">{step.moduleTitle}</p>
+        )}
         {step.pageStatus !== "published" ? (
           <p className="flex items-center gap-2 text-xs text-muted-foreground">
             <Badge variant="outline">
@@ -126,65 +140,65 @@ function StepRow({
           </p>
         ) : null}
       </div>
-      <div className="flex shrink-0 items-center gap-1">
-        <Select
-          value={phase}
-          disabled={pending}
-          onValueChange={(next) =>
-            act(() => changeTemplateStepPhaseAction({ stepId: step.id, phase: next as Phase }))
-          }
-        >
-          <SelectTrigger
-            size="sm"
-            aria-label={t("steps.phaseLabel", { title: step.title })}
-            className="w-36"
+      {canManage ? (
+        <div className="flex shrink-0 items-center gap-1">
+          <Select
+            value={phase}
+            disabled={pending}
+            onValueChange={(next) =>
+              act(() => changeTemplateStepPhaseAction({ stepId: step.id, phase: next as Phase }))
+            }
           >
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {PHASES.map((value) => (
-              <SelectItem key={value} value={value}>
-                {tPhase(value)}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon-sm"
-          disabled={pending || isFirst}
-          aria-label={t("steps.moveUp", { title: step.title })}
-          title={t("steps.moveUp", { title: step.title })}
-          onClick={() => act(() => moveTemplateStepAction({ stepId: step.id, direction: "up" }))}
-        >
-          <ArrowUp aria-hidden="true" />
-        </Button>
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon-sm"
-          disabled={pending || isLast}
-          aria-label={t("steps.moveDown", { title: step.title })}
-          title={t("steps.moveDown", { title: step.title })}
-          onClick={() => act(() => moveTemplateStepAction({ stepId: step.id, direction: "down" }))}
-        >
-          <ArrowDown aria-hidden="true" />
-        </Button>
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon-sm"
-          disabled={pending}
-          aria-label={t("steps.remove", { title: step.title })}
-          title={t("steps.remove", { title: step.title })}
-          onClick={() =>
-            act(() => removeTemplateStepAction({ stepId: step.id }), t("toast.stepRemoved"))
-          }
-        >
-          <Trash2 aria-hidden="true" />
-        </Button>
-      </div>
+            <SelectTrigger size="sm" aria-label={t("steps.phaseLabel", { title })} className="w-36">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {PHASES.map((value) => (
+                <SelectItem key={value} value={value}>
+                  {tPhase(value)}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon-sm"
+            disabled={pending || isFirst}
+            aria-label={t("steps.moveUp", { title })}
+            title={t("steps.moveUp", { title })}
+            onClick={() => act(() => moveTemplateStepAction({ stepId: step.id, direction: "up" }))}
+          >
+            <ArrowUp aria-hidden="true" />
+          </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon-sm"
+            disabled={pending || isLast}
+            aria-label={t("steps.moveDown", { title })}
+            title={t("steps.moveDown", { title })}
+            onClick={() =>
+              act(() => moveTemplateStepAction({ stepId: step.id, direction: "down" }))
+            }
+          >
+            <ArrowDown aria-hidden="true" />
+          </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon-sm"
+            disabled={pending}
+            aria-label={t("steps.remove", { title })}
+            title={t("steps.remove", { title })}
+            onClick={() =>
+              act(() => removeTemplateStepAction({ stepId: step.id }), t("toast.stepRemoved"))
+            }
+          >
+            <Trash2 aria-hidden="true" />
+          </Button>
+        </div>
+      ) : null}
     </li>
   );
 }

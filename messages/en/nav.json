@@ -22,7 +22,9 @@
   "adminTemplate": "Edit template",
   "adminEventNew": "Create event",
   "adminEvent": "Edit event",
-  "sections": { "admin": "Administration" },
+  "sections": {
+    "admin": "Administration"
+  },
   "menu": {
     "open": "Open navigation",
     "title": "Navigation",
@@ -38,5 +40,6 @@
     "theme": "Theme",
     "language": "Language",
     "signOut": "Sign out"
-  }
+  },
+  "templates": "Templates"
 }

@@ -27,7 +27,8 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ROUTES, W1_CONTENT_CONFIG } from "@/config/app";
+import { W1_CONTENT_CONFIG } from "@/config/app";
+import { areaRoutes, type Area } from "@/lib/area-routes";
 import {
   clearLocalDraft,
   loadLocalDraft,
@@ -49,7 +50,8 @@ interface Snapshot {
   contentEn: JSONContent;
 }
 
-export function PageEditor({ page }: { page: EditablePage }) {
+export function PageEditor({ page, area = "admin" }: { page: EditablePage; area?: Area }) {
+  const libraryHref = areaRoutes(area).library;
   const t = useTranslations("editor");
   const message = useMessage();
   const format = useFormatter();
@@ -138,7 +140,7 @@ export function PageEditor({ page }: { page: EditablePage }) {
         setSaved({ at: result.data.lastEditedAt.toISOString(), by: result.data.lastEditedByName });
         if (close) {
           lock.release();
-          router.push(ROUTES.adminLibrary);
+          router.push(libraryHref);
         } else {
           toast.success(t("status.saved"));
         }
@@ -186,7 +188,7 @@ export function PageEditor({ page }: { page: EditablePage }) {
           <>
             <StatusBadge kind="pageStatus" value={page.status} />
             <Button variant="outline" asChild>
-              <Link href={ROUTES.adminLibrary}>
+              <Link href={libraryHref}>
                 <ArrowLeft />
                 {t("backToLibrary")}
               </Link>

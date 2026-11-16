@@ -10,6 +10,7 @@ import { ModuleDialog } from "@/components/content/module-dialog";
 import { Button } from "@/components/ui/button";
 import { PAGE_STATUSES, ROUTES } from "@/config/app";
 import { requirePageRole } from "@/server/auth/guards";
+import { listOrgOptions } from "@/server/services/org";
 import { listLibrary } from "@/server/services/pages";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -23,7 +24,10 @@ export default async function Page({ searchParams }: PageProps<"/admin/library">
   const enums = await getTranslations("enums.pageStatus");
   const parsed = z.enum(PAGE_STATUSES).safeParse((await searchParams).status);
   const status = parsed.success ? parsed.data : undefined;
-  const modules = await listLibrary(actor, status ? { status } : {});
+  const [modules, options] = await Promise.all([
+    listLibrary(actor, status ? { status } : {}),
+    listOrgOptions(actor),
+  ]);
 
   return (
     <>
@@ -32,6 +36,7 @@ export default async function Page({ searchParams }: PageProps<"/admin/library">
         description={t("admin.description")}
         actions={
           <ModuleDialog
+            departments={options.departments}
             trigger={
               <Button>
                 <Plus />
@@ -66,7 +71,11 @@ export default async function Page({ searchParams }: PageProps<"/admin/library">
       {modules.length === 0 ? (
         <EmptyState title={t("admin.emptyTitle")} description={t("admin.emptyDescription")} />
       ) : (
-        <AdminLibrary modules={modules} filtered={status !== undefined} />
+        <AdminLibrary
+          modules={modules}
+          filtered={status !== undefined}
+          departments={options.departments}
+        />
       )}
     </>
   );

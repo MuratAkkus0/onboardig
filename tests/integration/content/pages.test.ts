@@ -27,7 +27,6 @@ import {
   createModule,
   createPage as makePage,
   createTemplate,
-  createUser,
 } from "../../factories";
 import { actorOf, doc, expireLock, minutesAgo, testDb } from "../../helpers";
 import { adminActor, PNG_BYTES } from "./fixtures";
@@ -136,13 +135,11 @@ describe("page state machine", () => {
     ]);
   });
 
-  it("is admin only", async () => {
+  it("is closed to employees", async () => {
     const page = await makePage();
-    for (const user of [await createEmployee(), await createLead()]) {
-      await expect(
-        changePageStatus(actorOf(user), { id: page.id, action: "publish" }),
-      ).rejects.toMatchObject({ code: "FORBIDDEN" });
-    }
+    await expect(
+      changePageStatus(actorOf(await createEmployee()), { id: page.id, action: "publish" }),
+    ).rejects.toMatchObject({ code: "FORBIDDEN" });
   });
 });
 
@@ -390,13 +387,11 @@ describe("savePageContent", () => {
     });
   });
 
-  it("is admin only", async () => {
+  it("is closed to employees", async () => {
     const page = await makePage();
-    for (const user of [await createEmployee(), await createLead()]) {
-      await expect(savePageContent(actorOf(user), input(page.id))).rejects.toMatchObject({
-        code: "FORBIDDEN",
-      });
-    }
+    await expect(
+      savePageContent(actorOf(await createEmployee()), input(page.id)),
+    ).rejects.toMatchObject({ code: "FORBIDDEN" });
   });
 });
 
@@ -628,10 +623,10 @@ describe("delete or archive", () => {
       await expect(deletePage(actorOf(user), { id: page.id })).rejects.toMatchObject({
         code: "FORBIDDEN",
       });
-      await expect(getPageDeletionImpact(actorOf(user), { id: page.id })).rejects.toMatchObject({
-        code: "FORBIDDEN",
-      });
     }
+    await expect(
+      getPageDeletionImpact(actorOf(await createEmployee()), { id: page.id }),
+    ).rejects.toMatchObject({ code: "FORBIDDEN" });
   });
 });
 
@@ -804,9 +799,9 @@ describe("listLibrary and listPagesForPicker", () => {
 });
 
 describe("authorization of reads", () => {
-  it("getPageForEdit is admin only", async () => {
+  it("getPageForEdit and createPage are closed to employees", async () => {
     const page = await makePage();
-    const user = await createUser({ role: "team_lead" });
+    const user = await createEmployee();
     await expect(getPageForEdit(actorOf(user), { id: page.id })).rejects.toMatchObject({
       code: "FORBIDDEN",
     });

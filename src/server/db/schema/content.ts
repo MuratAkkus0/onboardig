@@ -10,6 +10,7 @@ import {
   type TiptapDoc,
 } from "./custom-types";
 import { pageStatusEnum } from "./enums";
+import { departments } from "./org";
 
 export const modules = pgTable(
   "modules",
@@ -17,11 +18,16 @@ export const modules = pgTable(
     id: primaryUuid(),
     titleDe: text("title_de").notNull(),
     titleEn: text("title_en"),
+    /** Owner department; NULL = company-wide (admin only). */
+    departmentId: uuid("department_id").references(() => departments.id, { onDelete: "restrict" }),
     sortOrder: integer("sort_order").notNull().default(0),
     createdAt: createdAt(),
     updatedAt: updatedAt(),
   },
-  (t) => [index("modules_sort_idx").on(t.sortOrder)],
+  (t) => [
+    index("modules_sort_idx").on(t.sortOrder),
+    index("modules_department_id_idx").on(t.departmentId),
+  ],
 );
 
 export const pages = pgTable(

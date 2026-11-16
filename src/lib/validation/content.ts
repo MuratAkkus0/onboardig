@@ -16,7 +16,15 @@ export const pageActionSchema = z.enum(["publish", "unpublish", "archive", "rest
 
 export const idInputSchema = z.object({ id: idSchema });
 
-export const createModuleSchema = z.object({ titleDe: requiredTitle, titleEn: optionalTitle });
+/**
+ * `departmentId`: owner department of the module. On create `undefined`/`null` = company-wide
+ * (admins) or the lead's own department; on update `undefined` = unchanged, `null` = company-wide.
+ */
+export const createModuleSchema = z.object({
+  titleDe: requiredTitle,
+  titleEn: optionalTitle,
+  departmentId: idSchema.nullish(),
+});
 export const updateModuleSchema = createModuleSchema.extend({ id: idSchema });
 export const moveSchema = z.object({ id: idSchema, direction: directionSchema });
 

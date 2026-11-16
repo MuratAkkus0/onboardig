@@ -20,7 +20,7 @@ import { roleFitsDepartment } from "@/lib/domain/job-role-fit";
 import { assertPermission } from "@/server/auth/permissions";
 import type { Actor } from "@/server/auth/types";
 import { db, type DbExecutor, type Tx } from "@/server/db/client";
-import { departments, jobRoles, teams, templates, users } from "@/server/db/schema";
+import { departments, jobRoles, modules, teams, templates, users } from "@/server/db/schema";
 import { AppError, PG_ERROR, pgErrorCode, rethrowDbError } from "@/server/errors";
 import { logger } from "@/server/logger";
 
@@ -67,6 +67,8 @@ export interface TeamUsage {
 export interface DepartmentUsage extends TeamUsage {
   /** Job roles bound to the department; they count as usage. */
   jobRoles: OrgEntry[];
+  /** Library modules owned by the department; they count as usage. */
+  modules: OrgEntry[];
   /** Teams of the department that no user and no template references. */
   emptyTeams: OrgEntry[];
 }
@@ -137,20 +139,26 @@ async function departmentUsageInTx(
     .where(eq(teams.departmentId, departmentId))
     .orderBy(asc(teams.name), asc(teams.id));
   const teamIds = departmentTeams.map((team) => team.id);
-  const [departmentUsers, departmentTemplates, departmentRoles] = await Promise.all([
-    usersOfTeams(executor, teamIds),
-    templatesWhere(
-      executor,
-      teamIds.length > 0
-        ? or(eq(templates.departmentId, departmentId), inArray(templates.teamId, teamIds))
-        : eq(templates.departmentId, departmentId),
-    ),
-    executor
-      .select({ id: jobRoles.id, name: jobRoles.name })
-      .from(jobRoles)
-      .where(eq(jobRoles.departmentId, departmentId))
-      .orderBy(asc(jobRoles.name), asc(jobRoles.id)),
-  ]);
+  const [departmentUsers, departmentTemplates, departmentRoles, departmentModules] =
+    await Promise.all([
+      usersOfTeams(executor, teamIds),
+      templatesWhere(
+        executor,
+        teamIds.length > 0
+          ? or(eq(templates.departmentId, departmentId), inArray(templates.teamId, teamIds))
+          : eq(templates.departmentId, departmentId),
+      ),
+      executor
+        .select({ id: jobRoles.id, name: jobRoles.name })
+        .from(jobRoles)
+        .where(eq(jobRoles.departmentId, departmentId))
+        .orderBy(asc(jobRoles.name), asc(jobRoles.id)),
+      executor
+        .select({ id: modules.id, name: modules.titleDe })
+        .from(modules)
+        .where(eq(modules.departmentId, departmentId))
+        .orderBy(asc(modules.titleDe), asc(modules.id)),
+    ]);
   const referencedTeamIds = new Set<string>();
   if (teamIds.length > 0) {
     const [userTeams, templateTeams] = await Promise.all([
@@ -169,10 +177,14 @@ async function departmentUsageInTx(
   }
   return {
     used:
-      departmentUsers.length > 0 || departmentTemplates.length > 0 || departmentRoles.length > 0,
+      departmentUsers.length > 0 ||
+      departmentTemplates.length > 0 ||
+      departmentRoles.length > 0 ||
+      departmentModules.length > 0,
     users: departmentUsers,
     templates: departmentTemplates,
     jobRoles: departmentRoles,
+    modules: departmentModules,
     emptyTeams: departmentTeams.filter((team) => !referencedTeamIds.has(team.id)),
   };
 }
@@ -197,7 +209,7 @@ function inUse(usage: TeamUsage | DepartmentUsage): AppError {
   return new AppError("IN_USE", {
     users: usage.users,
     templates: usage.templates,
-    ...("jobRoles" in usage ? { jobRoles: usage.jobRoles } : {}),
+    ...("jobRoles" in usage ? { jobRoles: usage.jobRoles, modules: usage.modules } : {}),
   });
 }
 

@@ -48,7 +48,7 @@ describe("route map", () => {
   });
 
   it("guards the restricted route groups with a layout", () => {
-    for (const group of ["team", "library", "admin"]) {
+    for (const group of ["team", "library", "templates", "admin"]) {
       expect(existsSync(path.join(APP_DIR, "(app)", group, "layout.tsx")), group).toBe(true);
     }
   });

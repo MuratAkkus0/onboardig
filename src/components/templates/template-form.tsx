@@ -18,7 +18,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { ROUTES, W2_TEMPLATES_CONFIG } from "@/config/app";
+import { W2_TEMPLATES_CONFIG } from "@/config/app";
+import { areaRoutes, type Area } from "@/lib/area-routes";
 import { filterRolesForDepartment, keepFittingRoleId } from "@/lib/domain/job-role-fit";
 import { ALL_DEPARTMENTS } from "@/lib/validation/templates";
 import type { OrgOptions } from "@/server/services/org";
@@ -35,15 +36,28 @@ interface TemplateFormProps {
   mode: "create" | "edit";
   /** Initial values (edit) as strings; `departmentId` is "all" for company-wide templates. */
   initial?: Record<string, string>;
+  /**
+   * "lead": the department is fixed to the single department in `options` (the service already
+   * scoped them) and there is no company-wide choice.
+   */
+  area?: Area;
 }
 
 const { nameMaxLength, descriptionMaxLength } = W2_TEMPLATES_CONFIG;
 
 /** Create / edit form for a template. The department has no preselection and is required. */
-export function TemplateForm({ action, options, mode, initial = {} }: TemplateFormProps) {
+export function TemplateForm({
+  action,
+  options,
+  mode,
+  initial = {},
+  area = "admin",
+}: TemplateFormProps) {
   const message = useMessage();
   const [state, formAction] = useActionState(action, null);
-  const values = state?.values ?? initial;
+  const leadDepartmentId = area === "lead" ? (options.departments[0]?.id ?? "") : null;
+  const values =
+    state?.values ?? (leadDepartmentId ? { departmentId: leadDepartmentId, ...initial } : initial);
   const error = state && !state.result.ok ? state.result.error : null;
   const fieldError = (name: string) => {
     const key = error?.fieldErrors?.[name]?.[0];
@@ -62,6 +76,7 @@ export function TemplateForm({ action, options, mode, initial = {} }: TemplateFo
       formAction={formAction}
       options={options}
       mode={mode}
+      area={area}
       values={values}
       generalError={generalError}
       saved={Boolean(state?.result.ok)}
@@ -74,6 +89,7 @@ interface FieldsProps {
   formAction: (formData: FormData) => void;
   options: OrgOptions;
   mode: "create" | "edit";
+  area: Area;
   values: Record<string, string>;
   generalError: string | null;
   saved: boolean;
@@ -84,6 +100,7 @@ function TemplateFormFields({
   formAction,
   options,
   mode,
+  area,
   values,
   generalError,
   saved,
@@ -97,6 +114,7 @@ function TemplateFormFields({
   const roleDepartmentId =
     departmentId === "" || departmentId === ALL_DEPARTMENTS ? null : departmentId;
   const roleChoices = filterRolesForDepartment(options.jobRoles, roleDepartmentId);
+  const leadArea = area === "lead";
   const teamsAvailable = departmentId !== "" && departmentId !== ALL_DEPARTMENTS;
 
   return (
@@ -111,6 +129,7 @@ function TemplateFormFields({
           {t("saved")}
         </p>
       ) : null}
+      {leadArea ? <input type="hidden" name="departmentId" value={departmentId} /> : null}
       <Card>
         <CardContent className="space-y-4">
           <FormField label={t("name")} error={fieldError("name")}>
@@ -139,12 +158,13 @@ function TemplateFormFields({
             <FormField
               label={t("department")}
               error={fieldError("departmentId")}
-              description={t("departmentHint")}
+              description={leadArea ? t("departmentFixedHint") : t("departmentHint")}
             >
               {(control) => (
                 <Select
                   name="departmentId"
                   required
+                  disabled={leadArea}
                   value={departmentId}
                   onValueChange={(next) => {
                     setDepartmentId(next);
@@ -164,7 +184,9 @@ function TemplateFormFields({
                     <SelectValue placeholder={t("departmentPlaceholder")} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value={ALL_DEPARTMENTS}>{t("departmentAll")}</SelectItem>
+                    {leadArea ? null : (
+                      <SelectItem value={ALL_DEPARTMENTS}>{t("departmentAll")}</SelectItem>
+                    )}
                     {options.departments.map((department) => (
                       <SelectItem key={department.id} value={department.id}>
                         {department.name}
@@ -224,7 +246,7 @@ function TemplateFormFields({
         <SubmitButton>{mode === "create" ? t("create") : t("save")}</SubmitButton>
         {mode === "create" ? (
           <Button asChild variant="outline">
-            <Link href={ROUTES.adminTemplates}>{t("cancel")}</Link>
+            <Link href={areaRoutes(area).templates}>{t("cancel")}</Link>
           </Button>
         ) : null}
       </div>

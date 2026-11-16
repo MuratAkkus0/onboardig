@@ -98,6 +98,10 @@ export const ROUTES = {
   team: "/team",
   teamMember: (id: string) => `/team/${id}`,
   library: "/library",
+  pageEdit: (id: string) => `/library/pages/${id}/edit`,
+  templates: "/templates",
+  template: (id: string) => `/templates/${id}`,
+  templateNew: "/templates/new",
   admin: "/admin",
   adminUsers: "/admin/users",
   adminUser: (id: string) => `/admin/users/${id}`,
@@ -118,6 +122,7 @@ export const ROUTE_ACCESS = [
   { prefix: "/admin", roles: ["admin"] },
   { prefix: "/team", roles: ["team_lead", "admin"] },
   { prefix: "/library", roles: ["team_lead", "admin"] },
+  { prefix: "/templates", roles: ["team_lead", "admin"] },
 ] as const;
 
 export const NAVIGATION = [
@@ -141,6 +146,7 @@ export const NAVIGATION = [
   },
   { key: "team", href: ROUTES.team, icon: "users", roles: ["team_lead", "admin"] },
   { key: "library", href: ROUTES.library, icon: "book-open", roles: ["team_lead"] },
+  { key: "templates", href: ROUTES.templates, icon: "layers", roles: ["team_lead"] },
   {
     key: "adminOverview",
     href: ROUTES.admin,

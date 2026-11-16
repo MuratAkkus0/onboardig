@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { check, index, integer, pgTable, text, unique, uuid } from "drizzle-orm/pg-core";
+import { boolean, check, index, integer, pgTable, text, unique, uuid } from "drizzle-orm/pg-core";
 import { users } from "./auth";
 import { pages } from "./content";
 import { createdAt, primaryUuid, updatedAt } from "./custom-types";
@@ -16,6 +16,8 @@ export const templates = pgTable(
     teamId: uuid("team_id").references(() => teams.id, { onDelete: "restrict" }),
     jobRoleId: uuid("job_role_id").references(() => jobRoles.id, { onDelete: "restrict" }),
     status: templateStatusEnum("status").notNull().default("active"),
+    /** Created by a team lead: managed by the leads of `department_id` and by admins. */
+    leadManaged: boolean("lead_managed").notNull().default(false),
     createdBy: uuid("created_by").references(() => users.id, { onDelete: "set null" }),
     updatedBy: uuid("updated_by").references(() => users.id, { onDelete: "set null" }),
     createdAt: createdAt(),

@@ -24,6 +24,7 @@ interface Usage {
   users: OrgEntry[];
   templates: OrgEntry[];
   jobRoles?: OrgEntry[];
+  modules?: OrgEntry[];
   emptyTeams?: OrgEntry[];
 }
 
@@ -108,6 +109,7 @@ export function DeleteEntityDialog({
               <UsageList heading={t("delete.blocked.users")} entries={usage.users} />
               <UsageList heading={t("delete.blocked.templates")} entries={usage.templates} />
               <UsageList heading={t("delete.blocked.jobRoles")} entries={usage.jobRoles ?? []} />
+              <UsageList heading={t("delete.blocked.modules")} entries={usage.modules ?? []} />
               <AlertDialogFooter>
                 <AlertDialogCancel>{t("delete.blocked.close")}</AlertDialogCancel>
               </AlertDialogFooter>

@@ -78,7 +78,8 @@
       "users": "People",
       "templates": "Templates",
       "close": "Close",
-      "jobRoles": "Job roles"
+      "jobRoles": "Job roles",
+      "modules": "Modules"
     }
   },
   "errors": {

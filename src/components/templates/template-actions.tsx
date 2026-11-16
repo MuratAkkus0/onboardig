@@ -13,18 +13,19 @@ import {
 import { ConfirmDialog } from "@/components/common/confirm-dialog";
 import { useActionFeedback } from "@/components/content/action-feedback";
 import { Button } from "@/components/ui/button";
-import { ROUTES } from "@/config/app";
+import { areaRoutes, type Area } from "@/lib/area-routes";
 import type { TemplateDeletionImpact } from "@/server/services/templates";
 
 interface TemplateActionsProps {
   id: string;
+  area?: Area;
   status: "active" | "archived";
   /** Loaded with the page; the service re-checks on delete. */
   impact: TemplateDeletionImpact;
 }
 
 /** Archive / restore and the delete flow of K§8: unused is deleted, used is archived after typing the name. */
-export function TemplateActions({ id, status, impact }: TemplateActionsProps) {
+export function TemplateActions({ id, status, impact, area = "admin" }: TemplateActionsProps) {
   const t = useTranslations("templates");
   const router = useRouter();
   const run = useActionFeedback();
@@ -47,7 +48,7 @@ export function TemplateActions({ id, status, impact }: TemplateActionsProps) {
     if (!result.ok) return;
     if (result.data.result === "deleted") {
       toast.success(t("toast.deleted"));
-      router.push(ROUTES.adminTemplates);
+      router.push(areaRoutes(area).templates);
     } else {
       toast.success(t("toast.archived"));
     }

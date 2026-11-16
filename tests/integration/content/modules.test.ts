@@ -77,20 +77,21 @@ describe("modules service", () => {
     },
   );
 
-  it("is admin only for every write", async () => {
+  it("is closed to employees for every write and to leads for reordering", async () => {
     const mod = await makeModule();
-    for (const user of [await createEmployee(), await createLead()]) {
-      const actor = actorOf(user);
-      const forbidden = { code: "FORBIDDEN" };
-      await expect(createModule(actor, { titleDe: "x" })).rejects.toMatchObject(forbidden);
-      await expect(updateModule(actor, { id: mod.id, titleDe: "x" })).rejects.toMatchObject(
-        forbidden,
-      );
-      await expect(moveModule(actor, { id: mod.id, direction: "up" })).rejects.toMatchObject(
-        forbidden,
-      );
-      await expect(deleteModule(actor, { id: mod.id })).rejects.toMatchObject(forbidden);
-    }
+    const forbidden = { code: "FORBIDDEN" };
+    const employee = actorOf(await createEmployee());
+    await expect(createModule(employee, { titleDe: "x" })).rejects.toMatchObject(forbidden);
+    await expect(updateModule(employee, { id: mod.id, titleDe: "x" })).rejects.toMatchObject(
+      forbidden,
+    );
+    await expect(moveModule(employee, { id: mod.id, direction: "up" })).rejects.toMatchObject(
+      forbidden,
+    );
+    await expect(deleteModule(employee, { id: mod.id })).rejects.toMatchObject(forbidden);
+    await expect(
+      moveModule(actorOf(await createLead()), { id: mod.id, direction: "up" }),
+    ).rejects.toMatchObject(forbidden);
   });
 
   it("listModules needs library.read: leads see published pages only, employees nothing", async () => {

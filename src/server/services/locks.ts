@@ -5,8 +5,9 @@ import { pageIdInputSchema } from "@/lib/validation/content";
 import { assertPermission } from "@/server/auth/permissions";
 import type { Actor } from "@/server/auth/types";
 import { db, type DbExecutor, type Tx } from "@/server/db/client";
-import { pageEditLocks, pages, users } from "@/server/db/schema";
+import { pageEditLocks, users } from "@/server/db/schema";
 import { AppError, pgErrorCode, PG_ERROR } from "@/server/errors";
+import { assertCanEditPageInTx } from "./content-access";
 
 /** K§4 lease lock of a page. `holder` is null when the lock is free or expired. */
 export interface LockState {
@@ -56,8 +57,8 @@ export function getLockStateInTx(
 }
 
 /** The single atomic acquire statement. Returns false when someone else holds a live lock. */
-async function tryAcquire(pageId: string, userId: string): Promise<boolean> {
-  const rows = await db
+async function tryAcquire(tx: Tx, pageId: string, userId: string): Promise<boolean> {
+  const rows = await tx
     .insert(pageEditLocks)
     .values({ pageId, userId, acquiredAt: sql`now()`, expiresAt: newExpiry })
     .onConflictDoUpdate({
@@ -73,32 +74,34 @@ async function tryAcquire(pageId: string, userId: string): Promise<boolean> {
   return rows.length > 0;
 }
 
-async function assertPageExists(pageId: string): Promise<void> {
-  const [page] = await db.select({ id: pages.id }).from(pages).where(eq(pages.id, pageId));
-  if (!page) throw new AppError("NOT_FOUND");
-}
+/*
+ * Every lock function is open to whoever may edit the page (admin, or the lead of the page's
+ * department). The edit-right check runs in the same transaction as the lock write.
+ */
 
 /** Acquire (or renew) the edit lock. Throws LOCK_HELD { holderName, since } when someone else holds it. */
 export async function acquireLock(actor: Actor, input: { pageId: string }): Promise<LockState> {
-  assertPermission(actor, "content.manage");
+  assertPermission(actor, "content.edit");
   const { pageId } = pageIdInputSchema.parse(input);
-  await assertPageExists(pageId);
-  let acquired = await tryAcquire(pageId, actor.id);
-  if (!acquired) {
-    let state = await readLockInTx(db, pageId, actor.id);
-    if (!state.holder) {
-      // The holder released between our upsert and the read: retry once.
-      acquired = await tryAcquire(pageId, actor.id);
-      if (!acquired) state = await readLockInTx(db, pageId, actor.id);
-    }
+  return db.transaction(async (tx) => {
+    await assertCanEditPageInTx(tx, actor, pageId);
+    let acquired = await tryAcquire(tx, pageId, actor.id);
     if (!acquired) {
-      throw new AppError("LOCK_HELD", {
-        holderName: state.holder?.name ?? null,
-        since: state.since,
-      });
+      let state = await readLockInTx(tx, pageId, actor.id);
+      if (!state.holder) {
+        // The holder released between our upsert and the read: retry once.
+        acquired = await tryAcquire(tx, pageId, actor.id);
+        if (!acquired) state = await readLockInTx(tx, pageId, actor.id);
+      }
+      if (!acquired) {
+        throw new AppError("LOCK_HELD", {
+          holderName: state.holder?.name ?? null,
+          since: state.since,
+        });
+      }
     }
-  }
-  return readLockInTx(db, pageId, actor.id);
+    return readLockInTx(tx, pageId, actor.id);
+  });
 }
 
 /**
@@ -108,56 +111,75 @@ export async function acquireLock(actor: Actor, input: { pageId: string }): Prom
  * overwrite a newer save (K§4). `held: false` carries the current holder, if any.
  */
 export async function heartbeat(actor: Actor, input: { pageId: string }): Promise<HeartbeatResult> {
-  assertPermission(actor, "content.manage");
+  assertPermission(actor, "content.edit");
   const { pageId } = pageIdInputSchema.parse(input);
-  const [renewed] = await db
-    .update(pageEditLocks)
-    .set({ expiresAt: newExpiry })
-    .where(and(eq(pageEditLocks.pageId, pageId), eq(pageEditLocks.userId, actor.id)))
-    .returning({ expiresAt: pageEditLocks.expiresAt });
-  if (renewed) return { held: true, expiresAt: renewed.expiresAt };
-  const state = await readLockInTx(db, pageId, actor.id);
-  return { held: false, holderName: state.holder?.name ?? null, since: state.since };
+  try {
+    return await db.transaction(async (tx) => {
+      await assertCanEditPageInTx(tx, actor, pageId);
+      const [renewed] = await tx
+        .update(pageEditLocks)
+        .set({ expiresAt: newExpiry })
+        .where(and(eq(pageEditLocks.pageId, pageId), eq(pageEditLocks.userId, actor.id)))
+        .returning({ expiresAt: pageEditLocks.expiresAt });
+      if (renewed) return { held: true as const, expiresAt: renewed.expiresAt };
+      const state = await readLockInTx(tx, pageId, actor.id);
+      return { held: false as const, holderName: state.holder?.name ?? null, since: state.since };
+    });
+  } catch (e) {
+    // A deleted (or, for leads, unseen) page simply holds no lease; the heartbeat reveals nothing.
+    if (e instanceof AppError && e.code === "NOT_FOUND") {
+      return { held: false, holderName: null, since: null };
+    }
+    throw e;
+  }
 }
 
 /** Deletes the actor's own lock row (never someone else's). */
 export async function releaseLock(actor: Actor, input: { pageId: string }): Promise<void> {
-  assertPermission(actor, "content.manage");
+  assertPermission(actor, "content.edit");
   const { pageId } = pageIdInputSchema.parse(input);
-  await db
-    .delete(pageEditLocks)
-    .where(and(eq(pageEditLocks.pageId, pageId), eq(pageEditLocks.userId, actor.id)));
+  await db.transaction(async (tx) => {
+    await assertCanEditPageInTx(tx, actor, pageId);
+    await tx
+      .delete(pageEditLocks)
+      .where(and(eq(pageEditLocks.pageId, pageId), eq(pageEditLocks.userId, actor.id)));
+  });
 }
 
 /** Unconditionally writes the lock to the actor ("Bearbeitung take over"; the UI confirms first). */
 export async function takeOverLock(actor: Actor, input: { pageId: string }): Promise<LockState> {
-  assertPermission(actor, "content.manage");
+  assertPermission(actor, "content.edit");
   const { pageId } = pageIdInputSchema.parse(input);
-  await assertPageExists(pageId);
   try {
-    await db
-      .insert(pageEditLocks)
-      .values({ pageId, userId: actor.id, acquiredAt: sql`now()`, expiresAt: newExpiry })
-      .onConflictDoUpdate({
-        target: pageEditLocks.pageId,
-        set: {
-          userId: sql`excluded.user_id`,
-          acquiredAt: sql`now()`,
-          expiresAt: sql`excluded.expires_at`,
-        },
-      });
+    return await db.transaction(async (tx) => {
+      await assertCanEditPageInTx(tx, actor, pageId);
+      await tx
+        .insert(pageEditLocks)
+        .values({ pageId, userId: actor.id, acquiredAt: sql`now()`, expiresAt: newExpiry })
+        .onConflictDoUpdate({
+          target: pageEditLocks.pageId,
+          set: {
+            userId: sql`excluded.user_id`,
+            acquiredAt: sql`now()`,
+            expiresAt: sql`excluded.expires_at`,
+          },
+        });
+      return readLockInTx(tx, pageId, actor.id);
+    });
   } catch (e) {
+    // The page was deleted between the check and the write.
     if (pgErrorCode(e) === PG_ERROR.foreignKeyViolation) throw new AppError("NOT_FOUND");
     throw e;
   }
-  return readLockInTx(db, pageId, actor.id);
 }
 
 export async function getLockState(actor: Actor, input: { pageId: string }): Promise<LockState> {
-  assertPermission(actor, "content.manage");
+  assertPermission(actor, "content.edit");
   const { pageId } = pageIdInputSchema.parse(input);
-  await assertPageExists(pageId);
-  return readLockInTx(db, pageId, actor.id);
+  return db.transaction(async (tx) => {
+    await assertCanEditPageInTx(tx, actor, pageId);
+    return readLockInTx(tx, pageId, actor.id);
+  });
 }
 
 /**

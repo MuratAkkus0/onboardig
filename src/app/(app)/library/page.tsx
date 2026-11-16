@@ -1,54 +1,50 @@
-import Link from "next/link";
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
+import { Plus } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { EmptyState } from "@/components/common/empty-state";
 import { PageHeader } from "@/components/common/page-header";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { AdminLibrary } from "@/components/content/admin-library";
+import { ModuleDialog } from "@/components/content/module-dialog";
+import { Button } from "@/components/ui/button";
 import { ROUTES } from "@/config/app";
 import { requirePageRole } from "@/server/auth/guards";
 import { listLibrary } from "@/server/services/pages";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const t = await getTranslations("library.readonly");
+  const t = await getTranslations("library.lead");
   return { title: t("title") };
 }
 
-/** Read-only library for team leads (and admins): published pages only. */
+/**
+ * Library for team leads: modules of their own department are editable, all others read-only.
+ * Admins have their own screen (/admin/library) and are sent there.
+ */
 export default async function Page() {
   const actor = await requirePageRole(["team_lead", "admin"]);
-  const t = await getTranslations("library.readonly");
-  const modules = await listLibrary(actor, { status: "published" });
+  if (actor.role === "admin") redirect(ROUTES.adminLibrary);
+  const t = await getTranslations("library");
+  const modules = await listLibrary(actor);
   return (
     <>
-      <PageHeader title={t("title")} description={t("description")} />
+      <PageHeader
+        title={t("lead.title")}
+        description={t("lead.description")}
+        actions={
+          <ModuleDialog
+            trigger={
+              <Button>
+                <Plus />
+                {t("admin.addModule")}
+              </Button>
+            }
+          />
+        }
+      />
       {modules.length === 0 ? (
-        <EmptyState title={t("emptyTitle")} description={t("emptyDescription")} />
+        <EmptyState title={t("readonly.emptyTitle")} description={t("lead.emptyDescription")} />
       ) : (
-        <div className="grid gap-4 md:grid-cols-2">
-          {modules.map((module) => (
-            <Card key={module.id}>
-              <CardHeader>
-                <CardTitle>
-                  <h2>{module.title}</h2>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-2">
-                  {module.pages.map((page) => (
-                    <li key={page.id}>
-                      <Link
-                        href={ROUTES.page(page.id)}
-                        className="text-primary underline-offset-4 hover:underline"
-                      >
-                        {page.title}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+        <AdminLibrary modules={modules} area="lead" />
       )}
     </>
   );

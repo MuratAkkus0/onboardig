@@ -37,6 +37,12 @@ import type { TiptapDoc } from "@/server/db/schema/custom-types";
 import { AppError } from "@/server/errors";
 import { logger } from "@/server/logger";
 import { getStorage } from "@/server/storage";
+import {
+  assertCanEditModuleInTx,
+  assertCanEditPageInTx,
+  editorDepartmentIdInTx,
+  loadEditableModuleInTx,
+} from "./content-access";
 import { assertLockHeldInTx, getLockStateInTx, type LockState } from "./locks";
 import {
   isForeignKeyError,
@@ -171,15 +177,10 @@ export async function createPage(
   actor: Actor,
   input: { moduleId: string; titleDe: string },
 ): Promise<{ id: string }> {
-  assertPermission(actor, "content.manage");
+  assertPermission(actor, "content.edit");
   const data = createPageSchema.parse(input);
   return db.transaction(async (tx) => {
-    const [parent] = await tx
-      .select({ id: modules.id })
-      .from(modules)
-      .where(eq(modules.id, data.moduleId))
-      .for("update");
-    if (!parent) throw new AppError("NOT_FOUND");
+    await loadEditableModuleInTx(tx, actor, data.moduleId, "update");
     const [row] = await tx
       .insert(pages)
       .values({
@@ -194,9 +195,12 @@ export async function createPage(
 }
 
 export async function getPageForEdit(actor: Actor, input: { id: string }): Promise<PageEditDto> {
-  assertPermission(actor, "content.manage");
+  assertPermission(actor, "content.edit");
   const { id } = idInputSchema.parse(input);
-  return loadEditDto(db, actor.id, id);
+  return db.transaction(async (tx) => {
+    await assertCanEditPageInTx(tx, actor, id);
+    return loadEditDto(tx, actor.id, id);
+  });
 }
 
 /** Page as the viewer reads it. Admins may also open archived pages (preview). */
@@ -265,7 +269,7 @@ export async function savePageContent(
     contentEn?: unknown;
   },
 ): Promise<PageEditDto> {
-  assertPermission(actor, "content.manage");
+  assertPermission(actor, "content.edit");
   const raw = savePageContentSchema.parse(input);
   const contentDe = sanitizeField(raw.contentDe, "contentDe");
   const contentEn = raw.contentEn == null ? null : sanitizeField(raw.contentEn, "contentEn");
@@ -276,6 +280,7 @@ export async function savePageContent(
 
   return db.transaction(async (tx) => {
     const page = await lockPageInTx(tx, data.id);
+    await assertCanEditPageInTx(tx, actor, page.id);
     await assertLockHeldInTx(tx, { pageId: page.id, userId: actor.id });
     await assertImagesBelongToPage(tx, page.id, imageIds);
     await tx
@@ -302,10 +307,11 @@ export async function changePageStatus(
   actor: Actor,
   input: { id: string; action: PageAction },
 ): Promise<PageEditDto> {
-  assertPermission(actor, "content.manage");
+  assertPermission(actor, "content.edit");
   const { id, action } = changePageStatusSchema.parse(input);
   return db.transaction(async (tx) => {
     const page = await lockPageInTx(tx, id);
+    await assertCanEditPageInTx(tx, actor, id);
     await applyStatusChangeInTx(tx, actor.id, page, action);
     return loadEditDto(tx, actor.id, id);
   });
@@ -315,14 +321,10 @@ export async function movePage(
   actor: Actor,
   input: { id: string; direction: Direction },
 ): Promise<void> {
-  assertPermission(actor, "content.manage");
+  assertPermission(actor, "content.edit");
   const { id, direction } = moveSchema.parse(input);
   await db.transaction(async (tx) => {
-    const [page] = await tx
-      .select({ moduleId: pages.moduleId })
-      .from(pages)
-      .where(eq(pages.id, id));
-    if (!page) throw new AppError("NOT_FOUND");
+    const page = await assertCanEditPageInTx(tx, actor, id);
     await tx
       .select({ id: modules.id })
       .from(modules)
@@ -343,7 +345,7 @@ export async function movePageToModule(
   actor: Actor,
   input: { id: string; moduleId: string },
 ): Promise<void> {
-  assertPermission(actor, "content.manage");
+  assertPermission(actor, "content.edit");
   const { id, moduleId } = movePageToModuleSchema.parse(input);
   await db.transaction(async (tx) => {
     const [current] = await tx
@@ -351,16 +353,23 @@ export async function movePageToModule(
       .from(pages)
       .where(eq(pages.id, id));
     if (!current) throw new AppError("NOT_FOUND");
-    if (current.moduleId === moduleId) return;
+    if (current.moduleId === moduleId) {
+      await assertCanEditPageInTx(tx, actor, id);
+      return;
+    }
     const parents = await tx
-      .select({ id: modules.id })
+      .select({ id: modules.id, departmentId: modules.departmentId })
       .from(modules)
       .where(inArray(modules.id, [current.moduleId, moduleId]))
       .orderBy(asc(modules.id))
       .for("update");
-    if (!parents.some((parent) => parent.id === moduleId)) throw new AppError("NOT_FOUND");
+    const target = parents.find((parent) => parent.id === moduleId);
+    if (!target) throw new AppError("NOT_FOUND");
     const page = await lockPageInTx(tx, id);
     if (page.moduleId !== current.moduleId) throw new AppError("CONFLICT");
+    // Source and target must both be editable; the source is checked through the page.
+    await assertCanEditPageInTx(tx, actor, id);
+    await assertCanEditModuleInTx(tx, actor, await editorDepartmentIdInTx(tx, actor), target);
     await tx
       .update(pages)
       .set({ moduleId, sortOrder: await nextSortOrderInModule(tx, moduleId) })
@@ -402,11 +411,12 @@ export async function getPageDeletionImpact(
   actor: Actor,
   input: { id: string },
 ): Promise<PageDeletionImpact> {
-  assertPermission(actor, "content.manage");
+  assertPermission(actor, "content.edit");
   const { id } = idInputSchema.parse(input);
-  const [page] = await db.select({ id: pages.id }).from(pages).where(eq(pages.id, id));
-  if (!page) throw new AppError("NOT_FOUND");
-  return computeImpact(db, id);
+  return db.transaction(async (tx) => {
+    await assertCanEditPageInTx(tx, actor, id);
+    return computeImpact(tx, id);
+  });
 }
 
 /**

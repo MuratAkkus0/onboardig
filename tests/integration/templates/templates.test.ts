@@ -383,7 +383,7 @@ describe("archive, restore and delete", () => {
 });
 
 describe("authorization", () => {
-  it("only admins may use any template function", async () => {
+  it("employees may not use any template function", async () => {
     const template = await factories.createTemplate();
     const page = await factories.createPage();
     const [step] = await testDb
@@ -391,9 +391,8 @@ describe("authorization", () => {
       .values({ templateId: template.id, pageId: page.id, phase: "first_day" })
       .returning();
     if (!step) throw new Error("step not created");
-    const lead = actorOf(await factories.createLead());
     const employee = actorOf(await factories.createEmployee());
-    for (const actor of [lead, employee]) {
+    for (const actor of [employee]) {
       const calls = [
         () => listTemplates(actor),
         () => getTemplate(actor, { id: template.id }),

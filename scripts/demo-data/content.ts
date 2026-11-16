@@ -3,11 +3,21 @@ import { TECH_PAGES } from "./content-tech";
 import type { DemoModule, DemoPage } from "./types";
 
 export const DEMO_MODULES: DemoModule[] = [
-  { key: "culture", titleDe: "Willkommen und Kultur", titleEn: "Welcome and culture" },
-  { key: "it", titleDe: "IT und Zugänge", titleEn: "IT and access" },
-  { key: "engineering", titleDe: "Entwicklung", titleEn: "Engineering" },
-  { key: "hr", titleDe: "Personal und Organisation", titleEn: "People and organization" },
-  { key: "marketing", titleDe: "Marketing", titleEn: "Marketing" },
+  {
+    key: "culture",
+    departmentKey: null,
+    titleDe: "Willkommen und Kultur",
+    titleEn: "Welcome and culture",
+  },
+  { key: "it", departmentKey: null, titleDe: "IT und Zugänge", titleEn: "IT and access" },
+  { key: "engineering", departmentKey: "it", titleDe: "Entwicklung", titleEn: "Engineering" },
+  {
+    key: "hr",
+    departmentKey: "hr",
+    titleDe: "Personal und Organisation",
+    titleEn: "People and organization",
+  },
+  { key: "marketing", departmentKey: "marketing", titleDe: "Marketing", titleEn: "Marketing" },
 ];
 
 export const DEMO_PAGES: DemoPage[] = [...COMPANY_PAGES, ...TECH_PAGES];

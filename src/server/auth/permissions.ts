@@ -8,8 +8,10 @@ export const PERMISSIONS = {
   "library.read": ["team_lead", "admin"],
   "plan.manage": ["team_lead", "admin"], // + scope check: lead only for own employees
   "progress.viewOthers": ["team_lead", "admin"], // + scope check
-  "content.manage": ["admin"], // modules, pages, uploads, locks
+  "content.manage": ["admin"], // admin-only content operations: module order/department, page hard delete
+  "content.edit": ["team_lead", "admin"], // modules, pages, uploads, locks + scope check (own department)
   "templates.manage": ["admin"],
+  "templates.edit": ["team_lead", "admin"], // + scope check (lead-managed templates of own department)
   "org.manage": ["admin"], // departments, teams, job roles
   "users.manage": ["admin"],
   "events.manage": ["admin"], // CRUD + announce

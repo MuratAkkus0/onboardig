@@ -23,6 +23,8 @@ export interface DemoPage {
 
 export interface DemoModule {
   key: string;
+  /** Owner department; null = company-wide (admin only). */
+  departmentKey: string | null;
   titleDe: string;
   titleEn: string;
 }

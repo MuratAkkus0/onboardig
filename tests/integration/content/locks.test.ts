@@ -9,7 +9,7 @@ import {
   releaseLock,
   takeOverLock,
 } from "@/server/services/locks";
-import { createEmployee, createLead, createLock, createPage } from "../../factories";
+import { createEmployee, createLock, createPage } from "../../factories";
 import { actorOf, expireLock, minutesAgo, testDb } from "../../helpers";
 import { adminActor } from "./fixtures";
 
@@ -81,13 +81,11 @@ describe("acquireLock", () => {
     expect(rejected.reason).toMatchObject({ code: "LOCK_HELD" });
   });
 
-  it("is admin only", async () => {
+  it("is closed to employees", async () => {
     const page = await createPage();
-    for (const user of [await createEmployee(), await createLead()]) {
-      await expect(acquireLock(actorOf(user), { pageId: page.id })).rejects.toMatchObject({
-        code: "FORBIDDEN",
-      });
-    }
+    await expect(
+      acquireLock(actorOf(await createEmployee()), { pageId: page.id }),
+    ).rejects.toMatchObject({ code: "FORBIDDEN" });
   });
 });
 

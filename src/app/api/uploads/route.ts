@@ -10,7 +10,7 @@ const MULTIPART_OVERHEAD_BYTES = 16 * 1024;
 
 export const POST = withActor(async (req, { actor }) => {
   // Authorize and bound the body before reading it: formData() buffers everything in memory.
-  assertPermission(actor, "content.manage");
+  assertPermission(actor, "content.edit");
   const declaredLength = Number(req.headers.get("content-length"));
   if (
     !Number.isFinite(declaredLength) ||

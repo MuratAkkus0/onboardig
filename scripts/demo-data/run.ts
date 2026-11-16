@@ -139,7 +139,13 @@ export async function runDemoSeed(options: SeedOptions): Promise<SeedResult> {
   for (const entry of DEMO_MODULES) {
     moduleIds.set(
       entry.key,
-      (await createModule(admin, { titleDe: entry.titleDe, titleEn: entry.titleEn })).id,
+      (
+        await createModule(admin, {
+          titleDe: entry.titleDe,
+          titleEn: entry.titleEn,
+          departmentId: entry.departmentKey ? lookup(departmentIds, entry.departmentKey) : null,
+        })
+      ).id,
     );
   }
   const pageIds = new Map<string, string>();

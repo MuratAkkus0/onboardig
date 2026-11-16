@@ -17,7 +17,7 @@ const keys = (role: (typeof ROLES)[number]) => getVisibleNavigation(role).map((i
 describe("navigation per role", () => {
   it("shows exactly the entries of the role", () => {
     expect(keys("employee")).toEqual(["plan", "events", "search"]);
-    expect(keys("team_lead")).toEqual(["plan", "events", "search", "team", "library"]);
+    expect(keys("team_lead")).toEqual(["plan", "events", "search", "team", "library", "templates"]);
     expect(keys("admin")).toEqual([
       "plan",
       "events",

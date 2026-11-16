@@ -32,6 +32,7 @@ import {
 } from "@/server/db/schema";
 import { AppError, rethrowDbError } from "@/server/errors";
 import { logger } from "@/server/logger";
+import { canEditModule, editorDepartmentIdInTx } from "./content-access";
 import { createNotificationInTx } from "./notifications-core";
 import {
   applyRecomputeInTx,
@@ -308,7 +309,8 @@ export async function getMyStepState(
 
 /**
  * Plan of an employee for their lead or an admin. Inactive steps are flagged; admins see their
- * title and status, team leads only the status (they cannot read drafts in the library either).
+ * title and status, team leads the title only for pages they may view (own-department drafts),
+ * otherwise just the status.
  */
 export async function getPlanForUser(
   actor: Actor,
@@ -340,6 +342,7 @@ export async function getPlanForUser(
         completedAt: pageCompletions.completedAt,
         updateSeenAt: pageCompletions.updateSeenAt,
         moduleId: modules.id,
+        moduleDepartmentId: modules.departmentId,
         moduleTitleDe: modules.titleDe,
         moduleTitleEn: modules.titleEn,
         moduleSortOrder: modules.sortOrder,
@@ -370,15 +373,21 @@ export async function getPlanForUser(
     loadProgressForUsersInTx(db, [userId]),
   ]);
 
-  const showTitle = (status: PageStatusValue) => status === "published" || actor.role === "admin";
+  // Titles follow the library rule: published pages, everything for admins, and the pages of the
+  // lead's own department (drafts, archived) for team leads.
+  const editor = await editorDepartmentIdInTx(db, actor);
+  const showTitle = (row: { pageStatus: PageStatusValue; moduleDepartmentId: string | null }) =>
+    row.pageStatus === "published" ||
+    actor.role === "admin" ||
+    canEditModule(editor, { departmentId: row.moduleDepartmentId });
   const flat = rows.map((row) => {
     const isActive = row.pageStatus === "published";
     const { text, isFallback } = pick(row.titleDe, row.titleEn, actor.locale);
     const step: EmployeeStepDto = {
       pageId: row.pageId,
       phase: row.phase,
-      title: showTitle(row.pageStatus) ? text : null,
-      isFallback: showTitle(row.pageStatus) && isFallback,
+      title: showTitle(row) ? text : null,
+      isFallback: showTitle(row) && isFallback,
       pageStatus: row.pageStatus,
       isActive,
       completedAt: row.completedAt,

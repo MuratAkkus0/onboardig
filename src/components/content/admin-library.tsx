@@ -29,6 +29,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { ROUTES } from "@/config/app";
+import { areaRoutes, type Area } from "@/lib/area-routes";
 import type { PageAction } from "@/lib/domain/page-status";
 import { allowedPageActions } from "@/lib/domain/page-status";
 import type { LibraryPage, ModuleWithPages } from "@/server/services/modules";
@@ -57,7 +58,9 @@ function PageRow({
   total,
   filtered,
   otherModules,
+  area,
 }: {
+  area: Area;
   page: LibraryPage;
   index: number;
   total: number;
@@ -70,6 +73,7 @@ function PageRow({
   const [pending, startTransition] = useTransition();
   const [deleting, setDeleting] = useState(false);
   const closeDelete = useCallback(() => setDeleting(false), []);
+  const routes = areaRoutes(area);
 
   const move = (direction: "up" | "down") =>
     startTransition(async () => {
@@ -79,7 +83,7 @@ function PageRow({
   return (
     <TableRow>
       <TableCell className="font-medium whitespace-normal">
-        <Link href={ROUTES.adminPageEdit(page.id)} className="hover:underline">
+        <Link href={routes.pageEdit(page.id)} className="hover:underline">
           {page.titleDe}
         </Link>
       </TableCell>
@@ -118,7 +122,7 @@ function PageRow({
             <ArrowDown />
           </Button>
           <Button variant="outline" size="sm" asChild>
-            <Link href={ROUTES.adminPageEdit(page.id)}>
+            <Link href={routes.pageEdit(page.id)}>
               <Pencil />
               {t("page.edit")}
             </Link>
@@ -175,16 +179,69 @@ function PageRow({
                   </DropdownMenuSubContent>
                 </DropdownMenuSub>
               ) : null}
-              <DropdownMenuSeparator />
-              <DropdownMenuItem variant="destructive" onSelect={() => setDeleting(true)}>
-                {t("actions.delete")}
-              </DropdownMenuItem>
+              {area === "admin" ? (
+                <>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem variant="destructive" onSelect={() => setDeleting(true)}>
+                    {t("actions.delete")}
+                  </DropdownMenuItem>
+                </>
+              ) : null}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-        {deleting ? <DeletePageDialog page={page} onClose={closeDelete} /> : null}
+        {deleting && area === "admin" ? (
+          <DeletePageDialog page={page} onClose={closeDelete} />
+        ) : null}
       </TableCell>
     </TableRow>
+  );
+}
+
+function DepartmentBadge({ module }: { module: ModuleWithPages }) {
+  const t = useTranslations("library");
+  return (
+    <Badge variant={module.departmentId ? "secondary" : "outline"}>
+      {module.departmentName
+        ? t("module.owner", { name: module.departmentName })
+        : t("module.companyWide")}
+    </Badge>
+  );
+}
+
+/** A module the viewer cannot edit: published pages as plain links (team leads, other departments). */
+function ReadOnlyModuleCard({ module }: { module: ModuleWithPages }) {
+  const t = useTranslations("library");
+  return (
+    <Card>
+      <CardHeader className="flex flex-row flex-wrap items-center justify-between gap-2">
+        <CardTitle className="min-w-0">
+          <h2 className="break-words">{module.title}</h2>
+        </CardTitle>
+        <div className="flex flex-wrap items-center gap-2">
+          <DepartmentBadge module={module} />
+          <Badge variant="outline">{t("module.readOnly")}</Badge>
+        </div>
+      </CardHeader>
+      <CardContent>
+        {module.pages.length === 0 ? (
+          <p className="text-sm text-muted-foreground">{t("module.noPublishedPages")}</p>
+        ) : (
+          <ul className="space-y-2">
+            {module.pages.map((page) => (
+              <li key={page.id}>
+                <Link
+                  href={ROUTES.page(page.id)}
+                  className="text-primary underline-offset-4 hover:underline"
+                >
+                  {page.title}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        )}
+      </CardContent>
+    </Card>
   );
 }
 
@@ -194,18 +251,23 @@ function ModuleCard({
   total,
   filtered,
   allModules,
+  area,
+  departments,
 }: {
   module: ModuleWithPages;
   index: number;
   total: number;
   filtered: boolean;
   allModules: ModuleWithPages[];
+  area: Area;
+  departments?: { id: string; name: string }[];
 }) {
   const t = useTranslations("library");
   const run = useActionFeedback();
   const [pending, startTransition] = useTransition();
+  // Pages can only move into modules the viewer may edit.
   const otherModules = allModules
-    .filter((other) => other.id !== module.id)
+    .filter((other) => other.id !== module.id && other.canEdit)
     .map((other) => ({ id: other.id, title: other.titleDe }));
 
   return (
@@ -218,36 +280,42 @@ function ModuleCard({
           ) : null}
         </CardTitle>
         <div className="flex flex-wrap items-center gap-1">
-          <Button
-            variant="ghost"
-            size="icon-sm"
-            aria-label={t("module.moveUp")}
-            title={t("module.moveUp")}
-            disabled={pending || index === 0}
-            onClick={() =>
-              startTransition(async () => {
-                await run(() => moveModuleAction({ id: module.id, direction: "up" }));
-              })
-            }
-          >
-            <ArrowUp />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon-sm"
-            aria-label={t("module.moveDown")}
-            title={t("module.moveDown")}
-            disabled={pending || index === total - 1}
-            onClick={() =>
-              startTransition(async () => {
-                await run(() => moveModuleAction({ id: module.id, direction: "down" }));
-              })
-            }
-          >
-            <ArrowDown />
-          </Button>
+          <DepartmentBadge module={module} />
+          {area === "admin" ? (
+            <>
+              <Button
+                variant="ghost"
+                size="icon-sm"
+                aria-label={t("module.moveUp")}
+                title={t("module.moveUp")}
+                disabled={pending || index === 0}
+                onClick={() =>
+                  startTransition(async () => {
+                    await run(() => moveModuleAction({ id: module.id, direction: "up" }));
+                  })
+                }
+              >
+                <ArrowUp />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon-sm"
+                aria-label={t("module.moveDown")}
+                title={t("module.moveDown")}
+                disabled={pending || index === total - 1}
+                onClick={() =>
+                  startTransition(async () => {
+                    await run(() => moveModuleAction({ id: module.id, direction: "down" }));
+                  })
+                }
+              >
+                <ArrowDown />
+              </Button>
+            </>
+          ) : null}
           <ModuleDialog
             module={module}
+            departments={departments}
             trigger={
               <Button
                 variant="ghost"
@@ -280,6 +348,7 @@ function ModuleCard({
           />
           <PageCreateDialog
             moduleId={module.id}
+            area={area}
             trigger={
               <Button variant="outline" size="sm">
                 <Plus />
@@ -316,6 +385,7 @@ function ModuleCard({
                   total={module.pages.length}
                   filtered={filtered}
                   otherModules={otherModules}
+                  area={area}
                 />
               ))}
             </TableBody>
@@ -326,13 +396,23 @@ function ModuleCard({
   );
 }
 
+/**
+ * Library management tree. Admins edit everything; team leads get the same controls on modules
+ * of their own department (`module.canEdit`) and a read-only card on all others. The services
+ * re-check every action, the flags here only decide what is offered.
+ */
 export function AdminLibrary({
   modules,
   filtered = false,
+  area = "admin",
+  departments,
 }: {
   modules: ModuleWithPages[];
   /** A status filter is active: pages are hidden, so page ordering is disabled. */
   filtered?: boolean;
+  area?: Area;
+  /** Admin only: departments offered in the module dialog. */
+  departments?: { id: string; name: string }[];
 }) {
   const t = useTranslations("library");
   return (
@@ -342,16 +422,22 @@ export function AdminLibrary({
           {t("admin.filterHint")}
         </p>
       ) : null}
-      {modules.map((module, index) => (
-        <ModuleCard
-          key={module.id}
-          module={module}
-          index={index}
-          total={modules.length}
-          filtered={filtered}
-          allModules={modules}
-        />
-      ))}
+      {modules.map((module, index) =>
+        module.canEdit ? (
+          <ModuleCard
+            key={module.id}
+            module={module}
+            index={index}
+            total={modules.length}
+            filtered={filtered}
+            allModules={modules}
+            area={area}
+            departments={area === "admin" ? departments : undefined}
+          />
+        ) : (
+          <ReadOnlyModuleCard key={module.id} module={module} />
+        ),
+      )}
     </div>
   );
 }

@@ -113,11 +113,13 @@ describe("uploadImage", () => {
       }),
     ).rejects.toMatchObject({ code: "NOT_FOUND" });
     const page = await createPage();
-    for (const user of [await createEmployee(), await createLead()]) {
-      await expect(
-        uploadImage(actorOf(user), { pageId: page.id, fileName: "x.png", bytes: PNG_BYTES }),
-      ).rejects.toMatchObject({ code: "FORBIDDEN" });
-    }
+    await expect(
+      uploadImage(actorOf(await createEmployee()), {
+        pageId: page.id,
+        fileName: "x.png",
+        bytes: PNG_BYTES,
+      }),
+    ).rejects.toMatchObject({ code: "FORBIDDEN" });
   });
 });
 
@@ -266,8 +268,8 @@ describe("POST /api/uploads", () => {
     ).toBe(403);
   });
 
-  it("answers 403 for non-admins", async () => {
-    getActor.mockResolvedValue(actorOf(await createLead()));
+  it("answers 403 for employees", async () => {
+    getActor.mockResolvedValue(actorOf(await createEmployee()));
     const page = await createPage();
     expect((await POST(await postRequest(form(page.id, PNG_BYTES)), ctx)).status).toBe(403);
   });
@@ -311,8 +313,8 @@ describe("POST /api/uploads", () => {
     expect((await POST(noLength, ctx)).status).toBe(413);
   });
 
-  it("checks the permission before the body: a lead with an oversized declared length gets 403", async () => {
-    getActor.mockResolvedValue(actorOf(await createLead()));
+  it("checks the permission before the body: an employee with an oversized declared length gets 403", async () => {
+    getActor.mockResolvedValue(actorOf(await createEmployee()));
     const page = await createPage();
     const tooBig = APP_CONFIG.uploads.maxBytes * 100;
     expect(

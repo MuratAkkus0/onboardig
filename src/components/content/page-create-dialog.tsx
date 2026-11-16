@@ -17,7 +17,8 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { ROUTES, W1_CONTENT_CONFIG } from "@/config/app";
+import { W1_CONTENT_CONFIG } from "@/config/app";
+import { areaRoutes, type Area } from "@/lib/area-routes";
 import { createPageAction } from "@/app/(app)/admin/library/actions";
 import { useActionFeedback } from "./action-feedback";
 
@@ -25,9 +26,11 @@ import { useActionFeedback } from "./action-feedback";
 export function PageCreateDialog({
   moduleId,
   trigger,
+  area = "admin",
 }: {
   moduleId: string;
   trigger: React.ReactNode;
+  area?: Area;
 }) {
   const t = useTranslations("library");
   const common = useTranslations("common");
@@ -44,7 +47,7 @@ export function PageCreateDialog({
       const result = await run(() => createPageAction({ moduleId, titleDe }));
       if (result.ok) {
         setOpen(false);
-        router.push(ROUTES.adminPageEdit(result.data.id));
+        router.push(areaRoutes(area).pageEdit(result.data.id));
       } else {
         const key = result.error.fieldErrors?.titleDe?.[0];
         setFieldError(key ? message(key) : undefined);

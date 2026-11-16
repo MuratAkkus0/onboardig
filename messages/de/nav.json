@@ -22,7 +22,9 @@
   "adminTemplate": "Vorlage bearbeiten",
   "adminEventNew": "Veranstaltung anlegen",
   "adminEvent": "Veranstaltung bearbeiten",
-  "sections": { "admin": "Verwaltung" },
+  "sections": {
+    "admin": "Verwaltung"
+  },
   "menu": {
     "open": "Navigation öffnen",
     "title": "Navigation",
@@ -38,5 +40,6 @@
     "theme": "Design",
     "language": "Sprache",
     "signOut": "Abmelden"
-  }
+  },
+  "templates": "Vorlagen"
 }

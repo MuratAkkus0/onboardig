@@ -29,7 +29,14 @@
     "delete": "Modul löschen",
     "deleteTitle": "Modul löschen?",
     "deleteDescription": "Das Modul „{name}“ wird gelöscht. Das ist nur möglich, solange es keine Seiten enthält.",
-    "addPage": "Seite hinzufügen"
+    "addPage": "Seite hinzufügen",
+    "department": "Abteilung",
+    "departmentNone": "Unternehmensweit",
+    "departmentHint": "„Unternehmensweit“ bedeutet: Das Modul gehört keiner Abteilung und nur Admins können es bearbeiten.",
+    "owner": "Zuständig: {name}",
+    "companyWide": "Unternehmensweit",
+    "readOnly": "Nur lesen",
+    "noPublishedPages": "Keine veröffentlichten Seiten in diesem Modul."
   },
   "page": {
     "createTitle": "Seite hinzufügen",
@@ -94,5 +101,10 @@
     "description": "Alle veröffentlichten Seiten zum Nachlesen.",
     "emptyTitle": "Noch keine veröffentlichten Seiten",
     "emptyDescription": "Sobald Seiten veröffentlicht sind, findest du sie hier."
+  },
+  "lead": {
+    "title": "Bibliothek",
+    "description": "Module und Seiten deiner Abteilung bearbeitest du hier. Alle anderen Module kannst du nur lesen.",
+    "emptyDescription": "Noch gibt es keine Module oder Seiten."
   }
 }

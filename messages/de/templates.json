@@ -18,7 +18,8 @@
     "steps": "Schritte",
     "assigned": "Zugewiesen",
     "status": "Status",
-    "open": "Vorlage {name} öffnen"
+    "open": "Vorlage {name} öffnen",
+    "management": "Verwaltung"
   },
   "scope": {
     "allDepartments": "Alle Abteilungen",
@@ -43,13 +44,15 @@
     "save": "Speichern",
     "create": "Vorlage anlegen",
     "saved": "Gespeichert.",
-    "cancel": "Abbrechen"
+    "cancel": "Abbrechen",
+    "departmentFixedHint": "Als Teamleitung legst du Vorlagen nur für deine Abteilung an."
   },
   "detail": {
     "back": "Zurück zu den Vorlagen",
     "stepsHeading": "Schritte",
     "stepsDescription": "Seiten aus der Bibliothek, gruppiert nach Phase. Die Reihenfolge gilt innerhalb einer Phase.",
-    "assignedInfo": "Bei {count} Mitarbeitenden zugewiesen. Änderungen betreffen bestehende Pläne nicht."
+    "assignedInfo": "Bei {count} Mitarbeitenden zugewiesen. Änderungen betreffen bestehende Pläne nicht.",
+    "readOnlyNotice": "Diese Vorlage kannst du nur lesen. Sie wird nicht von einer Teamleitung verwaltet."
   },
   "steps": {
     "emptyPhase": "Keine Schritte in dieser Phase.",
@@ -60,7 +63,9 @@
     "draft": "Entwurf",
     "archived": "Archiviert",
     "archivedHint": "Diese Seite ist archiviert und wird bei Zuweisungen übersprungen.",
-    "draftHint": "Diese Seite ist noch ein Entwurf und wird erst nach der Veröffentlichung in Pläne übernommen."
+    "draftHint": "Diese Seite ist noch ein Entwurf und wird erst nach der Veröffentlichung in Pläne übernommen.",
+    "hidden": "Seite nicht sichtbar",
+    "hiddenHint": "Du hast keinen Zugriff auf den Titel dieser Seite."
   },
   "addStep": {
     "button": "Schritt hinzufügen",
@@ -101,5 +106,13 @@
     "pageArchived": "Archivierte Seiten können nicht hinzugefügt werden.",
     "duplicatePage": "Diese Seite ist bereits in der Vorlage enthalten.",
     "confirmNameMismatch": "Der eingegebene Name stimmt nicht überein."
+  },
+  "leadManaged": {
+    "lead": "Von Teamleitung verwaltet",
+    "admin": "Von Admin verwaltet"
+  },
+  "lead": {
+    "description": "Vorlagen deiner Abteilung und unternehmensweite Vorlagen. Du bearbeitest nur Vorlagen, die von Teamleitungen verwaltet werden.",
+    "noTeam": "Dir ist kein Team zugeordnet. Du kannst keine Vorlagen anlegen."
   }
 }
