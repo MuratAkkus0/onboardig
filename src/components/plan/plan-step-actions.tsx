@@ -1,9 +1,9 @@
 import { CheckCircle2, Circle } from "lucide-react";
 import { getTranslations } from "next-intl/server";
-import { Badge } from "@/components/ui/badge";
 import { requirePageActor } from "@/server/auth/guards";
 import { getMyStepState } from "@/server/services/plans";
 import { StepToggle } from "./step-toggle";
+import { UpdatedBadge } from "./updated-badge";
 
 /**
  * Slot on the page view: "Erledigt" toggle plus the "Seit deinem Abschluss aktualisiert" badge for
@@ -14,7 +14,6 @@ export async function PlanStepActions({ pageId }: { pageId: string }) {
   const state = await getMyStepState(actor, { pageId });
   if (!state) return null;
   const t = await getTranslations("plan.step");
-  const tPlan = await getTranslations("plan");
   const { completedAt } = state;
   const completed = completedAt !== null;
   return (
@@ -33,9 +32,7 @@ export async function PlanStepActions({ pageId }: { pageId: string }) {
         ) : (
           <span className="text-muted-foreground">{t("open")}</span>
         )}
-        {state.updatedSinceCompletion ? (
-          <Badge variant="secondary">{tPlan("updatedSinceCompletion")}</Badge>
-        ) : null}
+        {state.updatedSinceCompletion ? <UpdatedBadge pageId={pageId} /> : null}
       </div>
       <StepToggle pageId={pageId} completed={completed} />
     </section>

@@ -14,7 +14,8 @@
     "open": "Offen",
     "done": "Erledigt",
     "actionsLabel": "Fortschritt für diesen Schritt",
-    "allDoneToast": "Glückwunsch, du hast alle Schritte erledigt."
+    "allDoneToast": "Glückwunsch, du hast alle Schritte erledigt.",
+    "dismissUpdate": "Als gelesen markieren"
   },
   "member": {
     "title": "Plan von {name}",

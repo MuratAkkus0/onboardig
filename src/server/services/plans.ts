@@ -189,6 +189,20 @@ async function loadManageableTargetReadOnly(
   return target;
 }
 
+/**
+ * The page content changed after the employee completed the step and after they last dismissed
+ * the "updated since completion" badge.
+ */
+function isUpdatedSinceCompletion(row: {
+  contentUpdatedAt: Date;
+  completedAt: Date | null;
+  updateSeenAt: Date | null;
+}): boolean {
+  if (row.completedAt === null) return false;
+  const seen = Math.max(row.completedAt.getTime(), row.updateSeenAt?.getTime() ?? 0);
+  return row.contentUpdatedAt.getTime() > seen;
+}
+
 async function nextSortOrderInPhase(tx: Tx, userId: string, phase: Phase): Promise<number> {
   const [row] = await tx
     .select({ value: sql<number>`coalesce(max(${userPlanSteps.sortOrder}), -1)` })
@@ -215,6 +229,7 @@ export async function getMyPlan(actor: Actor): Promise<PlanDto> {
         titleEn: pages.titleEn,
         contentUpdatedAt: pages.contentUpdatedAt,
         completedAt: pageCompletions.completedAt,
+        updateSeenAt: pageCompletions.updateSeenAt,
       })
       .from(userPlanSteps)
       .innerJoin(pages, eq(pages.id, userPlanSteps.pageId))
@@ -237,8 +252,7 @@ export async function getMyPlan(actor: Actor): Promise<PlanDto> {
       title: text,
       isFallback,
       completedAt: row.completedAt,
-      updatedSinceCompletion:
-        row.completedAt !== null && row.contentUpdatedAt.getTime() > row.completedAt.getTime(),
+      updatedSinceCompletion: isUpdatedSinceCompletion(row),
     };
     return { phase: row.phase, step };
   });
@@ -267,6 +281,7 @@ export async function getMyStepState(
     .select({
       contentUpdatedAt: pages.contentUpdatedAt,
       completedAt: pageCompletions.completedAt,
+      updateSeenAt: pageCompletions.updateSeenAt,
     })
     .from(userPlanSteps)
     .innerJoin(pages, eq(pages.id, userPlanSteps.pageId))
@@ -287,8 +302,7 @@ export async function getMyStepState(
   if (!row) return null;
   return {
     completedAt: row.completedAt,
-    updatedSinceCompletion:
-      row.completedAt !== null && row.contentUpdatedAt.getTime() > row.completedAt.getTime(),
+    updatedSinceCompletion: isUpdatedSinceCompletion(row),
   };
 }
 
@@ -324,6 +338,7 @@ export async function getPlanForUser(
         titleEn: pages.titleEn,
         contentUpdatedAt: pages.contentUpdatedAt,
         completedAt: pageCompletions.completedAt,
+        updateSeenAt: pageCompletions.updateSeenAt,
         moduleId: modules.id,
         moduleTitleDe: modules.titleDe,
         moduleTitleEn: modules.titleEn,
@@ -367,10 +382,7 @@ export async function getPlanForUser(
       pageStatus: row.pageStatus,
       isActive,
       completedAt: row.completedAt,
-      updatedSinceCompletion:
-        isActive &&
-        row.completedAt !== null &&
-        row.contentUpdatedAt.getTime() > row.completedAt.getTime(),
+      updatedSinceCompletion: isActive && isUpdatedSinceCompletion(row),
     };
     return { step, row };
   });
@@ -755,6 +767,33 @@ export async function setStepCompletion(
       return recomputed;
     }),
   );
+}
+
+/**
+ * Dismisses the "updated since completion" badge of a completed step in the actor's own plan.
+ * Progress and the completion date stay unchanged; a later content change shows the badge again.
+ */
+export async function dismissStepUpdate(actor: Actor, input: { pageId: string }): Promise<void> {
+  assertPermission(actor, "plan.completeOwn");
+  const { pageId } = pageIdInputSchema.parse(input);
+  const [step] = await db
+    .select({ id: userPlanSteps.id })
+    .from(userPlanSteps)
+    .innerJoin(pages, eq(pages.id, userPlanSteps.pageId))
+    .where(
+      and(
+        eq(userPlanSteps.userId, actor.id),
+        eq(userPlanSteps.pageId, pageId),
+        eq(pages.status, "published"),
+      ),
+    );
+  if (!step) throw new AppError("NOT_FOUND");
+  const updated = await db
+    .update(pageCompletions)
+    .set({ updateSeenAt: sql`now()` })
+    .where(and(eq(pageCompletions.userId, actor.id), eq(pageCompletions.pageId, pageId)))
+    .returning({ pageId: pageCompletions.pageId });
+  if (updated.length === 0) throw new AppError("NOT_FOUND");
 }
 
 /** Internal: progress and last activity per user (dashboards use the same numbers as the plan). */

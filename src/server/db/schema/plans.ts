@@ -59,6 +59,8 @@ export const pageCompletions = pgTable(
       .notNull()
       .references(() => pages.id, { onDelete: "restrict" }),
     completedAt: timestamptz("completed_at").notNull().defaultNow(),
+    /** Set when the employee dismissed the "updated since completion" badge (P-plan-3). */
+    updateSeenAt: timestamptz("update_seen_at"),
   },
   (t) => [
     primaryKey({ name: "page_completions_pk", columns: [t.userId, t.pageId] }),

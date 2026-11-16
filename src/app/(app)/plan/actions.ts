@@ -5,7 +5,7 @@ import { ROUTES } from "@/config/app";
 import type { ActionResult } from "@/lib/action-result";
 import type { OnboardingStatus } from "@/lib/domain/onboarding-status";
 import { runAction } from "@/server/actions/run-action";
-import { setStepCompletion } from "@/server/services/plans";
+import { dismissStepUpdate, setStepCompletion } from "@/server/services/plans";
 
 /** "Erledigt" toggle and undo for the signed-in user's own plan (rendered on /plan and /pages/[id]). */
 export async function setStepCompletionAction(
@@ -15,6 +15,19 @@ export async function setStepCompletionAction(
   const result = await runAction(async (actor) => {
     const { status } = await setStepCompletion(actor, { pageId, completed });
     return { status };
+  });
+  if (result.ok) {
+    revalidatePath(ROUTES.plan);
+    revalidatePath(ROUTES.page(pageId));
+  }
+  return result;
+}
+
+/** Dismisses the "updated since completion" badge of an own completed step. */
+export async function dismissStepUpdateAction(pageId: string): Promise<ActionResult<null>> {
+  const result = await runAction(async (actor) => {
+    await dismissStepUpdate(actor, { pageId });
+    return null;
   });
   if (result.ok) {
     revalidatePath(ROUTES.plan);

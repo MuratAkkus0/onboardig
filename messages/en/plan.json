@@ -14,7 +14,8 @@
     "open": "Open",
     "done": "Done",
     "actionsLabel": "Progress for this step",
-    "allDoneToast": "Congratulations, you have completed all steps."
+    "allDoneToast": "Congratulations, you have completed all steps.",
+    "dismissUpdate": "Mark as read"
   },
   "member": {
     "title": "{name}'s plan",

@@ -1,0 +1,1 @@
+ALTER TABLE "page_completions" ADD COLUMN "update_seen_at" timestamp with time zone;

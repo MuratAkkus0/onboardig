@@ -6,6 +6,7 @@ import { ROUTES } from "@/config/app";
 import type { PlanDto, StepDto } from "@/server/services/plans";
 import { PhaseTitle } from "./phase-title";
 import { StepToggle } from "./step-toggle";
+import { UpdatedBadge } from "./updated-badge";
 
 function StepRow({ step }: { step: StepDto }) {
   const t = useTranslations("plan");
@@ -30,9 +31,7 @@ function StepRow({ step }: { step: StepDto }) {
               <span>{t("step.open")}</span>
             )}
             {step.isFallback ? <Badge variant="outline">{common("germanOnly")}</Badge> : null}
-            {step.updatedSinceCompletion ? (
-              <Badge variant="secondary">{t("updatedSinceCompletion")}</Badge>
-            ) : null}
+            {step.updatedSinceCompletion ? <UpdatedBadge pageId={step.pageId} /> : null}
           </div>
         </div>
       </div>

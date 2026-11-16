@@ -378,7 +378,7 @@ Blueprint incelemesi sırasında netleştirilen yorumlar (kaynak: `docs/v1-archi
 - **P-tpl-3** Arşivdeki şablonun adımları düzenlenebilir; şablona taslak sayfa eklenebilir (arayüzde işaretli), arşiv sayfa eklenemez. (otonom karar)
 - **P-plan-1** Kopyalamada şablon önceliği: şirket geneli → departman → ekip → iş rolü, sonra ad. (otonom karar)
 - **P-plan-2** Lider plana yayında olmayan bir sayfa eklemeye çalışırsa sayfa yokmuş gibi yanıt alır (taslağın varlığı sızmaz). (otonom karar)
-- **P-plan-3** Tamamlanmış adımı yeniden tamamlamak ilk tamamlama tarihini korur; "Seit deinem Abschluss aktualisiert" rozetini kaldırmak için çalışan adımı geri alıp yeniden tamamlar. (otonom karar)
+- **P-plan-3** Tamamlanmış adımı yeniden tamamlamak ilk tamamlama tarihini korur. "Seit deinem Abschluss aktualisiert" rozeti tek tıkla kapatılır (`page_completions.update_seen_at`); tamamlama tarihi ve ilerleme değişmez, sayfa yeniden güncellenirse rozet tekrar çıkar. Çalışan kapattığında rozet lider/admin görünümünden de kalkar. (16.11.2026 kullanıcı kararıyla güncellendi)
 - **P-plan-4** Çalışan başkasının planına erişmeye çalışırsa `FORBIDDEN`, lider kendisine atanmamış çalışan için `NOT_FOUND` alır. (otonom karar)
 
 ### Dalga 3 otonom kararları

@@ -2,7 +2,13 @@ import { eq } from "drizzle-orm";
 import { describe, expect, it } from "vitest";
 import { notifications, pageCompletions, pages, users } from "@/server/db/schema";
 import { isAppError } from "@/server/errors";
-import { getMyPlan, getMyStepState, setStepCompletion } from "@/server/services/plans";
+import {
+  dismissStepUpdate,
+  getMyPlan,
+  getMyStepState,
+  getPlanForUser,
+  setStepCompletion,
+} from "@/server/services/plans";
 import { reactivateUser } from "@/server/services/users";
 import { completePage, createAdmin, createEmployee, createLead, createPage } from "../../factories";
 import { actorOf, testDb } from "../../helpers";
@@ -187,5 +193,59 @@ describe("getMyStepState", () => {
     expect((await getMyStepState(employeeActor, { pageId: a!.id }))?.completedAt).toBeInstanceOf(
       Date,
     );
+  });
+});
+
+describe("dismissStepUpdate", () => {
+  it("hides the badge without touching the completion, until the page changes again", async () => {
+    const { adminActor, employee, employeeActor } = await orgFixture();
+    const [a, b] = await publishedPages(2);
+    await planWith(employee.id, [a!.id, b!.id]);
+    const completedAt = new Date(Date.now() - 60_000);
+    await completePage(employee.id, a!.id, completedAt);
+    expect((await getMyStepState(employeeActor, { pageId: a!.id }))?.updatedSinceCompletion).toBe(
+      true,
+    );
+
+    await dismissStepUpdate(employeeActor, { pageId: a!.id });
+
+    expect(await getMyStepState(employeeActor, { pageId: a!.id })).toEqual({
+      completedAt,
+      updatedSinceCompletion: false,
+    });
+    const plan = await getMyPlan(employeeActor);
+    expect(plan.progress).toMatchObject({ completed: 1, total: 2 });
+    const leadView = await getPlanForUser(adminActor, { userId: employee.id });
+    expect(leadView.phases.flatMap((p) => p.steps).find((s) => s.pageId === a!.id)).toMatchObject({
+      updatedSinceCompletion: false,
+    });
+
+    await testDb
+      .update(pages)
+      .set({ contentUpdatedAt: new Date(Date.now() + 60_000) })
+      .where(eq(pages.id, a!.id));
+    expect((await getMyStepState(employeeActor, { pageId: a!.id }))?.updatedSinceCompletion).toBe(
+      true,
+    );
+  });
+
+  it("rejects open steps and pages outside the own plan", async () => {
+    const { employee, employeeActor } = await orgFixture();
+    const other = await createEmployee();
+    const [a, b, c] = await publishedPages(3);
+    await planWith(employee.id, [a!.id]);
+    await planWith(other.id, [c!.id]);
+    await completePage(other.id, c!.id, new Date(Date.now() - 60_000));
+
+    for (const pageId of [a!.id, b!.id, c!.id]) {
+      await expect(dismissStepUpdate(employeeActor, { pageId })).rejects.toSatisfy(
+        (e) => isAppError(e) && e.code === "NOT_FOUND",
+      );
+    }
+    const [otherCompletion] = await testDb
+      .select()
+      .from(pageCompletions)
+      .where(eq(pageCompletions.userId, other.id));
+    expect(otherCompletion?.updateSeenAt).toBeNull();
   });
 });
