@@ -25,11 +25,18 @@ import { setLocaleAction } from "@/server/actions/preferences";
 
 type Variant = "menu" | "field" | "select";
 
+interface LocaleSwitcherProps {
+  variant: Variant;
+  id?: string;
+  /** "select" only: the trigger shows the short code ("DE") while the items keep the full names. */
+  compact?: boolean;
+}
+
 /**
  * de / en. Signed in: stored on the profile; always: NEXT_LOCALE cookie (works on the login page).
  * "select" is the compact variant for the signed-out pages.
  */
-export function LocaleSwitcher({ variant, id }: { variant: Variant; id?: string }) {
+export function LocaleSwitcher({ variant, id, compact = false }: LocaleSwitcherProps) {
   const t = useTranslations();
   const locale = useLocale();
   const router = useRouter();
@@ -67,7 +74,11 @@ export function LocaleSwitcher({ variant, id }: { variant: Variant; id?: string 
     return (
       <Select value={locale} onValueChange={change} disabled={pending}>
         <SelectTrigger id={id} size="sm" aria-label={t("nav.userMenu.language")}>
-          <SelectValue />
+          {compact ? (
+            <SelectValue>{t(`enums.localeShort.${locale}`)}</SelectValue>
+          ) : (
+            <SelectValue />
+          )}
         </SelectTrigger>
         <SelectContent>
           {LOCALES.map((value) => (

@@ -1125,7 +1125,7 @@ outside requests). Sender `env.MAIL_FROM`. Mail templates contain no color value
 
 ## 6. Route map and navigation
 
-No locale prefix. `(auth)` and `(app)` are route groups. "Owner" = unit that owns the folder after F2b's placeholder.
+No locale prefix. `(auth)`, `(app)` and `(public)` are route groups. "Owner" = unit that owns the folder after F2b's placeholder.
 
 | Route | Access | Owner | Content |
 |---|---|---|---|
@@ -1133,7 +1133,7 @@ No locale prefix. `(auth)` and `(app)` are route groups. "Owner" = unit that own
 | `/set-password?token=` | public | F2b | invitation acceptance (`verifyInvitationToken` / `acceptInvitation`) |
 | `/forgot-password` | public | F2b | request reset mail (always shows neutral success) |
 | `/reset-password?token=` | public | F2b | set new password |
-| `/` | all signed-in | F2b | redirect: employee → `/plan`, team_lead → `/team`, admin → `/admin` |
+| `/` | public (`(public)` group; exact match in proxy `PUBLIC_PATHS`) | V-land | signed in (`getActor()`) ⇒ redirect: employee → `/plan`, team_lead → `/team`, admin → `/admin`; otherwise the landing page (`src/components/landing/*`, presentation only, K V-land-1) |
 | `/plan` | all | W2-plans | own plan grouped by phase, progress, "Dein Onboarding-Plan wird vorbereitet" when empty |
 | `/pages/[pageId]` | all (service decides visibility) | W1-content | page view; EN fallback note; last edited; slot `<PlanStepActions pageId>` (W2) |
 | `/events` | all | W1-notify-events | upcoming / past |

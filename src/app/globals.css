@@ -46,9 +46,40 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+  /* Landing page */
+  --color-brand: var(--brand);
+  --color-brand-foreground: var(--brand-foreground);
+  --color-brand-soft: var(--brand-soft);
+  --color-brand-soft-foreground: var(--brand-soft-foreground);
+  --color-surface-raised: var(--surface-raised);
+  --color-surface-sunken: var(--surface-sunken);
+  --color-window-chrome: var(--window-chrome);
+  --color-ring-track: var(--ring-track);
+  --shadow-raised: var(--elevation-raised);
+  --shadow-float: var(--elevation-float);
+  --shadow-glow: var(--elevation-glow);
+  --font-landing: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-landing-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, monospace;
+  --text-display: clamp(2.5rem, 1.6rem + 4.2vw, 4.75rem);
+  --text-display--line-height: 1.02;
+  --text-display--letter-spacing: -0.035em;
+  --text-section: clamp(1.875rem, 1.4rem + 2vw, 3rem);
+  --text-section--line-height: 1.08;
+  --text-section--letter-spacing: -0.025em;
+}
+
+/* Always emitted: the landing motion utilities below reference these by var(). */
+@theme static {
+  --ease-landing: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 @layer base {
+  @media (prefers-reduced-motion: no-preference) {
+    html:has([data-landing]) {
+      scroll-behavior: smooth;
+    }
+  }
   * {
     @apply border-border outline-ring/50;
   }
@@ -65,5 +96,248 @@
   [role="switch"]:not(:disabled),
   summary {
     cursor: pointer;
+  }
+}
+
+/* ---- Landing page ------------------------------------------------------------------------
+ * Colors come from tokens.css via var() only. Every element's default style is its FINAL state;
+ * animations run only under prefers-reduced-motion: no-preference (fill-mode both), so reduced
+ * motion or missing support always shows the finished page. CSS only: no timers, no observers.
+ */
+
+@utility bg-aurora {
+  background-image:
+    radial-gradient(60% 50% at 20% 0%, var(--glow-indigo), transparent 70%),
+    radial-gradient(50% 45% at 85% 10%, var(--glow-cyan), transparent 70%),
+    radial-gradient(70% 55% at 50% 100%, var(--glow-dawn), transparent 70%);
+}
+
+/* The mask only uses the alpha channel of --foreground (opaque in both themes). */
+@utility bg-grid {
+  background-image:
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, var(--foreground) 40%, transparent 100%);
+}
+
+@utility mask-fade-b {
+  mask-image: linear-gradient(to bottom, var(--foreground) 72%, transparent);
+}
+
+/* Fades a decorative layer out towards every edge of its box, so it never shows a hard edge. */
+@utility mask-fade-radial {
+  mask-image: radial-gradient(closest-side, var(--foreground) 35%, transparent 100%);
+}
+
+@utility headline-fade {
+  background-image: linear-gradient(180deg, var(--foreground) 35%, var(--muted-foreground));
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  @media (forced-colors: active) {
+    background: none;
+    color: CanvasText;
+  }
+}
+
+@utility surface-glass {
+  background-color: var(--surface-raised);
+  backdrop-filter: blur(20px) saturate(1.2);
+  @supports not (backdrop-filter: blur(1px)) {
+    background-color: var(--card);
+  }
+  @media (prefers-reduced-transparency: reduce) {
+    background-color: var(--card);
+    backdrop-filter: none;
+  }
+}
+
+/* Header rule fades in over the first 64px of scroll; without support the border stays visible. */
+@utility landing-header-rule {
+  @supports (animation-timeline: scroll()) {
+    animation: landing-header-rule linear both;
+    animation-timeline: scroll(root);
+    animation-range: 0 64px;
+  }
+}
+
+/* Scroll-driven reveal (progressive enhancement; Firefox / older Safari show static content). */
+@utility landing-reveal {
+  @media (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: view()) {
+      animation: landing-rise linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 25%;
+    }
+  }
+}
+
+@media print {
+  .landing-reveal,
+  .landing-line {
+    animation: none;
+  }
+}
+
+@utility landing-line {
+  @media (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: view()) {
+      animation: landing-line-grow linear both;
+      animation-timeline: view();
+      animation-range: entry 20% cover 35%;
+    }
+  }
+}
+
+/* One-shot load animations; timing comes from --landing-delay / --landing-duration (inline). */
+@utility landing-enter {
+  @media (prefers-reduced-motion: no-preference) {
+    animation: landing-rise var(--landing-duration, 600ms) var(--ease-landing)
+      var(--landing-delay, 0ms) both;
+  }
+}
+
+@utility landing-anim-fade-in {
+  @media (prefers-reduced-motion: no-preference) {
+    animation: landing-fade-in var(--landing-duration, 300ms) ease-out var(--landing-delay, 0ms)
+      both;
+  }
+}
+
+@utility landing-anim-fade-out {
+  @media (prefers-reduced-motion: no-preference) {
+    animation: landing-fade-out var(--landing-duration, 300ms) ease-out var(--landing-delay, 0ms)
+      both;
+  }
+}
+
+@utility landing-anim-check {
+  @media (prefers-reduced-motion: no-preference) {
+    animation: landing-check var(--landing-duration, 300ms) var(--ease-spring)
+      var(--landing-delay, 0ms) both;
+  }
+}
+
+@utility landing-anim-ring {
+  @media (prefers-reduced-motion: no-preference) {
+    animation: landing-ring var(--landing-duration, 900ms) var(--ease-landing)
+      var(--landing-delay, 0ms) both;
+  }
+}
+
+@utility landing-anim-bar {
+  @media (prefers-reduced-motion: no-preference) {
+    animation: landing-bar var(--landing-duration, 900ms) var(--ease-landing)
+      var(--landing-delay, 0ms) both;
+  }
+}
+
+@utility landing-anim-draw {
+  @media (prefers-reduced-motion: no-preference) {
+    animation: landing-draw var(--landing-duration, 700ms) var(--ease-landing)
+      var(--landing-delay, 0ms) both;
+  }
+}
+
+/* Rises in, floats for a fixed number of cycles (never infinite, WCAG 2.2.2), then rests. */
+@utility landing-anim-notify {
+  @media (prefers-reduced-motion: no-preference) {
+    animation:
+      landing-rise var(--landing-duration, 600ms) var(--ease-landing) var(--landing-delay, 0ms) both,
+      landing-float var(--landing-float-duration, 6000ms) ease-in-out
+        var(--landing-float-delay, 0ms) var(--landing-float-iterations, 1);
+  }
+}
+
+@keyframes landing-rise {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes landing-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes landing-fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes landing-check {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes landing-ring {
+  from {
+    stroke-dashoffset: var(--ring-from);
+  }
+  to {
+    stroke-dashoffset: var(--ring-to);
+  }
+}
+
+@keyframes landing-bar {
+  from {
+    transform: scaleX(var(--bar-from));
+  }
+  to {
+    transform: scaleX(var(--bar-to));
+  }
+}
+
+@keyframes landing-draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes landing-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes landing-header-rule {
+  from {
+    border-bottom-color: transparent;
+  }
+  to {
+    border-bottom-color: var(--border);
+  }
+}
+
+@keyframes landing-line-grow {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
   }
 }

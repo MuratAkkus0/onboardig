@@ -3,8 +3,13 @@
 import { useSyncExternalStore } from "react";
 import { useTheme } from "next-themes";
 import { useTranslations } from "next-intl";
+import { Moon, Sun } from "lucide-react";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
   DropdownMenuSub,
@@ -16,7 +21,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { THEMES } from "@/config/app";
 import { setThemeAction } from "@/server/actions/preferences";
 
-type Variant = "menu" | "field";
+type Variant = "menu" | "field" | "icon";
 
 const subscribeNothing = () => () => undefined;
 
@@ -29,8 +34,20 @@ function useMounted(): boolean {
   );
 }
 
-/** Light / dark / system. Applies immediately (next-themes) and persists to the profile. */
-export function ThemeSwitcher({ variant }: { variant: Variant }) {
+interface ThemeSwitcherProps {
+  variant: Variant;
+  /**
+   * Store the choice on the profile (default). Signed-out pages pass false: there is no actor, so
+   * the action would fail; next-themes still keeps the choice in the browser.
+   */
+  persist?: boolean;
+}
+
+/**
+ * Light / dark / system. Applies immediately (next-themes); with `persist` (default) it is also
+ * saved to the profile. Signed-out pages pass `persist={false}`, as there is no profile to save to.
+ */
+export function ThemeSwitcher({ variant, persist = true }: ThemeSwitcherProps) {
   const t = useTranslations();
   const { theme, setTheme } = useTheme();
   const mounted = useMounted();
@@ -38,8 +55,32 @@ export function ThemeSwitcher({ variant }: { variant: Variant }) {
 
   async function change(next: string) {
     setTheme(next);
+    if (!persist) return;
     const result = await setThemeAction(next);
     if (!result.ok) toast.error(t("profile.saveFailed"));
+  }
+
+  if (variant === "icon") {
+    // Sun/Moon switch by the .dark class (CSS), so server and client render the same markup.
+    return (
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" size="icon" aria-label={t("nav.userMenu.theme")}>
+            <Sun className="dark:hidden" aria-hidden />
+            <Moon className="hidden dark:block" aria-hidden />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuRadioGroup value={current} onValueChange={change}>
+            {THEMES.map((value) => (
+              <DropdownMenuRadioItem key={value} value={value}>
+                {t(`enums.theme.${value}`)}
+              </DropdownMenuRadioItem>
+            ))}
+          </DropdownMenuRadioGroup>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    );
   }
 
   if (variant === "menu") {

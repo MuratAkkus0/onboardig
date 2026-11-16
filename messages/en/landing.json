@@ -1,0 +1,205 @@
+{
+  "meta": {
+    "title": "{appName} – Onboarding with a plan",
+    "description": "Personal onboarding plans by department, team and role – with progress for team leads and no tracking of reading behaviour."
+  },
+  "a11y": {
+    "skipLink": "Skip to content",
+    "homeLink": "{appName} – go to home page",
+    "sectionNav": "Home page sections",
+    "footerNav": "More links",
+    "stageLabel": "Example view: an onboarding plan with {completed} of {total} steps done, a team overview with {people} people and a notification about a new event."
+  },
+  "header": {
+    "nav": {
+      "roles": "Features",
+      "howItWorks": "How it works",
+      "privacy": "Privacy"
+    },
+    "signIn": "Sign in"
+  },
+  "hero": {
+    "eyebrow": "Onboarding for new team members",
+    "titleLine1": "Ready to go",
+    "titleLine2": "from day one.",
+    "lead": "A personal plan for every new person – put together by department, team and role. Tick it off step by step, keep track of changes, and team leads always see where onboarding stands.",
+    "primaryCta": "Sign in",
+    "secondaryCta": "See how it works",
+    "accessNote": "No self-registration – accounts are set up by the administrators.",
+    "stageCaption": "Sample view with fictional names and content"
+  },
+  "facts": {
+    "label": "{appName} in numbers",
+    "phases": {
+      "unit": "{count, plural, one {phase} other {phases}}",
+      "caption": "From before the start to the first month"
+    },
+    "roles": {
+      "unit": "{count, plural, one {user role} other {user roles}}",
+      "caption": "Employees, team leads and admins"
+    },
+    "languages": {
+      "unit": "{count, plural, one {language} other {languages}}",
+      "caption": "Interface and content in German and English"
+    },
+    "tracking": {
+      "unit": "{count, plural, one {tracker} other {trackers}}",
+      "caption": "No recording of reading time or scrolling"
+    }
+  },
+  "mock": {
+    "windowPathPlan": "{appSlug} / my-plan",
+    "windowPathTeam": "{appSlug} / team",
+    "windowPathEditor": "{appSlug} / library",
+    "people": {
+      "mira": "Mira Kaya",
+      "jonas": "Jonas Berg",
+      "lea": "Lea Sommer",
+      "deniz": "Deniz Arslan",
+      "nina": "Nina Brandt"
+    },
+    "department": "Customer Service",
+    "team": "Team North",
+    "jobRole": "Service Coordination",
+    "planMeta": "{name} · {department} · {team}",
+    "steps": {
+      "documents": "Documents for your first day",
+      "arrival": "Getting here and arriving",
+      "welcome": "Welcome to the team",
+      "workplace": "Set up your workplace and accounts",
+      "security": "Information security guidelines",
+      "tools": "Our tools at a glance",
+      "contacts": "Key contacts",
+      "project": "Your first own task",
+      "feedback": "Prepare your feedback talk"
+    },
+    "event": {
+      "title": "Team breakfast"
+    },
+    "eventLine": "{title} · {date}",
+    "editorPage": "First week in Customer Service",
+    "searchQuery": "guidelines",
+    "searchResult": "Information security <hl>guidelines</hl>"
+  },
+  "phases": {
+    "eyebrow": "The plan",
+    "title": "One plan, four phases.",
+    "lead": "Content comes from templates for department, team and role. The result is a plan that follows how the first weeks actually unfold.",
+    "caption": "Every page can be marked as done. If a completed page is revised later, the plan shows a notice.",
+    "items": {
+      "before_start": "Prepare: reading for the time before the first working day.",
+      "first_day": "Arrive: welcome, workplace and first accounts.",
+      "first_week": "Settle in: processes, tools and contacts.",
+      "first_month": "Go deeper: the specialist topics of the role and the team."
+    }
+  },
+  "roles": {
+    "eyebrow": "Features",
+    "title": "The right view for every role.",
+    "lead": "Everyone works in the same tool – and each role sees exactly what it needs for its job.",
+    "employee": {
+      "title": "Work through your own plan, step by step.",
+      "points": {
+        "plan": "Read pages ordered by phase and mark them as done",
+        "updated": "A notice when a completed page has changed",
+        "more": "Events, notifications and search in one place"
+      }
+    },
+    "teamLead": {
+      "title": "The team's progress at a glance.",
+      "points": {
+        "assign": "Assign templates and add or remove individual pages",
+        "progress": "Progress, start date and last activity for each person",
+        "content": "Edit the content of your own department"
+      }
+    },
+    "admin": {
+      "title": "Structure, content and access in one place.",
+      "points": {
+        "users": "Create user accounts and send invitations by email",
+        "org": "Maintain departments, teams and job roles",
+        "library": "Manage content in the editor, templates and events",
+        "reports": "Handle reported problems"
+      }
+    },
+    "more": {
+      "title": "Also included",
+      "events": {
+        "title": "Events",
+        "body": "Introductions, team meetings and other dates, clearly in one place."
+      },
+      "notifications": {
+        "title": "Notifications",
+        "body": "New steps, changed pages and new events appear right inside the app."
+      },
+      "search": {
+        "title": "Search",
+        "body": "Search across pages and events – in German and in English."
+      },
+      "bilingual": {
+        "title": "Bilingual",
+        "body": "Interface and content in German and English. If a translation is missing, the German version is shown."
+      },
+      "lock": {
+        "title": "Edit lock",
+        "body": "A page is only ever edited by one person at a time. If the lock is lost or saving fails, the changes are kept as a draft in the browser."
+      },
+      "report": {
+        "title": "Report a problem",
+        "body": "Report app errors or outdated content directly from the page in question."
+      }
+    }
+  },
+  "howItWorks": {
+    "eyebrow": "How it works",
+    "title": "Ready to go in three steps.",
+    "steps": {
+      "account": {
+        "title": "Create the account",
+        "body": "The administrators create the account with department, team and role. The new person receives an email invitation and sets their own password – the link is valid for {hours} hours."
+      },
+      "plan": {
+        "title": "Put the plan together",
+        "body": "The team lead assigns suitable templates. Their steps are copied into the personal plan – pages that are already in the plan are not added twice."
+      },
+      "start": {
+        "title": "Get started, with support",
+        "body": "The new person works through the plan, even before the first working day if they like. The team lead sees the progress and is notified as soon as everything is done."
+      }
+    }
+  },
+  "privacy": {
+    "eyebrow": "Privacy",
+    "title": "Only what is <accent>done</accent> is counted. Nothing else.",
+    "lead": "{appName} is built for data minimisation. For each step it records whether and when it was done. How long anyone reads is never recorded.",
+    "legal": "Designed with the GDPR (<de>DSGVO</de>) and Section 87(1) no. 6 of the German Works Constitution Act (<de>BetrVG</de>) in mind.",
+    "storedTitle": "What is stored",
+    "stored": {
+      "completion": "Whether and when a step was done – and whether a change notice was marked as read",
+      "profile": "Profile: name, email, department, team, role, start date, language and theme",
+      "notifications": "Notifications – those older than {days} days are removed",
+      "reports": "Reported problems – resolved reports are removed after {reportDays} days",
+      "sessions": "Sign-in sessions with IP address and browser – for sign-in security only, never analysed"
+    },
+    "notStoredTitle": "What is never recorded or used",
+    "notStored": {
+      "readingTime": "Reading time and time spent on pages",
+      "behavior": "Scroll behaviour and click paths",
+      "analytics": "Third-party analytics or advertising services",
+      "cookies": "Tracking cookies"
+    },
+    "footnote": "Roles decide who sees what: employees see their own plan, team leads see their team, admins see all plans."
+  },
+  "cta": {
+    "title": "Ready for day one?",
+    "body": "Sign in with your email address and the password you chose, and start right away with your own plan.",
+    "primary": "Sign in",
+    "noAccount": "No account yet? The administrators in your company can help."
+  },
+  "footer": {
+    "tagline": "Onboarding with a plan – for new team members, team leads and administrators.",
+    "signIn": "Sign in",
+    "copyright": "© {year} {appName}",
+    "fictional": "All names and sample content on this page are fictional."
+  }
+}

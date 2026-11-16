@@ -2,7 +2,9 @@ import { NextResponse, type NextRequest } from "next/server";
 import { getSessionCookie } from "better-auth/cookies";
 import { F2B_CONFIG, ROUTES } from "@/config/app";
 
+// Exact matches only: "/" (the landing page) is public, "/plan" etc. are not.
 const PUBLIC_PATHS: readonly string[] = [
+  ROUTES.home,
   ROUTES.login,
   ROUTES.setPassword,
   ROUTES.forgotPassword,
@@ -11,8 +13,9 @@ const PUBLIC_PATHS: readonly string[] = [
 
 /**
  * Optimistic gate, one direction only: no session cookie on an (app) path => /login?next=...
- * It never redirects away from the auth pages (a stale cookie would loop /login <-> /). Real
- * checks happen in the layouts (requirePageActor) and in the services.
+ * Public: the auth pages and the landing page "/" (which itself sends signed-in users to their
+ * role home). It never redirects away from public pages by cookie (a stale cookie would loop
+ * /login <-> /). Real checks happen in the layouts (requirePageActor) and in the services.
  */
 export function proxy(request: NextRequest) {
   const { pathname, search } = request.nextUrl;

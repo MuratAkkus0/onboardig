@@ -374,3 +374,85 @@ export const V_FB_CONFIG = {
   filterAll: "all",
 } as const;
 // <<< v-fb
+
+// >>> v-land
+/** Public landing page at "/" (signed-out visitors only). All demo content is fictional. */
+export const LANDING_CONFIG = {
+  /** Internal tool: keep the landing page out of search engines by default. */
+  robotsIndex: false,
+  sectionIds: {
+    main: "main",
+    plan: "plan",
+    roles: "roles",
+    howItWorks: "how-it-works",
+    privacy: "privacy",
+  },
+  /** Heading ids the sections point to with aria-labelledby. */
+  headingIds: {
+    hero: "hero-title",
+    facts: "facts-title",
+    phases: "phases-title",
+    roles: "roles-title",
+    howItWorks: "how-title",
+    privacy: "privacy-title",
+    cta: "cta-title",
+  },
+  /** Shown on the page as a fact. Must stay literally true: never add analytics. */
+  trackingServiceCount: 0,
+  demo: {
+    person: "mira",
+    planSteps: [
+      { key: "welcome", phase: "first_day", state: "done", doneOn: "2026-11-02" },
+      { key: "workplace", phase: "first_day", state: "animated", doneOn: "2026-11-03" },
+      { key: "security", phase: "first_day", state: "done", updated: true, doneOn: "2026-11-02" },
+      { key: "tools", phase: "first_week", state: "open" },
+      { key: "contacts", phase: "first_week", state: "open" },
+    ],
+    phaseChips: {
+      before_start: [
+        { key: "documents", done: true },
+        { key: "arrival", done: true },
+      ],
+      first_day: [
+        { key: "welcome", done: true },
+        { key: "workplace", done: true },
+        { key: "security", done: true },
+      ],
+      first_week: [
+        { key: "tools", done: false },
+        { key: "contacts", done: false },
+      ],
+      first_month: [
+        { key: "project", done: false },
+        { key: "feedback", done: false },
+      ],
+    },
+    team: [
+      { key: "mira", percent: 60, status: "active" },
+      { key: "jonas", percent: 45, status: "active" },
+      { key: "lea", percent: 100, status: "completed" },
+      { key: "deniz", percent: 0, status: "active" },
+    ],
+    /** People shown in the team-lead mini mock (subset of `team`). */
+    teamPreview: ["mira", "jonas", "lea"],
+    event: { startsAt: "2026-11-20T09:00:00+01:00" },
+    /** Editor holding the lock: a fictional admin, not one of the new hires in `team`. */
+    lock: { person: "nina", since: "2026-11-16T10:42:00+01:00" },
+  },
+  ring: { sizePx: 72, mobileSizePx: 56, strokePx: 8 },
+  motion: {
+    staggerMs: 80,
+    stageDurationMs: 800,
+    underlineDelayMs: 500,
+    underlineMs: 700,
+    checkDelayMs: 1600,
+    checkMs: 300,
+    ringMs: 900,
+    notificationDelayMs: 2200,
+    notificationRiseMs: 600,
+    floatMs: 6000,
+    floatIterations: 2,
+    cardStaggerMs: 100,
+  },
+} as const;
+// <<< v-land

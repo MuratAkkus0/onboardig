@@ -34,3 +34,4 @@ v1 = IHK teslimi. Aşağıdakiler bilerek v1 dışında bırakıldı; v1 altyap�
 ## Altyapı
 - [ ] Şirket sunucusuna kurulum ve otomatik deploy
 - [ ] Yedekleme ve geri yükleme prosedürü
+- [ ] `/` internete açılırsa Impressum ve Datenschutzerklärung sayfaları (işletmeciye bağlı; landing footer'ında yeri işaretli)

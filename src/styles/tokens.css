@@ -38,6 +38,27 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+  /* Landing page only (the app screens stay neutral, K§9). */
+  --brand: oklch(0.5 0.2 272);
+  --brand-foreground: oklch(0.985 0 0);
+  --brand-soft: oklch(0.955 0.03 272);
+  --brand-soft-foreground: oklch(0.42 0.17 272);
+  --glow-indigo: oklch(0.72 0.15 272 / 35%);
+  --glow-cyan: oklch(0.86 0.08 200 / 35%);
+  --glow-dawn: oklch(0.86 0.1 60 / 50%);
+  --grid-line: oklch(0.145 0 0 / 6%);
+  --surface-raised: oklch(1 0 0 / 82%);
+  --surface-sunken: oklch(0.975 0.003 272);
+  --window-chrome: oklch(0.965 0.003 272);
+  --ring-track: oklch(0.93 0.005 272);
+  --shadow-color: oklch(0.3 0.05 272 / 14%);
+  --highlight: oklch(1 0 0 / 70%);
+  /* Declared once: .dark sits on <html> (= :root), so these resolve against the dark values. */
+  --elevation-raised: 0 1px 2px var(--shadow-color), 0 8px 24px -12px var(--shadow-color);
+  --elevation-float:
+    inset 0 1px 0 var(--highlight), 0 2px 4px -2px var(--shadow-color),
+    0 24px 48px -16px var(--shadow-color), 0 48px 96px -32px var(--shadow-color);
+  --elevation-glow: 0 10px 28px -10px var(--glow-indigo);
 }
 
 .dark {
@@ -78,4 +99,19 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+  /* Landing page only. */
+  --brand: oklch(0.74 0.14 272);
+  --brand-foreground: oklch(0.17 0.03 272);
+  --brand-soft: oklch(0.28 0.07 272);
+  --brand-soft-foreground: oklch(0.88 0.06 272);
+  --glow-indigo: oklch(0.55 0.2 272 / 40%);
+  --glow-cyan: oklch(0.55 0.1 200 / 22%);
+  --glow-dawn: oklch(0.62 0.14 50 / 28%);
+  --grid-line: oklch(1 0 0 / 6%);
+  --surface-raised: oklch(0.21 0.005 272 / 80%);
+  --surface-sunken: oklch(0.17 0.004 272);
+  --window-chrome: oklch(0.24 0.005 272);
+  --ring-track: oklch(0.3 0.01 272);
+  --shadow-color: oklch(0 0 0 / 55%);
+  --highlight: oklch(1 0 0 / 8%);
 }

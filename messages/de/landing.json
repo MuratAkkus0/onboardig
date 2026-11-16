@@ -1,0 +1,205 @@
+{
+  "meta": {
+    "title": "{appName} – Onboarding mit Plan",
+    "description": "Persönliche Onboarding-Pläne nach Abteilung, Team und Rolle – mit Fortschritt für die Teamleitung und ohne Erfassung von Leseverhalten."
+  },
+  "a11y": {
+    "skipLink": "Zum Inhalt springen",
+    "homeLink": "{appName} – zur Startseite",
+    "sectionNav": "Abschnitte der Startseite",
+    "footerNav": "Weitere Links",
+    "stageLabel": "Beispielansicht: ein Onboarding-Plan mit {completed} von {total} erledigten Schritten, eine Teamübersicht mit {people} Personen und eine Benachrichtigung über eine neue Veranstaltung."
+  },
+  "header": {
+    "nav": {
+      "roles": "Funktionen",
+      "howItWorks": "Ablauf",
+      "privacy": "Datenschutz"
+    },
+    "signIn": "Anmelden"
+  },
+  "hero": {
+    "eyebrow": "Onboarding für neue Teammitglieder",
+    "titleLine1": "Vom ersten Tag an",
+    "titleLine2": "startklar.",
+    "lead": "Ein persönlicher Plan für jede neue Person – zusammengestellt nach Abteilung, Team und Rolle. Schritt für Schritt abhaken, Änderungen im Blick behalten, und die Teamleitung sieht jederzeit, wo das Onboarding steht.",
+    "primaryCta": "Anmelden",
+    "secondaryCta": "So funktioniert es",
+    "accessNote": "Keine Selbstregistrierung – Zugänge richtet die Administration ein.",
+    "stageCaption": "Beispielansicht mit fiktiven Namen und Inhalten"
+  },
+  "facts": {
+    "label": "{appName} in Zahlen",
+    "phases": {
+      "unit": "{count, plural, one {Phase} other {Phasen}}",
+      "caption": "Von der Zeit vor dem Start bis zum ersten Monat"
+    },
+    "roles": {
+      "unit": "{count, plural, one {Benutzerrolle} other {Benutzerrollen}}",
+      "caption": "Mitarbeitende, Teamleitung und Admin"
+    },
+    "languages": {
+      "unit": "{count, plural, one {Sprache} other {Sprachen}}",
+      "caption": "Oberfläche und Inhalte auf Deutsch und Englisch"
+    },
+    "tracking": {
+      "unit": "{count, plural, one {Tracker} other {Tracker}}",
+      "caption": "Keine Erfassung von Lesezeit oder Scrollverhalten"
+    }
+  },
+  "mock": {
+    "windowPathPlan": "{appSlug} / mein-plan",
+    "windowPathTeam": "{appSlug} / team",
+    "windowPathEditor": "{appSlug} / bibliothek",
+    "people": {
+      "mira": "Mira Kaya",
+      "jonas": "Jonas Berg",
+      "lea": "Lea Sommer",
+      "deniz": "Deniz Arslan",
+      "nina": "Nina Brandt"
+    },
+    "department": "Kundenservice",
+    "team": "Team Nord",
+    "jobRole": "Servicekoordination",
+    "planMeta": "{name} · {department} · {team}",
+    "steps": {
+      "documents": "Unterlagen für den ersten Tag",
+      "arrival": "Anfahrt und Ankommen",
+      "welcome": "Willkommen im Team",
+      "workplace": "Arbeitsplatz und Zugänge einrichten",
+      "security": "Richtlinien zur Informationssicherheit",
+      "tools": "Unsere Werkzeuge im Überblick",
+      "contacts": "Wichtige Ansprechpersonen",
+      "project": "Die erste eigene Aufgabe",
+      "feedback": "Feedbackgespräch vorbereiten"
+    },
+    "event": {
+      "title": "Team-Frühstück"
+    },
+    "eventLine": "{title} · {date}",
+    "editorPage": "Erste Woche im Kundenservice",
+    "searchQuery": "Richtlinien",
+    "searchResult": "<hl>Richtlinien</hl> zur Informationssicherheit"
+  },
+  "phases": {
+    "eyebrow": "Der Plan",
+    "title": "Ein Plan, vier Phasen.",
+    "lead": "Die Inhalte stammen aus Vorlagen für Abteilung, Team und Rolle. Daraus entsteht ein Plan, der dem tatsächlichen Ablauf der ersten Wochen folgt.",
+    "caption": "Jede Seite lässt sich als erledigt markieren. Wird eine erledigte Seite später überarbeitet, zeigt der Plan einen Hinweis.",
+    "items": {
+      "before_start": "Vorbereiten: Lesestoff für die Zeit vor dem ersten Arbeitstag.",
+      "first_day": "Ankommen: Begrüßung, Arbeitsplatz und erste Zugänge.",
+      "first_week": "Einarbeiten: Abläufe, Werkzeuge und Ansprechpersonen.",
+      "first_month": "Vertiefen: Fachthemen der Rolle und des Teams."
+    }
+  },
+  "roles": {
+    "eyebrow": "Funktionen",
+    "title": "Für jede Rolle die passende Sicht.",
+    "lead": "Alle arbeiten im selben Werkzeug – jede Rolle sieht genau das, was sie für ihre Aufgabe braucht.",
+    "employee": {
+      "title": "Den eigenen Plan Schritt für Schritt erledigen.",
+      "points": {
+        "plan": "Seiten nach Phasen geordnet lesen und als erledigt markieren",
+        "updated": "Hinweis, wenn sich eine erledigte Seite geändert hat",
+        "more": "Veranstaltungen, Benachrichtigungen und Suche an einem Ort"
+      }
+    },
+    "teamLead": {
+      "title": "Den Fortschritt des Teams auf einen Blick.",
+      "points": {
+        "assign": "Vorlagen zuweisen sowie einzelne Seiten ergänzen oder entfernen",
+        "progress": "Fortschritt, Startdatum und letzte Aktivität für jede Person",
+        "content": "Inhalte der eigenen Abteilung bearbeiten"
+      }
+    },
+    "admin": {
+      "title": "Struktur, Inhalte und Zugänge an einem Ort.",
+      "points": {
+        "users": "Benutzerkonten anlegen und per E-Mail einladen",
+        "org": "Abteilungen, Teams und Rollen pflegen",
+        "library": "Inhalte im Editor, Vorlagen und Veranstaltungen verwalten",
+        "reports": "Gemeldete Probleme bearbeiten"
+      }
+    },
+    "more": {
+      "title": "Außerdem dabei",
+      "events": {
+        "title": "Veranstaltungen",
+        "body": "Einführungen, Teamtreffen und andere Termine übersichtlich an einem Ort."
+      },
+      "notifications": {
+        "title": "Benachrichtigungen",
+        "body": "Neue Schritte, geänderte Seiten und neue Veranstaltungen erscheinen direkt in der Anwendung."
+      },
+      "search": {
+        "title": "Suche",
+        "body": "Suche über Seiten und Veranstaltungen – auf Deutsch und auf Englisch."
+      },
+      "bilingual": {
+        "title": "Zweisprachig",
+        "body": "Oberfläche und Inhalte auf Deutsch und Englisch. Fehlt eine Übersetzung, erscheint die deutsche Fassung."
+      },
+      "lock": {
+        "title": "Bearbeitungssperre",
+        "body": "Eine Seite wird immer nur von einer Person gleichzeitig bearbeitet. Geht die Sperre verloren oder scheitert das Speichern, bleiben die Änderungen als Entwurf im Browser erhalten."
+      },
+      "report": {
+        "title": "Problem melden",
+        "body": "Fehler in der Anwendung oder veraltete Inhalte direkt von der jeweiligen Seite aus melden."
+      }
+    }
+  },
+  "howItWorks": {
+    "eyebrow": "Ablauf",
+    "title": "In drei Schritten startklar.",
+    "steps": {
+      "account": {
+        "title": "Zugang anlegen",
+        "body": "Die Administration legt das Konto mit Abteilung, Team und Rolle an. Die neue Person erhält eine Einladung per E-Mail und legt ihr Passwort selbst fest – der Link ist {hours} Stunden gültig."
+      },
+      "plan": {
+        "title": "Plan zusammenstellen",
+        "body": "Die Teamleitung weist passende Vorlagen zu. Die Schritte werden in den persönlichen Plan übernommen – Seiten, die schon im Plan sind, werden nicht doppelt hinzugefügt."
+      },
+      "start": {
+        "title": "Loslegen und begleiten",
+        "body": "Die neue Person arbeitet den Plan ab, auf Wunsch schon vor dem ersten Arbeitstag. Die Teamleitung sieht den Fortschritt und wird benachrichtigt, sobald alles erledigt ist."
+      }
+    }
+  },
+  "privacy": {
+    "eyebrow": "Datenschutz",
+    "title": "Gezählt wird, was <accent>erledigt</accent> ist. Sonst nichts.",
+    "lead": "{appName} ist auf Datensparsamkeit ausgelegt. Pro Schritt wird festgehalten, ob und wann er erledigt wurde. Wie lange jemand liest, wird nicht erfasst.",
+    "legal": "Entwickelt mit Blick auf die <de>DSGVO</de> und <de>§ 87 Abs. 1 Nr. 6 BetrVG</de>.",
+    "storedTitle": "Was gespeichert wird",
+    "stored": {
+      "completion": "Ob und wann ein Schritt erledigt wurde – und ob ein Änderungshinweis als gelesen markiert wurde",
+      "profile": "Profil: Name, E-Mail, Abteilung, Team, Rolle, Startdatum, Sprache und Design",
+      "notifications": "Benachrichtigungen – ältere als {days} Tage werden entfernt",
+      "reports": "Gemeldete Probleme – erledigte Meldungen werden nach {reportDays} Tagen entfernt",
+      "sessions": "Anmeldesitzungen mit IP-Adresse und Browser – nur für die Sicherheit der Anmeldung, nicht ausgewertet"
+    },
+    "notStoredTitle": "Was nicht erfasst oder eingesetzt wird",
+    "notStored": {
+      "readingTime": "Lesezeit und Verweildauer auf Seiten",
+      "behavior": "Scrollverhalten und Klickpfade",
+      "analytics": "Analyse- oder Werbedienste von Drittanbietern",
+      "cookies": "Tracking-Cookies"
+    },
+    "footnote": "Wer was sieht, regeln die Rollen: Mitarbeitende sehen ihren eigenen Plan, die Teamleitung ihr Team, die Administration alle Pläne."
+  },
+  "cta": {
+    "title": "Bereit für den ersten Tag?",
+    "body": "Mit E-Mail-Adresse und selbst gewähltem Passwort anmelden und direkt mit dem eigenen Plan beginnen.",
+    "primary": "Anmelden",
+    "noAccount": "Noch kein Zugang? Die Administration im Unternehmen hilft weiter."
+  },
+  "footer": {
+    "tagline": "Onboarding mit Plan – für neue Teammitglieder, Teamleitungen und Administration.",
+    "signIn": "Anmelden",
+    "copyright": "© {year} {appName}",
+    "fictional": "Alle Namen und Beispielinhalte auf dieser Seite sind frei erfunden."
+  }
+}

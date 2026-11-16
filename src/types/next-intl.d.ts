@@ -19,6 +19,7 @@ import type plan from "../../messages/de/plan.json";
 import type dashboard from "../../messages/de/dashboard.json";
 import type search from "../../messages/de/search.json";
 import type feedback from "../../messages/de/feedback.json";
+import type landing from "../../messages/de/landing.json";
 
 declare module "next-intl" {
   interface AppConfig {
@@ -44,6 +45,7 @@ declare module "next-intl" {
       dashboard: typeof dashboard;
       search: typeof search;
       feedback: typeof feedback;
+      landing: typeof landing;
     };
   }
 }

@@ -50,5 +50,9 @@
     "open": "Open",
     "in_progress": "In progress",
     "done": "Done"
+  },
+  "localeShort": {
+    "de": "DE",
+    "en": "EN"
   }
 }
