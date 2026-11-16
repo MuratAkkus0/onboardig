@@ -14,5 +14,6 @@
   "FILE_TOO_LARGE": "Die Datei ist zu groß.",
   "FILE_TYPE_NOT_ALLOWED": "Dieser Dateityp ist nicht erlaubt.",
   "EMAIL_TAKEN": "Diese E-Mail-Adresse ist bereits vergeben.",
-  "INTERNAL": "Etwas ist schiefgelaufen. Bitte versuche es später erneut."
+  "INTERNAL": "Etwas ist schiefgelaufen. Bitte versuche es später erneut.",
+  "RATE_LIMITED": "Zu viele Meldungen in kurzer Zeit. Bitte versuche es später erneut."
 }

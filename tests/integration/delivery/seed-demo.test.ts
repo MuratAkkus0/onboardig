@@ -86,6 +86,7 @@ describe("seed:demo", () => {
         "event_announced",
         "employee_assigned",
         "onboarding_completed",
+        "feedback_resolved",
       ]),
     );
   });

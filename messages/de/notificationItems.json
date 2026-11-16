@@ -5,5 +5,7 @@
   "eventRemoved": "Veranstaltung entfernt",
   "employeeAssigned": "{employeeName} wurde dir zugewiesen.",
   "onboardingCompleted": "{employeeName} hat das Onboarding abgeschlossen.",
-  "pageRemoved": "Eine Seite wurde entfernt."
+  "pageRemoved": "Eine Seite wurde entfernt.",
+  "feedbackResolved": "Deine Meldung „{subject}“ wurde bearbeitet.",
+  "feedbackResolvedWithResponse": "Deine Meldung „{subject}“ wurde bearbeitet: {response}"
 }

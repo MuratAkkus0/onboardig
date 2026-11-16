@@ -1,9 +1,10 @@
 import { randomBytes } from "node:crypto";
-import { APP_CONFIG } from "@/config/app";
+import { APP_CONFIG, ROUTES } from "@/config/app";
 import type { Actor } from "@/server/auth/types";
 import { db } from "@/server/db/client";
 import { createInitialAdmin } from "@/server/services/bootstrap";
 import { createEvent, announceEvent } from "@/server/services/events";
+import { createReport, updateReport } from "@/server/services/feedback";
 import { acceptInvitation, issueInvitationInTx } from "@/server/services/invitations";
 import { acquireLock, releaseLock } from "@/server/services/locks";
 import { createModule } from "@/server/services/modules";
@@ -16,6 +17,7 @@ import { createUser, deactivateUser, type UserListItem } from "@/server/services
 import { DEMO_MODULES, DEMO_PAGE_UPDATE, DEMO_PAGES } from "./content";
 import { countUsers, wipeAllTables } from "./database";
 import { DEMO_EVENTS } from "./events";
+import { DEMO_REPORTS } from "./feedback";
 import { assertSeedAllowed } from "./guard";
 import { DEMO_DEPARTMENTS, DEMO_JOB_ROLES } from "./org";
 import { DEMO_ADMIN, DEMO_PEOPLE } from "./people";
@@ -266,6 +268,24 @@ export async function runDemoSeed(options: SeedOptions): Promise<SeedResult> {
       endsAt: new Date(day.getTime() + event.durationHours * HOUR_MS),
     });
     if (event.announce) await announceEvent(admin, { id: created.id });
+  }
+
+  // Problem reports (sent as the reporters; one handled and resolved by a lead)
+  log("Creating problem reports");
+  for (const report of DEMO_REPORTS) {
+    const created = await createReport(lookup(actors, report.reporterKey), {
+      type: report.type,
+      subject: report.subject,
+      message: report.message,
+      path: report.pageKey ? ROUTES.page(lookup(pageIds, report.pageKey)) : ROUTES.plan,
+    });
+    if (report.resolution) {
+      await updateReport(lookup(actors, report.resolution.handlerKey), {
+        id: created.id,
+        status: report.resolution.status,
+        response: report.resolution.response,
+      });
+    }
   }
 
   // One user with an empty inbox, everybody else keeps unread notifications

@@ -7,5 +7,6 @@ export * from "./templates";
 export * from "./plans";
 export * from "./notifications";
 export * from "./events";
+export * from "./feedback";
 export * from "./invitations";
 export * from "./relations";

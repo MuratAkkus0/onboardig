@@ -8,18 +8,32 @@ export interface VisibleNavItem {
   href: string;
   icon: NavIconName;
   section: "main" | "admin";
+  /** Optional count shown as a badge (e.g. open reports); omitted or 0 shows nothing. */
+  badge?: number;
 }
 
+/** Badge counts by navigation key. */
+export type NavBadges = Partial<Record<NavItem["key"], number>>;
+
 /** Navigation entries of the role, in config order. */
-export function getVisibleNavigation(role: Role): VisibleNavItem[] {
-  return NAVIGATION.filter((item) => (item.roles as readonly Role[]).includes(role)).map(
-    (item) => ({
+export function getVisibleNavigation(role: Role, badges: NavBadges = {}): VisibleNavItem[] {
+  return NAVIGATION.filter((item) => (item.roles as readonly Role[]).includes(role)).map((item) => {
+    const badge = badges[item.key];
+    return {
       key: item.key,
       href: item.href,
       icon: item.icon,
       section: "section" in item ? item.section : "main",
-    }),
-  );
+      ...(badge ? { badge } : {}),
+    };
+  });
+}
+
+/** The navigation key that carries the open-reports count for the role (null: no reports entry). */
+export function reportsNavKey(role: Role): "reports" | "adminReports" | null {
+  if (role === "admin") return "adminReports";
+  if (role === "team_lead") return "reports";
+  return null;
 }
 
 /** The role's landing page (employee: plan, team lead: team, admin: admin). */

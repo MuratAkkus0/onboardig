@@ -1,14 +1,22 @@
 import { useTranslations } from "next-intl";
-import { getVisibleNavigation, initialsOf } from "@/lib/navigation";
+import { getVisibleNavigation, initialsOf, type NavBadges } from "@/lib/navigation";
 import type { Actor } from "@/server/auth/types";
 import { NavigationTracker } from "./navigation-tracker";
 import { SidebarNav } from "./sidebar-nav";
 import { TopBar } from "./top-bar";
 
 /** Responsive shell: top bar always, sidebar from md up, navigation sheet below md. */
-export function AppShell({ actor, children }: { actor: Actor; children: React.ReactNode }) {
+export function AppShell({
+  actor,
+  badges,
+  children,
+}: {
+  actor: Actor;
+  badges?: NavBadges;
+  children: React.ReactNode;
+}) {
   const t = useTranslations("common");
-  const items = getVisibleNavigation(actor.role);
+  const items = getVisibleNavigation(actor.role, badges);
   return (
     <div className="flex min-h-screen flex-col">
       <NavigationTracker />

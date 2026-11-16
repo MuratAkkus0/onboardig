@@ -16,6 +16,8 @@ export const PERMISSIONS = {
   "users.manage": ["admin"],
   "events.manage": ["admin"], // CRUD + announce
   "events.view": ["employee", "team_lead", "admin"],
+  "feedback.create": ["employee", "team_lead", "admin"],
+  "feedback.manage": ["team_lead", "admin"], // + scope check (lead: content reports of own department)
 } as const satisfies Record<string, readonly Role[]>;
 
 export type Permission = keyof typeof PERMISSIONS;

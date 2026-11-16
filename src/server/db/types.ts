@@ -39,3 +39,5 @@ export type Notification = InferSelectModel<typeof s.notifications>;
 export type NewNotification = InferInsertModel<typeof s.notifications>;
 export type AppEvent = InferSelectModel<typeof s.events>;
 export type NewAppEvent = InferInsertModel<typeof s.events>;
+export type FeedbackReport = InferSelectModel<typeof s.feedbackReports>;
+export type NewFeedbackReport = InferInsertModel<typeof s.feedbackReports>;

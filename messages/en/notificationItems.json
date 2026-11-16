@@ -5,5 +5,7 @@
   "eventRemoved": "Event removed",
   "employeeAssigned": "{employeeName} was assigned to you as an employee.",
   "onboardingCompleted": "{employeeName} has completed onboarding.",
-  "pageRemoved": "A page was removed."
+  "pageRemoved": "A page was removed.",
+  "feedbackResolved": "Your report \"{subject}\" has been resolved.",
+  "feedbackResolvedWithResponse": "Your report \"{subject}\" has been resolved: {response}"
 }

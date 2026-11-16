@@ -1,6 +1,7 @@
 import "server-only";
 import { and, eq, ne, sql } from "drizzle-orm";
 import { ROUTES } from "@/config/app";
+import { safeNextPath } from "@/lib/navigation";
 import type { Tx } from "@/server/db/client";
 import { notifications, users } from "@/server/db/schema";
 import type { NewNotification } from "@/server/db/types";
@@ -30,6 +31,14 @@ export type NotificationInput =
       type: "onboarding_completed";
       subjectUserId: string;
       params: { employeeName: string };
+    }
+  | {
+      userId: string;
+      type: "feedback_resolved";
+      reportId: string;
+      /** In-app path the report was filed from; becomes the notification link when safe. */
+      path?: string | null;
+      params: { subject: string; response: string | null };
     };
 
 /** Derives message key, link and dedupe key from the type; callers cannot pass free text. */
@@ -83,6 +92,17 @@ function toRow(input: NotificationInput): NewNotification & { dedupeKey: string 
         link: ROUTES.teamMember(input.subjectUserId),
         subjectUserId: input.subjectUserId,
         dedupeKey: `onboarding_completed:${input.subjectUserId}`,
+      };
+    case "feedback_resolved":
+      return {
+        userId: input.userId,
+        type: input.type,
+        messageKey: input.params.response
+          ? "notificationItems.feedbackResolvedWithResponse"
+          : "notificationItems.feedbackResolved",
+        params: input.params,
+        link: safeNextPath(input.path),
+        dedupeKey: `feedback_resolved:${input.reportId}`,
       };
   }
 }

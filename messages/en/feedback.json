@@ -1,0 +1,60 @@
+{
+  "dialog": {
+    "trigger": "Report a problem",
+    "title": "Report a problem",
+    "description": "Describe what is wrong. Your report goes to the people responsible.",
+    "type": "Type of report",
+    "subject": "Subject",
+    "message": "Description",
+    "counter": "{count} / {max} characters",
+    "path": "Current page",
+    "cancel": "Cancel",
+    "submit": "Send report",
+    "success": "Thank you, your report was sent."
+  },
+  "filters": {
+    "label": "Filter reports",
+    "status": "Status",
+    "type": "Type",
+    "all": "All"
+  },
+  "list": {
+    "title": "Reports",
+    "descriptionAdmin": "All reports from employees.",
+    "descriptionLead": "Reports about content of your department.",
+    "label": "Reports",
+    "count": "{count, plural, one {# report} other {# reports}}",
+    "emptyTitle": "No reports",
+    "emptyDescription": "As soon as someone reports a problem it shows up here.",
+    "emptyFilteredTitle": "No matching reports",
+    "emptyFilteredDescription": "Adjust the filters to see other reports.",
+    "reportedBy": "Reported by {name}",
+    "deletedUser": "deleted user",
+    "location": "Page",
+    "openPage": "Open reported page",
+    "response": "Response",
+    "responseBy": "Response from {name}"
+  },
+  "actions": {
+    "status": "Status",
+    "saved": "Report saved.",
+    "deleted": "Report deleted.",
+    "editResponse": "Edit response",
+    "editResponseFor": "Edit response: {subject}",
+    "dialog": {
+      "title": "Edit response",
+      "description": "Status and response for the report \"{subject}\". Setting it to \"Done\" notifies the reporter.",
+      "response": "Response (optional)",
+      "counter": "{count} / {max} characters",
+      "cancel": "Cancel",
+      "save": "Save"
+    },
+    "delete": {
+      "action": "Delete",
+      "actionFor": "Delete report: {subject}",
+      "title": "Delete report?",
+      "description": "The report \"{subject}\" will be deleted permanently.",
+      "confirm": "Delete"
+    }
+  }
+}
