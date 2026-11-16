@@ -1,6 +1,6 @@
 # Systemarchitektur
 
-Überblick über Aufbau, Schichten und Laufzeitverhalten des Onboarding Portals (Stand v1.1). Die
+Überblick über Aufbau, Schichten und Laufzeitverhalten von Startklar (Stand v1.1). Die
 ausführliche technische Spezifikation steht in `docs/v1-architecture.md` (Erweiterungen v1.1: Abschnitt 15).
 Dieses Dokument beschreibt den umgesetzten Stand.
 

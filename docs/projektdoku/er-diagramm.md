@@ -1,6 +1,6 @@
 # ER-Diagramm
 
-Datenmodell des Onboarding Portals (Stand v1.1). Quelle ist der Code, nicht der Entwurf:
+Datenmodell von Startklar (Stand v1.1). Quelle ist der Code, nicht der Entwurf:
 `src/server/db/schema/*.ts`. Daraus sind die Migrationen in `drizzle/` generiert; bestehende Migrationen
 werden nie geändert, jede Erweiterung bringt eine eigene mit:
 

@@ -1,4 +1,4 @@
-# Onboarding Portal — v2'de Yapılacaklar
+# Startklar — v2'de Yapılacaklar
 
 v1 = IHK teslimi. Aşağıdakiler bilerek v1 dışında bırakıldı; v1 altyapısı bunlara uygun kurulur ama kendileri yapılmaz.
 

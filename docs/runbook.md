@@ -1,4 +1,4 @@
-# Runbook: Onboarding Portal betreiben
+# Runbook: Startklar betreiben
 
 Übergabedokument für Installation und Betrieb. Alle Beispiele verwenden Platzhalter (`example.com`);
 Zugangsdaten und Geheimnisse gehören nie ins Repository.
@@ -30,8 +30,8 @@ Quellcode für `db:migrate` und `seed:*`).
 ## 3. Installation
 
 ```bash
-git clone <repository-url> onboarding-portal
-cd onboarding-portal
+git clone <repository-url> startklar
+cd startklar
 cp .env.prod.example .env.prod
 ```
 
@@ -119,7 +119,7 @@ Lokal fängt Mailpit alle Mails ab (Oberfläche `http://localhost:8025`). Für d
 
    ```dotenv
    MAIL_TRANSPORT=smtp
-   MAIL_FROM="Onboarding Portal <onboarding@ihre-domain.example>"
+   MAIL_FROM="Startklar <onboarding@ihre-domain.example>"
    SMTP_HOST=smtp.ihre-domain.example
    SMTP_PORT=587
    SMTP_SECURE=false

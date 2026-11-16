@@ -1,4 +1,4 @@
-# Onboarding Portal — Kararlar (v1)
+# Startklar — Kararlar (v1)
 
 Yeni çalışanların departman, ekip ve rollerine göre atanan onboarding adımlarını okuyup tamamladığı, ekip liderlerinin ve
 adminin ilerlemeyi takip ettiği web uygulaması. IHK Abschlussprojekt (FIAE, 80 saat, 02.11.–04.12.2026); kapsamın
@@ -275,7 +275,7 @@ ve kullanıcı öğenin adını yazarak onaylar.
 
 - Arayüz dili **Almanca ve İngilizce**; tüm metinler `messages/{de,en}/*.json`'dan. Kullanıcı dilini profilinden seçer.
   URL'de dil öneki yok; dil profil/cookie'den gelir (otonom karar).
-- Uygulama adı: **"Onboarding Portal"** (geçici; logo ve isim tek yerden değişir).
+- Uygulama adı: **"Startklar"** (16.11.2026 kullanıcı kararı; önceki geçici ad "Onboarding Portal"). Ad ve logo tek yerden değişir (`APP_CONFIG.appName`, `public/logo.svg`).
 - Responsive (telefon dahil). Tema: açık / koyu / sistem; renkler yalnızca `tokens.css`'te. Varsayılan palet nötr.
 - Boş / yükleniyor / hata durumları her listede tanımlı.
 

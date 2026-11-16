@@ -1,4 +1,4 @@
-# Onboarding Portal
+# Startklar
 
 Yeni çalışanlara departman/ekip/rol bazlı onboarding planı sunan, ilerlemeyi ekip lideri ve admin için takip edilebilir kılan
 Next.js uygulaması. IHK Abschlussprojekt (FIAE, 80 saat, teslim 04.12.2026).

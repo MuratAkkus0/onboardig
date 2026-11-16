@@ -1,4 +1,4 @@
-# Onboarding Portal — v1 Architecture Blueprint
+# Startklar — v1 Architecture Blueprint
 
 Status: binding implementation contract for v1. Source of truth for product decisions remains
 [kararlar.md](kararlar.md); this document turns those decisions into a concrete technical contract so several engineers
@@ -1318,7 +1318,7 @@ SMTP_PORT=1025
 SMTP_SECURE=false
 SMTP_USER=
 SMTP_PASSWORD=
-MAIL_FROM="Onboarding Portal <noreply@example.com>"
+MAIL_FROM="Startklar <noreply@example.com>"
 MAIL_TRANSPORT=smtp
 
 # Uploads (local disk StorageAdapter)
@@ -1350,7 +1350,7 @@ Sectioned, `as const`. Every value in K§2 plus enum value arrays, routes, navig
 
 ```ts
 export const APP_CONFIG = {
-  appName: "Onboarding Portal",                    // K§9: name + logo from one place
+  appName: "Startklar",                            // K§9: name + logo from one place
   logoPath: "/logo.svg",
   auth: {
     passwordMinLength: 12, passwordMaxLength: 128,
@@ -1365,7 +1365,7 @@ export const APP_CONFIG = {
   uploads: { allowedMimeTypes: ["image/png", "image/jpeg", "image/webp", "image/gif"], maxBytes: 5 * 1024 * 1024, urlPrefix: "/api/uploads/" },
   search: { minQueryLength: 2, maxResults: 20 },
   archivedUserDeletionSuggestionMonths: 6,
-  draftStorageKeyPrefix: "onboarding-portal:page-draft:",
+  draftStorageKeyPrefix: "startklar:page-draft:",
 } as const;
 
 export const ROLES = ["admin", "team_lead", "employee"] as const;

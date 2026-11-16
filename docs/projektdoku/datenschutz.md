@@ -1,6 +1,6 @@
 # Datenschutz (DSGVO) und Mitbestimmung
 
-Technische Beschreibung, welche personenbezogenen Daten das Onboarding Portal verarbeitet, wozu und wie
+Technische Beschreibung, welche personenbezogenen Daten Startklar verarbeitet, wozu und wie
 lange. Sie dient als Grundlage für die datenschutzrechtliche Prüfung im Unternehmen (Verzeichnis von
 Verarbeitungstätigkeiten, Information der Beschäftigten, Beteiligung des Betriebsrats). Eine rechtliche
 Bewertung ersetzt sie nicht; Rechtsgrundlage und Fristen legt das Unternehmen mit seiner bzw. seinem

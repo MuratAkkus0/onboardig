@@ -13,7 +13,7 @@ const envSchema = z.object({
   SMTP_SECURE: booleanString.default(false),
   SMTP_USER: z.string().default(""),
   SMTP_PASSWORD: z.string().default(""),
-  MAIL_FROM: z.string().min(1).default("Onboarding Portal <noreply@example.com>"),
+  MAIL_FROM: z.string().min(1).default("Startklar <noreply@example.com>"),
   MAIL_TRANSPORT: z.enum(["smtp", "memory"]).default("smtp"),
   UPLOAD_DIR: z.string().min(1).default("./uploads"),
 });

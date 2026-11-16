@@ -17,7 +17,7 @@ export const FEEDBACK_TYPES = ["app_bug", "content_issue", "other"] as const;
 export const FEEDBACK_STATUSES = ["open", "in_progress", "done"] as const;
 
 export const APP_CONFIG = {
-  appName: "Onboarding Portal",
+  appName: "Startklar",
   logoPath: "/logo.svg",
   auth: {
     passwordMinLength: 12,
@@ -83,7 +83,7 @@ export const APP_CONFIG = {
   },
   search: { minQueryLength: 2, maxResults: 20 },
   archivedUserDeletionSuggestionMonths: 6,
-  draftStorageKeyPrefix: "onboarding-portal:page-draft:",
+  draftStorageKeyPrefix: "startklar:page-draft:",
 } as const;
 
 export const ROUTES = {
