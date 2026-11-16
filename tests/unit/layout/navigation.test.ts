@@ -4,6 +4,7 @@ import { NAV_ICONS } from "@/components/layout/nav-icons";
 import {
   activeNavHref,
   getVisibleNavigation,
+  reportsNavKey,
   homeRouteFor,
   initialsOf,
   isActiveRoute,
@@ -17,7 +18,15 @@ const keys = (role: (typeof ROLES)[number]) => getVisibleNavigation(role).map((i
 describe("navigation per role", () => {
   it("shows exactly the entries of the role", () => {
     expect(keys("employee")).toEqual(["plan", "events", "search"]);
-    expect(keys("team_lead")).toEqual(["plan", "events", "search", "team", "library", "templates"]);
+    expect(keys("team_lead")).toEqual([
+      "plan",
+      "events",
+      "search",
+      "team",
+      "reports",
+      "library",
+      "templates",
+    ]);
     expect(keys("admin")).toEqual([
       "plan",
       "events",
@@ -30,6 +39,7 @@ describe("navigation per role", () => {
       "adminLibrary",
       "adminTemplates",
       "adminEvents",
+      "adminReports",
     ]);
   });
 
@@ -43,7 +53,7 @@ describe("navigation per role", () => {
 
   it("marks admin entries with the admin section", () => {
     const admin = getVisibleNavigation("admin");
-    expect(admin.filter((item) => item.section === "admin")).toHaveLength(7);
+    expect(admin.filter((item) => item.section === "admin")).toHaveLength(8);
   });
 
   it("has an icon and a label in every locale for every entry", () => {
@@ -53,6 +63,32 @@ describe("navigation per role", () => {
       for (const item of NAVIGATION)
         expect(typeof nav[item.key], `${locale} ${item.key}`).toBe("string");
     }
+  });
+
+  it("adds the open-report badge only to the matching entry and only when above zero", () => {
+    const lead = getVisibleNavigation("team_lead", { reports: 3 });
+    expect(lead.find((item) => item.key === "reports")?.badge).toBe(3);
+    expect(lead.filter((item) => item.badge !== undefined)).toHaveLength(1);
+    const admin = getVisibleNavigation("admin", { adminReports: 2 });
+    expect(admin.find((item) => item.key === "adminReports")?.badge).toBe(2);
+    expect(getVisibleNavigation("admin", { adminReports: 0 }).some((i) => "badge" in i)).toBe(
+      false,
+    );
+    expect(getVisibleNavigation("admin").some((i) => "badge" in i)).toBe(false);
+  });
+
+  it("maps roles to their reports entry", () => {
+    expect(reportsNavKey("employee")).toBeNull();
+    expect(reportsNavKey("team_lead")).toBe("reports");
+    expect(reportsNavKey("admin")).toBe("adminReports");
+  });
+
+  it("gives reports routes to leads and admins only", () => {
+    expect(canAccessRoute("employee", ROUTES.reports)).toBe(false);
+    expect(canAccessRoute("team_lead", ROUTES.reports)).toBe(true);
+    expect(canAccessRoute("admin", ROUTES.reports)).toBe(true);
+    expect(canAccessRoute("team_lead", ROUTES.adminReports)).toBe(false);
+    expect(canAccessRoute("admin", ROUTES.adminReports)).toBe(true);
   });
 
   it("redirects each role to its landing page", () => {
@@ -77,6 +113,7 @@ describe("activeNavHref", () => {
     expect(activeNavHref(adminHrefs, ROUTES.adminUsers)).toBe(ROUTES.adminUsers);
     expect(activeNavHref(adminHrefs, ROUTES.adminTemplate("1"))).toBe(ROUTES.adminTemplates);
     expect(activeNavHref(adminHrefs, ROUTES.admin)).toBe(ROUTES.admin);
+    expect(activeNavHref(adminHrefs, ROUTES.adminReports)).toBe(ROUTES.adminReports);
   });
 
   it("returns null when no entry matches", () => {

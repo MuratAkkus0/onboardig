@@ -1,0 +1,60 @@
+{
+  "dialog": {
+    "trigger": "Problem melden",
+    "title": "Problem melden",
+    "description": "Beschreibe, was nicht stimmt. Die Meldung geht an die zuständige Stelle.",
+    "type": "Art der Meldung",
+    "subject": "Betreff",
+    "message": "Beschreibung",
+    "counter": "{count} / {max} Zeichen",
+    "path": "Aktuelle Seite",
+    "cancel": "Abbrechen",
+    "submit": "Meldung senden",
+    "success": "Danke, deine Meldung wurde gesendet."
+  },
+  "filters": {
+    "label": "Meldungen filtern",
+    "status": "Status",
+    "type": "Art",
+    "all": "Alle"
+  },
+  "list": {
+    "title": "Meldungen",
+    "descriptionAdmin": "Alle Meldungen von Mitarbeitenden.",
+    "descriptionLead": "Meldungen zu Inhalten deiner Abteilung.",
+    "label": "Meldungen",
+    "count": "{count, plural, one {# Meldung} other {# Meldungen}}",
+    "emptyTitle": "Keine Meldungen",
+    "emptyDescription": "Sobald jemand ein Problem meldet, erscheint es hier.",
+    "emptyFilteredTitle": "Keine passenden Meldungen",
+    "emptyFilteredDescription": "Passe die Filter an, um andere Meldungen zu sehen.",
+    "reportedBy": "Gemeldet von {name}",
+    "deletedUser": "gelöschter Benutzer",
+    "location": "Seite",
+    "openPage": "Gemeldete Seite öffnen",
+    "response": "Antwort",
+    "responseBy": "Antwort von {name}"
+  },
+  "actions": {
+    "status": "Status",
+    "saved": "Meldung gespeichert.",
+    "deleted": "Meldung gelöscht.",
+    "editResponse": "Antwort bearbeiten",
+    "editResponseFor": "Antwort bearbeiten: {subject}",
+    "dialog": {
+      "title": "Antwort bearbeiten",
+      "description": "Status und Antwort zur Meldung „{subject}“. Wird sie auf „Erledigt“ gesetzt, erhält die meldende Person eine Benachrichtigung.",
+      "response": "Antwort (optional)",
+      "counter": "{count} / {max} Zeichen",
+      "cancel": "Abbrechen",
+      "save": "Speichern"
+    },
+    "delete": {
+      "action": "Löschen",
+      "actionFor": "Meldung löschen: {subject}",
+      "title": "Meldung löschen?",
+      "description": "Die Meldung „{subject}“ wird endgültig gelöscht.",
+      "confirm": "Löschen"
+    }
+  }
+}

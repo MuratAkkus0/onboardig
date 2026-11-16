@@ -11,7 +11,10 @@ export const NOTIFICATION_TYPES = [
   "event_announced",
   "employee_assigned",
   "onboarding_completed",
+  "feedback_resolved",
 ] as const;
+export const FEEDBACK_TYPES = ["app_bug", "content_issue", "other"] as const;
+export const FEEDBACK_STATUSES = ["open", "in_progress", "done"] as const;
 
 export const APP_CONFIG = {
   appName: "Onboarding Portal",
@@ -116,6 +119,8 @@ export const ROUTES = {
   adminEvents: "/admin/events",
   adminEvent: (id: string) => `/admin/events/${id}`,
   adminEventNew: "/admin/events/new",
+  reports: "/reports",
+  adminReports: "/admin/reports",
 } as const;
 
 export const ROUTE_ACCESS = [
@@ -123,6 +128,7 @@ export const ROUTE_ACCESS = [
   { prefix: "/team", roles: ["team_lead", "admin"] },
   { prefix: "/library", roles: ["team_lead", "admin"] },
   { prefix: "/templates", roles: ["team_lead", "admin"] },
+  { prefix: "/reports", roles: ["team_lead", "admin"] },
 ] as const;
 
 export const NAVIGATION = [
@@ -145,6 +151,12 @@ export const NAVIGATION = [
     roles: ["employee", "team_lead", "admin"],
   },
   { key: "team", href: ROUTES.team, icon: "users", roles: ["team_lead", "admin"] },
+  {
+    key: "reports",
+    href: ROUTES.reports,
+    icon: "message-square-warning",
+    roles: ["team_lead"],
+  },
   { key: "library", href: ROUTES.library, icon: "book-open", roles: ["team_lead"] },
   { key: "templates", href: ROUTES.templates, icon: "layers", roles: ["team_lead"] },
   {
@@ -196,6 +208,13 @@ export const NAVIGATION = [
     roles: ["admin"],
     section: "admin",
   },
+  {
+    key: "adminReports",
+    href: ROUTES.adminReports,
+    icon: "message-square-warning",
+    roles: ["admin"],
+    section: "admin",
+  },
 ] as const;
 
 // ---- unit-owned sections: edit ONLY strictly between your own >>> / <<< markers ----
@@ -223,6 +242,7 @@ export const F2A_CONFIG = {
       FILE_TOO_LARGE: 413,
       FILE_TYPE_NOT_ALLOWED: 415,
       EMAIL_TAKEN: 409,
+      RATE_LIMITED: 429,
       INTERNAL: 500,
     },
   },
@@ -326,3 +346,24 @@ export const W3_SEARCH_CONFIG = {
 // >>> W3-delivery (owned by W3-delivery)
 export const W3_DELIVERY_CONFIG = {} as const;
 // <<< W3-delivery
+
+// >>> v-fb
+export const V_FB_CONFIG = {
+  maxReportsPerHour: 5,
+  retentionDays: 180,
+  subjectMaxLength: 120,
+  messageMaxLength: 2000,
+  pathMaxLength: 500,
+  responseMaxLength: 1000,
+  /** Rolling window of the per-reporter rate limit. */
+  rateLimitWindowMinutes: 60,
+  /** Prefix of the advisory lock key that serialises one reporter's concurrent submissions. */
+  rateLimitLockNamespace: "feedback_report",
+  /** Open-count badges on the navigation show "99+" above this value. */
+  badgeMax: 99,
+  /** Query parameter names of the report list filters. */
+  filterParams: { status: "status", type: "type" },
+  /** Select value standing for "no filter" (Radix Select forbids empty values). */
+  filterAll: "all",
+} as const;
+// <<< v-fb

@@ -1,4 +1,4 @@
-import type { PHASES } from "@/config/app";
+import type { FEEDBACK_TYPES, PHASES } from "@/config/app";
 import type { Locale } from "@/server/auth/types";
 import type { TiptapDoc } from "@/server/db/schema";
 
@@ -71,4 +71,16 @@ export interface DemoEvent {
   startHour: number;
   durationHours: number;
   announce: boolean;
+}
+
+export interface DemoReport {
+  key: string;
+  reporterKey: string;
+  type: (typeof FEEDBACK_TYPES)[number];
+  subject: string;
+  message: string;
+  /** Demo page the report was sent from; null = the plan overview. */
+  pageKey: string | null;
+  /** Handler (a demo person) and the final state; null leaves the report open. */
+  resolution: { handlerKey: string; status: "in_progress" | "done"; response: string } | null;
 }

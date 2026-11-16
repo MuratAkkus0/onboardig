@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { ReportProblemDialog } from "@/components/feedback/report-problem-dialog";
+import { V_FB_CONFIG } from "@/config/app";
 import { cn } from "@/lib/utils";
 import { activeNavHref, type VisibleNavItem } from "@/lib/navigation";
 import { NAV_ICONS } from "./nav-icons";
@@ -43,7 +45,18 @@ export function SidebarNav({ items, className, onNavigate }: SidebarNavProps) {
                 )}
               >
                 <Icon className="size-4 shrink-0" aria-hidden="true" />
-                {t(item.key)}
+                <span className="min-w-0 flex-1 truncate">{t(item.key)}</span>
+                {item.badge ? (
+                  <>
+                    <span
+                      aria-hidden="true"
+                      className="rounded-full bg-primary px-2 py-0.5 text-xs font-semibold text-primary-foreground"
+                    >
+                      {item.badge > V_FB_CONFIG.badgeMax ? `${V_FB_CONFIG.badgeMax}+` : item.badge}
+                    </span>
+                    <span className="sr-only">{t("badge.open", { count: item.badge })}</span>
+                  </>
+                ) : null}
               </Link>
             </li>
           );
@@ -53,16 +66,21 @@ export function SidebarNav({ items, className, onNavigate }: SidebarNavProps) {
   }
 
   return (
-    <nav aria-label={t("menu.main")} className={cn("space-y-6", className)}>
-      {renderList(main)}
-      {admin.length > 0 ? (
-        <div className="space-y-2">
-          <p className="px-3 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
-            {t("sections.admin")}
-          </p>
-          {renderList(admin)}
-        </div>
-      ) : null}
-    </nav>
+    <div className={cn("flex flex-col gap-6", className)}>
+      <nav aria-label={t("menu.main")} className="space-y-6">
+        {renderList(main)}
+        {admin.length > 0 ? (
+          <div className="space-y-2">
+            <p className="px-3 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+              {t("sections.admin")}
+            </p>
+            {renderList(admin)}
+          </div>
+        ) : null}
+      </nav>
+      <div className="border-t pt-4">
+        <ReportProblemDialog />
+      </div>
+    </div>
   );
 }

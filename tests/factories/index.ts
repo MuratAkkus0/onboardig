@@ -4,6 +4,7 @@ import {
   accounts,
   departments,
   events,
+  feedbackReports,
   jobRoles,
   modules,
   notifications,
@@ -19,10 +20,12 @@ import {
 import type {
   AppEvent,
   Department,
+  FeedbackReport,
   JobRole,
   Module,
   NewAppEvent,
   NewDepartment,
+  NewFeedbackReport,
   NewJobRole,
   NewModule,
   NewNotification,
@@ -268,6 +271,19 @@ export async function createLock(input: {
         acquiredAt,
         expiresAt: input.expiresAt ?? new Date(acquiredAt.getTime() + 120_000),
       })
+      .returning(),
+  );
+}
+
+/** Direct insert (bypasses the service, so rate limit and path rules do not apply). */
+export async function createFeedbackReport(
+  overrides: Partial<NewFeedbackReport> = {},
+): Promise<FeedbackReport> {
+  const n = next();
+  return one(
+    await db
+      .insert(feedbackReports)
+      .values({ type: "other", subject: `Subject ${n}`, message: `Message ${n}`, ...overrides })
       .returning(),
   );
 }

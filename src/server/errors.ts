@@ -14,6 +14,7 @@ export const ERROR_CODES = [
   "FILE_TOO_LARGE",
   "FILE_TYPE_NOT_ALLOWED",
   "EMAIL_TAKEN",
+  "RATE_LIMITED",
   "INTERNAL",
 ] as const;
 

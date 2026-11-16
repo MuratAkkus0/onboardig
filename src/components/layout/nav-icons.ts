@@ -8,6 +8,7 @@ import {
   LayoutDashboard,
   Library,
   ListChecks,
+  MessageSquareWarning,
   Search,
   UserCog,
   Users,
@@ -29,4 +30,5 @@ export const NAV_ICONS = {
   library: Library,
   layers: Layers,
   "calendar-cog": CalendarCog,
+  "message-square-warning": MessageSquareWarning,
 } as const satisfies Record<NavIconName, LucideIcon>;

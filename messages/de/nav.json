@@ -41,5 +41,10 @@
     "language": "Sprache",
     "signOut": "Abmelden"
   },
-  "templates": "Vorlagen"
+  "templates": "Vorlagen",
+  "reports": "Meldungen",
+  "adminReports": "Meldungen",
+  "badge": {
+    "open": "{count, plural, one {# offene Meldung} other {# offene Meldungen}}"
+  }
 }

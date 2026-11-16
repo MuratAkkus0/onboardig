@@ -41,5 +41,10 @@
     "language": "Language",
     "signOut": "Sign out"
   },
-  "templates": "Templates"
+  "templates": "Templates",
+  "reports": "Reports",
+  "adminReports": "Reports",
+  "badge": {
+    "open": "{count, plural, one {# open report} other {# open reports}}"
+  }
 }

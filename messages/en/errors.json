@@ -14,5 +14,6 @@
   "FILE_TOO_LARGE": "The file is too large.",
   "FILE_TYPE_NOT_ALLOWED": "This file type is not allowed.",
   "EMAIL_TAKEN": "This email address is already taken.",
-  "INTERNAL": "Something went wrong. Please try again later."
+  "INTERNAL": "Something went wrong. Please try again later.",
+  "RATE_LIMITED": "Too many reports in a short time. Please try again later."
 }

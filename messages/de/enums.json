@@ -1,21 +1,54 @@
 {
-  "role": { "admin": "Admin", "team_lead": "Teamleitung", "employee": "Mitarbeitende" },
-  "onboardingStatus": { "active": "Aktiv", "completed": "Abgeschlossen", "archived": "Archiviert" },
-  "pageStatus": { "draft": "Entwurf", "published": "Veröffentlicht", "archived": "Archiviert" },
-  "templateStatus": { "active": "Aktiv", "archived": "Archiviert" },
+  "role": {
+    "admin": "Admin",
+    "team_lead": "Teamleitung",
+    "employee": "Mitarbeitende"
+  },
+  "onboardingStatus": {
+    "active": "Aktiv",
+    "completed": "Abgeschlossen",
+    "archived": "Archiviert"
+  },
+  "pageStatus": {
+    "draft": "Entwurf",
+    "published": "Veröffentlicht",
+    "archived": "Archiviert"
+  },
+  "templateStatus": {
+    "active": "Aktiv",
+    "archived": "Archiviert"
+  },
   "phase": {
     "before_start": "Vor dem Start",
     "first_day": "Erster Tag",
     "first_week": "Erste Woche",
     "first_month": "Erster Monat"
   },
-  "locale": { "de": "Deutsch", "en": "English" },
-  "theme": { "light": "Hell", "dark": "Dunkel", "system": "System" },
+  "locale": {
+    "de": "Deutsch",
+    "en": "English"
+  },
+  "theme": {
+    "light": "Hell",
+    "dark": "Dunkel",
+    "system": "System"
+  },
   "notificationType": {
     "step_added": "Neuer Schritt",
     "page_updated": "Seite aktualisiert",
     "event_announced": "Neue Veranstaltung",
     "employee_assigned": "Neue Person im Team",
-    "onboarding_completed": "Onboarding abgeschlossen"
+    "onboarding_completed": "Onboarding abgeschlossen",
+    "feedback_resolved": "Meldung bearbeitet"
+  },
+  "feedbackType": {
+    "app_bug": "Fehler in der App",
+    "content_issue": "Inhalt falsch oder veraltet",
+    "other": "Sonstiges"
+  },
+  "feedbackStatus": {
+    "open": "Offen",
+    "in_progress": "In Bearbeitung",
+    "done": "Erledigt"
   }
 }
