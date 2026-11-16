@@ -15,6 +15,7 @@ Durum: ⬜ başlamadı · 🔄 devam ediyor · ✅ bitti
 | 5 | Bildirimler ve etkinlikler | Benachrichtigungsfunktion, Veranstaltungen | ✅ |
 | 6 | Paneller ve arama | Darstellung des Bearbeitungsstandes | ✅ |
 | 7 | Bitiriş: demo veri, Docker prod, E2E, dokümantasyon girdileri | Test, Bereitstellung | ✅ |
+| 8 | v1.1: departmana bağlı roller, lider editörlüğü, Problem melden | Erweiterung / Zusatzfunktion | 🔄 |
 
 ## 0. Kurulum
 - Next.js 16 + TypeScript strict + pnpm iskeleti; ESLint, Prettier.
@@ -79,3 +80,9 @@ Durum: ⬜ başlamadı · 🔄 devam ediyor · ✅ bitti
 
 **Kabul:** prod compose ile temiz kurulum çalışıyor; E2E geçiyor; tüm aşama kabul kriterleri sağlanmış.
 **Kullanıcıdan:** gerçek SMTP bilgilerini `.env`'e girmek; domainde SPF/DKIM/DMARC kontrolü (adım adım anlatılacak).
+
+## 8. v1.1 genişletmeleri
+Kararlar: [kararlar.md §14](kararlar.md). Sözleşme ve kabul kriterleri: [v1-architecture.md §15](v1-architecture.md).
+Sırayla: V-role (departmana bağlı iş rolleri) → V-lead (liderler kendi departmanlarının editörü) → V-fb ("Problem melden") → V-docs.
+
+**Kabul:** §15'teki tüm kabul maddeleri integration testleriyle doğrulanmış; `pnpm lint && pnpm typecheck && pnpm test && pnpm build` ve CI yeşil; E2E geçiyor; Projektdoku güncel.

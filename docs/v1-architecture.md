@@ -1843,3 +1843,165 @@ different form than suggested:
 - **Rate-limit tuning** stays in F1's `auth.ts`, driven by `APP_CONFIG.auth.rateLimit`, so F2a never edits `auth.ts`.
 
 No finding was rejected.
+
+---
+
+## 15. v1.1 extensions
+
+Decisions: `kararlar.md` §14. Three units, built **sequentially** on `main` in this order: **V-role → V-lead → V-fb**,
+then **V-docs**. Each unit owns everything it needs (no parallel unit runs at the same time), but must keep existing
+behaviour, tests and conventions (services own DB access and authorization, zod schemas in `src/lib/validation/*`,
+constants in `src/config/app.ts` — add a new `// >>> V-<unit>` block, texts in `messages/{de,en}/<ns>.json`, colors only
+via tokens). Each unit adds one drizzle migration via `pnpm db:generate --name <name>` (never edit old migrations) and
+updates `scripts/seed-demo.ts` so the demo data exercises the feature. Integration tests are mandatory for every
+authorization and business rule below. E2E: do not add new specs; existing specs must keep passing (run only in V-docs).
+
+### 15.1 V-role — job roles belong to a department
+
+Schema
+- `job_roles.department_id uuid NULL REFERENCES departments(id) ON DELETE RESTRICT`; index on it.
+- Replace `job_roles_name_uq` with `unique("job_roles_department_name_uq").on(departmentId, name).nullsNotDistinct()`.
+- Migration leaves existing rows `NULL` (company-wide).
+
+Rule `roleFitsDepartment(role, departmentId | null)`: `role.departmentId === null || role.departmentId === departmentId`
+(so a company-wide template, `departmentId = null`, only accepts company-wide roles). One shared helper in the service
+layer (plus a pure version in `src/lib/domain/` for the forms).
+
+Services
+- `org.ts`: `listJobRoles` returns `departmentId` + department name; `createJobRole`/`updateJobRole` accept
+  `departmentId: string | null`. Changing the department is rejected with `IN_USE` (details: names of mismatching
+  templates and users) when any template or user using the role would no longer fit; changing to `null` is always
+  allowed. `getDepartmentUsage`/`deleteDepartment`: job roles of the department count as usage. If `updateTeam` can move
+  a team to another department, it must reject the move with `IN_USE` when users of the team hold roles bound to the old
+  department. `listOrgOptions` returns `departmentId` on job roles.
+- `templates.ts` create/update: role must fit the template department, else `VALIDATION` (field `jobRoleId`).
+- `users.ts` create/update: role must fit the department of the user's team, else `VALIDATION` (field `jobRoleId`).
+- Unique violation on (department, name) → existing duplicate-name error handling, per department.
+
+UI
+- Admin job roles page: department select ("Unternehmensweit" = none) on create/edit, department shown per row (group or
+  column), list sorted by department then name.
+- Template form: job role options = roles fitting the selected department; "Alle" → company-wide only; changing the
+  department clears a role that no longer fits. Same for the user form based on the selected team's department.
+
+Acceptance (integration tests unless noted)
+- create/update role with and without department; same name allowed in two departments, rejected twice in one
+  (and twice company-wide).
+- template create/update rejects a foreign-department role and a department role on an "Alle" template; accepts own and
+  company-wide roles.
+- user create/update rejects a role not fitting the team's department.
+- changing a role's department with mismatching templates/users → `IN_USE` with the lists; to `null` → ok.
+- department with roles cannot be deleted; team move rule (if moves exist).
+- unit test for the pure fit helper; forms filter options (component logic covered by unit test of the filter function).
+
+### 15.2 V-lead — team leads edit their own department's content
+
+Schema
+- `modules.department_id uuid NULL REFERENCES departments(id) ON DELETE RESTRICT` (NULL = company-wide, admin only); index.
+- `templates.lead_managed boolean NOT NULL DEFAULT false`.
+
+Authorization (all in the service layer; `Actor` stays as is — the lead's department is looked up in the DB)
+- `editorDepartmentIdInTx(tx, actor)`: admin → `"all"`, team_lead → department of `users.team_id` (or `null` when the
+  lead has no team), employee → `null`.
+- `canEditModule(actor, module)`: admin always; team_lead iff `module.departmentId !== null` and equals their department.
+  `canEditPage` = `canEditModule` of the page's module. Departments of leads are read inside the same transaction as
+  the write.
+- New permission entries: `"content.edit": ["team_lead", "admin"]` (+ scope check) and
+  `"templates.edit": ["team_lead", "admin"]` (+ scope check). `content.manage` / `templates.manage` stay admin-only and
+  guard the admin-only operations.
+- Lead may (own department modules only): `createModule` (department forced to the lead's; admin may pass any or none),
+  `updateModule` title, `deleteModule` (empty), `createPage`, `getPageForEdit`, `savePageContent`, `changePageStatus`
+  (all transitions incl. publish), `movePage` (within module), `movePageToModule` (source and target both editable),
+  `getPageDeletionImpact`, lock functions (`acquireLock`, `heartbeat`, `releaseLock`, `takeOverLock`, `getLockState`),
+  `uploadImage` (page must be editable).
+- Admin only: `moveModule` (global order), setting/changing `modules.department_id`, `deletePage` (hard delete; leads
+  archive instead), company-wide modules.
+- Foreign module/page for a lead: `NOT_FOUND` when the lead cannot even view it (draft/archived elsewhere), otherwise
+  `FORBIDDEN`.
+- Visibility (`visibility.ts`, the single rule): team_lead sees published pages **plus** draft pages of their own
+  department's modules; archived pages of their own department only with `includeArchived` (library management).
+  Implement with a SQL subquery on modules/teams/users — no extra round trip. Uploads, search, page view and the lead's
+  employee-plan view follow automatically (lead sees titles of own-department drafts in plans).
+- Notifications: saves/publishes by leads trigger exactly the same "page updated" rules as admin saves.
+
+Templates
+- Lead `createTemplate`: department forced to the lead's department (lead without team → `FORBIDDEN`); `teamId` null or a
+  team of that department (`VALIDATION` otherwise); role per §15.1; `lead_managed = true`.
+- Lead may update/archive/restore/delete and manage steps (`addTemplateStep`, `removeTemplateStep`, `moveTemplateStep`,
+  `changeTemplateStepPhase`) only for templates with `lead_managed = true` and `department_id` = their department, and may
+  not move a template to another department. Admin may do everything; admin edits keep `lead_managed` as is.
+- Lead template steps: published pages of any module, or draft pages of own department (P-tpl-3 marking); never archived.
+- `listTemplates` for a lead: company-wide + own-department templates, each with `canManage`; `getTemplate` for a lead on a
+  template outside that set → `NOT_FOUND`; steps whose page the lead cannot view show status only, no title.
+- Assignment (`listAssignableTemplates`, `assignTemplates`) unchanged.
+
+Routes / UI
+- `/library` (lead): own-department modules show edit controls (new module, new page, edit, status actions, reorder
+  pages, move page); other modules read-only. Module cards show the owner department. Reuse admin library components.
+- `/library/pages/[pageId]/edit` (lead page editor, reusing the admin editor + lock UI; lock banner shows the holder name
+  regardless of role).
+- `/templates`, `/templates/new`, `/templates/[templateId]` for team_lead (reuse admin template components; read-only
+  view when `canManage` is false). Add to `ROUTE_ACCESS` (`team_lead`, `admin`) and lead navigation ("Vorlagen").
+- Admin library: module create/edit gets a department select ("Unternehmensweit" = none); department badge per module.
+- Admin template list shows whether a template is lead-managed.
+
+Acceptance (integration tests)
+- lead can create/edit/publish/archive/restore/reorder/move pages and create/rename/delete modules in own department;
+  every such call on another department's or a company-wide module is rejected; lead without team edits nothing.
+- lead cannot hard-delete pages, reorder modules, or change a module's department; admin can.
+- lock acquire/takeover/save between a lead and an admin on the same page work; a lead of another department cannot
+  acquire the lock.
+- visibility: lead sees own-department drafts (library, search, page view, image), not other departments' drafts;
+  employees unchanged.
+- lead page save on a published page sends the same "page updated" notifications as an admin save.
+- lead template create (forced department, team/role validation), manage own-department lead-managed templates, read-only
+  admin templates, no access to other departments' templates; step page rules.
+
+### 15.3 V-fb — "Problem melden"
+
+Schema
+- enums `feedback_type` (`app_bug`, `content_issue`, `other`) and `feedback_status` (`open`, `in_progress`, `done`)
+  from constants in `src/config/app.ts`.
+- `feedback_reports`: `id`, `reporter_id` (FK users, `SET NULL`), `type`, `subject` (≤120), `message` (≤2000),
+  `path` (nullable, ≤500, a same-origin in-app path checked with `safeNextPath`), `page_id` (FK pages, `SET NULL`),
+  `status` default `open`, `response` (nullable, ≤1000), `handled_by` (FK users, `SET NULL`), `created_at`, `updated_at`,
+  `resolved_at` (nullable). Indexes on `(status, created_at)`, `page_id`, `reporter_id`.
+- New notification type `feedback_resolved` (i18n key + params: subject, response) for the reporter.
+- New error code `RATE_LIMITED` (+ de/en `errors` messages).
+
+Services (`src/server/services/feedback.ts`)
+- `createReport(actor, input)`: any signed-in role. zod validation; the server derives `page_id` from `path`
+  (`/pages/<uuid>`) only when the reporter can view that page (`canViewPageInTx`), otherwise `null`. Rate limit: at most
+  `V_FB_CONFIG.maxReportsPerHour` (5) per reporter in the last rolling hour → `RATE_LIMITED`.
+- Scope rule: admin → all reports; team_lead → `content_issue` reports whose page belongs to a module of their department
+  (dynamic join, so a module's department change re-routes); others → none.
+- `listReports(actor, { status?, type? })`, `countOpenReports(actor)` (status `open`, within scope),
+  `updateReport(actor, { id, status, response })` (sets `handled_by`, `resolved_at` when → `done`, clears it when leaving
+  `done`; sends `feedback_resolved` to the reporter on every transition into `done` if the reporter still exists and is
+  not archived), `deleteReport(actor, { id })` (admin only). Out-of-scope id → `NOT_FOUND`.
+- Retention: `listReports` first deletes `done` reports with `resolved_at` older than `V_FB_CONFIG.retentionDays` (180).
+
+Routes / UI
+- Sidebar (desktop + mobile sheet), all roles: "Problem melden" button at the bottom of the navigation → dialog with type
+  select (default `content_issue` on `/pages/*`, else `app_bug`), subject, message, and a read-only line with the current
+  path. Success toast; field errors inline.
+- Admin: "Meldungen" under "Verwaltung" → `/admin/reports`; team_lead: "Meldungen" → `/reports` (add to `ROUTE_ACCESS`).
+  Shared list component: filters (status, type), each report shows type, subject, message, reporter name (or
+  "gelöschter Benutzer"), date, link to the page/path; actions: change status, write response, delete (admin only,
+  confirm dialog). Navigation items show the open count (from `countOpenReports`, computed in the app layout) as a badge.
+
+Acceptance (integration tests)
+- create: validation limits, page derived only when visible, foreign/invisible page ignored, unsafe path rejected,
+  rate limit on the 6th report within an hour.
+- scope: admin sees all; lead sees only own-department content reports; employee lists nothing (`FORBIDDEN`); lead cannot
+  update/delete out-of-scope reports.
+- status transitions set/clear `resolved_at` and `handled_by`; `feedback_resolved` notification on → done (not for
+  deleted/archived reporters); retention purge; admin delete; reporter deletion keeps the report.
+- `countOpenReports` per role.
+
+### 15.4 V-docs
+
+Update `docs/projektdoku/*` (German): ER diagram (new columns/tables), Berechtigungskonzept (new matrix), state diagram
+for reports, Soll-Ist (V-role/V-lead as "Erweiterung", V-fb as "Zusatzfunktion", with hours), Testkonzept/Testbericht
+(new numbers), Datenschutz (reports: what is stored, retention). Update `docs/v1-plan.md` (phase 8 ✅). Run the E2E
+suite once and fix breakage.

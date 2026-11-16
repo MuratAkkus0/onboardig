@@ -101,7 +101,7 @@ Her kullanıcının **tek** uygulama yetkisi vardır: `admin`, `team_lead`, `emp
 
 ### Organizasyon
 - **Departman → Ekip** (iki seviye). Örn. "IT / Yazılım Geliştirme" → "Frontend", "Backend".
-- **İş rolü** (Stellenrolle) ayrı bir liste: "Frontend Developer", "Designer" … Admin panelden ekler/düzenler.
+- **İş rolü** (Stellenrolle) ayrı bir liste: "Frontend Developer", "Designer" … Admin panelden ekler/düzenler. v1.1: rol bir departmana bağlı ya da şirket genelidir (§14.1).
 - Departman, ekip ve iş rolleri admin panelinden yönetilir.
 - Her çalışan: **bir ekip** (departmanı ekipten türetilir), **bir iş rolü**, **bir ekip lideri**.
 - Ekip lideri yalnızca kendisine atanmış çalışanları görür. Lider aynı zamanda kendi onboarding planı olan bir çalışan olabilir.
@@ -127,7 +127,10 @@ Ad, soyad, e-posta (benzersiz), ekip, iş rolü, ekip lideri, başlangıç tarih
 | Başkası adına "tamamlandı" işaretleme | ✗ | ✗ | ✗ |
 | Sayfa kütüphanesini okuma | ✗ (yalnızca planındaki sayfalar) | ✓ | ✓ |
 | Şablon atama, plana adım ekleme/çıkarma | ✗ | Yalnızca kendi çalışanları | Herkes |
-| Sayfa, modül, şablon, departman, ekip, rol, kullanıcı, etkinlik yönetimi | ✗ | ✗ | ✓ |
+| Kendi departmanının modül/sayfaları, kendi departmanı için şablon (v1.1, §14.2) | ✗ | ✓ | ✓ |
+| Şirket geneli modüller, modül sırası/departmanı, sayfa kalıcı silme, departman, ekip, rol, kullanıcı, etkinlik yönetimi | ✗ | ✗ | ✓ |
+| "Problem melden" (v1.1, §14.3) | ✓ | ✓ | ✓ |
+| Raporları işleme | ✗ | Kendi departmanının içerik raporları | Hepsi |
 | İlerleme görme | Kendi | Kendi çalışanları | Herkes |
 | Etkinlikleri görme | ✓ | ✓ | ✓ |
 | Etkinlik duyurma | ✗ | ✗ | ✓ |
@@ -395,3 +398,50 @@ Blueprint incelemesi sırasında netleştirilen yorumlar (kaynak: `docs/v1-archi
 - **P-fin-2** Görsel yükleme, gövde okunmadan önce yetki ve `Content-Length` kontrolü yapar; `Content-Length` göndermeyen (chunked) istemciler 413 alır. (otonom karar)
 - **P-fin-3** Prod compose uygulama portunu yalnızca `127.0.0.1`'e bağlar; dışarıya açmak için aynı sunucuda reverse proxy kullanılır. Rate limiting için istemci IP'si yapılandırılmış proxy başlığından okunur (runbook). (otonom karar)
 - **P-fin-4** Editör kilidi yalnızca devralmada otomatik yeniden yükler; süre aşımı veya boşta kalma sonrası yeniden yükleme önerilir, taslak tarayıcıda saklanır. (otonom karar; P20'nin güncellenmiş hali)
+
+---
+
+## 14. v1.1 genişletmeleri (16.11.2026, kullanıcı kararı)
+
+Teknik sözleşme: [v1-architecture.md §15](v1-architecture.md#15-v11-extensions). Sıra: V-role → V-lead → V-fb.
+Arayüzde rol adı **"Admin"** olarak kalır (HR olarak yeniden adlandırılmaz).
+
+### 14.1 İş rolleri departmana bağlı (V-role)
+- Her iş rolü **bir departmana** bağlıdır ya da departmansızdır (= şirket geneli, örn. Werkstudent, Praktikant).
+- Rol adı departman içinde benzersizdir; farklı departmanlarda aynı ad olabilir.
+- "Rol departmana uyar" = rol şirket geneli **veya** rolün departmanı hedef departmanla aynı.
+  - Şablon: departman seçiliyse o departmanın rolleri + şirket geneli roller; "Alle" seçiliyse yalnızca şirket geneli roller.
+  - Kullanıcı: rol, ekibin departmanına uymalı.
+  - Formda departman/ekip değişince uymayan rol seçimi sıfırlanır; sunucu da aynı kuralı doğrular (`VALIDATION`).
+- Rolün departmanı değiştirilirken rolü kullanan uyumsuz şablon/kullanıcı varsa değişiklik engellenir ve etkilenenler
+  listelenir (`IN_USE`). Şirket geneline çevirmek her zaman serbesttir.
+- Rolü olan departman silinemez (§8 ile aynı mantık). Mevcut roller migration'da şirket geneli olur.
+
+### 14.2 Ekip liderleri kendi departmanlarının editörüdür (V-lead)
+- Her modülün bir **sahibi** vardır: bir departman ya da şirket geneli (departmansız). Şirket geneli modülleri yalnızca admin yönetir.
+- Liderin departmanı = kendi ekibinin departmanı. Ekibi olmayan lider editör değildir.
+- Lider, kendi departmanının modüllerinde: modül oluşturur (departmanı otomatik kendisi), modül adını değiştirir, boş modülü
+  siler; sayfa oluşturur, düzenler (aynı kilit kuralları), **doğrudan yayınlar**, yayından kaldırır, arşivler, geri alır,
+  modül içinde sıralar, kendi departmanının modülleri arasında taşır, görsel yükler.
+- Yalnızca admin: modül sıralaması (genel sıra), modülün departmanını belirleme/değiştirme, sayfayı **kalıcı silme**,
+  şirket geneli modüller.
+- Lider kendi departmanının taslak ve arşiv sayfalarını görür (kütüphane, arama, görsel); diğer departmanların yalnızca
+  yayındaki sayfalarını görür.
+- Lider **şablon** oluşturabilir: departman otomatik kendi departmanı, ekip boş veya kendi departmanının bir ekibi, rol
+  §14.1'e uygun. Liderin oluşturduğu şablonları (`lead_managed`) o departmanın tüm liderleri ve admin yönetir; adminin
+  oluşturduğu şablonlar lider için salt okunurdur. Lider şablon listesinde yalnızca şirket geneli ve kendi departmanının
+  şablonlarını görür.
+- Onay (Freigabe) akışı yok; v2.
+
+### 14.3 "Problem melden" (V-fb)
+- Sidebar'da herkes için "Problem melden" → popup: tür (Fehler in der App / Inhalt falsch oder veraltet / Sonstiges),
+  konu (en fazla 120), açıklama (en fazla 2000). Bildirildiği uygulama içi sayfa yolu otomatik eklenir; yol bir döküman
+  sayfasıysa ve bildiren onu görebiliyorsa sayfa da bağlanır. Başka veri (tarayıcı, davranış) toplanmaz.
+- Durumlar: `offen → in Bearbeitung → erledigt` (geri alınabilir). İşleyen kısa bir cevap notu yazabilir.
+  "Erledigt" olunca bildirene uygulama içi bildirim gider (cevap notuyla).
+- Admin tüm raporları görür ("Verwaltung → Meldungen"). Lider, sayfası kendi departmanının modülünde olan
+  "Inhalt falsch oder veraltet" raporlarını görür ve işler ("Meldungen"). Menüde açık rapor sayısı rozeti.
+- Kişi başı saatte en fazla 5 rapor. Erledigt raporlar 180 gün sonra silinir (liste açılırken temizlenir, cron yok).
+  Admin bir raporu silebilir. Bildiren kullanıcı silinirse rapor kalır, bildiren boş görünür.
+- Ekran görüntüsü yükleme ve "Meine Meldungen" listesi v2.
+- IHK: Projektantrag dışı ek fonksiyon; Soll-Ist karşılaştırmasında "Zusatzfunktion" olarak yazılır.
