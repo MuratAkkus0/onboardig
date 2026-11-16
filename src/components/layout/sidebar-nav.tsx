@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
-import { isActiveRoute, type VisibleNavItem } from "@/lib/navigation";
+import { activeNavHref, type VisibleNavItem } from "@/lib/navigation";
 import { NAV_ICONS } from "./nav-icons";
 
 interface SidebarNavProps {
@@ -20,13 +20,17 @@ export function SidebarNav({ items, className, onNavigate }: SidebarNavProps) {
   const pathname = usePathname();
   const main = items.filter((item) => item.section === "main");
   const admin = items.filter((item) => item.section === "admin");
+  const activeHref = activeNavHref(
+    items.map((item) => item.href),
+    pathname,
+  );
 
   function renderList(list: VisibleNavItem[]) {
     return (
       <ul className="space-y-1">
         {list.map((item) => {
           const Icon = NAV_ICONS[item.icon];
-          const active = isActiveRoute(item.href, pathname);
+          const active = item.href === activeHref;
           return (
             <li key={item.key}>
               <Link

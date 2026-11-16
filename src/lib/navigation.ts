@@ -35,6 +35,18 @@ export function isActiveRoute(href: string, pathname: string): boolean {
 }
 
 /**
+ * The href of the most specific item matching `pathname`, so a parent entry ("/admin") is not
+ * highlighted together with a child entry ("/admin/users").
+ */
+export function activeNavHref(hrefs: readonly string[], pathname: string): string | null {
+  let best: string | null = null;
+  for (const href of hrefs) {
+    if (isActiveRoute(href, pathname) && (best === null || href.length > best.length)) best = href;
+  }
+  return best;
+}
+
+/**
  * Accepts only same-origin absolute paths ("/plan?x=1"); protocol-relative ("//evil"), backslash
  * tricks and full URLs fall back to null.
  */

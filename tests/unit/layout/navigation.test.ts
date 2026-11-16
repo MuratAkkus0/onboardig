@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { LOCALES, NAVIGATION, ROLES, ROUTES } from "@/config/app";
 import { NAV_ICONS } from "@/components/layout/nav-icons";
 import {
+  activeNavHref,
   getVisibleNavigation,
   homeRouteFor,
   initialsOf,
@@ -66,6 +67,20 @@ describe("isActiveRoute", () => {
     expect(isActiveRoute("/admin", "/admin")).toBe(true);
     expect(isActiveRoute("/admin/users", "/admin/users/123")).toBe(true);
     expect(isActiveRoute("/admin/users", "/admin/users-x")).toBe(false);
+  });
+});
+
+describe("activeNavHref", () => {
+  const adminHrefs = getVisibleNavigation("admin").map((item) => item.href);
+
+  it("highlights only the most specific entry", () => {
+    expect(activeNavHref(adminHrefs, ROUTES.adminUsers)).toBe(ROUTES.adminUsers);
+    expect(activeNavHref(adminHrefs, ROUTES.adminTemplate("1"))).toBe(ROUTES.adminTemplates);
+    expect(activeNavHref(adminHrefs, ROUTES.admin)).toBe(ROUTES.admin);
+  });
+
+  it("returns null when no entry matches", () => {
+    expect(activeNavHref(adminHrefs, ROUTES.profile)).toBeNull();
   });
 });
 
