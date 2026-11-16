@@ -31,3 +31,6 @@ next-env.d.ts
 *.tsbuildinfo
 test-results/
 playwright-report/
+
+# IHK presentation (contains Projektantrag details, kept local)
+docs/praesentation/
