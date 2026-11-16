@@ -108,6 +108,9 @@ export function ModuleDialog({ trigger, module, departments }: ModuleDialogProps
               />
             )}
           </FormField>
+          {!departments && !module ? (
+            <p className="text-sm text-muted-foreground">{t("module.ownDepartmentHint")}</p>
+          ) : null}
           {departments ? (
             <FormField
               label={t("module.department")}

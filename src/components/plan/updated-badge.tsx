@@ -31,7 +31,7 @@ export function UpdatedBadge({ pageId }: { pageId: string }) {
         disabled={pending}
         aria-label={t("step.dismissUpdate")}
         title={t("step.dismissUpdate")}
-        className="rounded-full p-0.5 hover:bg-foreground/10 focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none disabled:opacity-50"
+        className="relative rounded-full p-0.5 after:absolute after:-inset-1.5 after:content-[''] hover:bg-foreground/10 focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none disabled:opacity-50"
       >
         <X className="size-3" aria-hidden="true" />
       </button>

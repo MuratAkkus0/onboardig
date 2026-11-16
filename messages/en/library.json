@@ -36,7 +36,8 @@
     "owner": "Owner: {name}",
     "companyWide": "Company-wide",
     "readOnly": "Read only",
-    "noPublishedPages": "No published pages in this module."
+    "noPublishedPages": "No published pages in this module.",
+    "ownDepartmentHint": "The module belongs to your department. All team leads of your department can edit it."
   },
   "page": {
     "createTitle": "Add page",

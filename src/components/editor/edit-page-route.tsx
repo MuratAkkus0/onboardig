@@ -31,7 +31,12 @@ export async function EditPageRoute({ pageId, area }: { pageId: string; area: Ar
       lastEditedByName: page.lastEditedByName,
     };
   } catch (e) {
-    if ((isAppError(e) && e.code === "NOT_FOUND") || e instanceof ZodError) notFound();
+    // A page the actor may not edit is answered like a missing one (as on every other guarded route).
+    if (
+      (isAppError(e) && (e.code === "NOT_FOUND" || e.code === "FORBIDDEN")) ||
+      e instanceof ZodError
+    )
+      notFound();
     throw e;
   }
   return <PageEditor page={editable} area={area} />;

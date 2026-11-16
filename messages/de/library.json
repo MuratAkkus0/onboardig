@@ -36,7 +36,8 @@
     "owner": "Zuständig: {name}",
     "companyWide": "Unternehmensweit",
     "readOnly": "Nur lesen",
-    "noPublishedPages": "Keine veröffentlichten Seiten in diesem Modul."
+    "noPublishedPages": "Keine veröffentlichten Seiten in diesem Modul.",
+    "ownDepartmentHint": "Das Modul gehört zu deiner Abteilung. Alle Teamleads deiner Abteilung können es bearbeiten."
   },
   "page": {
     "createTitle": "Seite hinzufügen",
