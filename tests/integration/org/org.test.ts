@@ -223,12 +223,14 @@ describe("teams", () => {
 describe("job roles", () => {
   it("creates, renames, lists with counts and rejects duplicates", async () => {
     const admin = actorOf(await factories.createAdmin());
-    const role = await createJobRole(admin, { name: "Designer" });
-    await expect(createJobRole(admin, { name: "Designer" })).rejects.toMatchObject({
+    const role = await createJobRole(admin, { name: "Designer", departmentId: null });
+    await expect(
+      createJobRole(admin, { name: "Designer", departmentId: null }),
+    ).rejects.toMatchObject({
       code: "CONFLICT",
       details: { reasonKey: "org.errors.nameTaken" },
     });
-    await updateJobRole(admin, { id: role.id, name: "UX Designer" });
+    await updateJobRole(admin, { id: role.id, name: "UX Designer", departmentId: null });
     const lead = await factories.createLead();
     await factories.createEmployee({ jobRoleId: role.id, leadId: lead.id });
     const list = await listJobRoles(admin);
@@ -282,8 +284,8 @@ describe("org authorization", () => {
         getTeamUsage(actor, { id: team.id }),
         deleteTeam(actor, { id: team.id }),
         listJobRoles(actor),
-        createJobRole(actor, { name: "X" }),
-        updateJobRole(actor, { id: role.id, name: "X" }),
+        createJobRole(actor, { name: "X", departmentId: null }),
+        updateJobRole(actor, { id: role.id, name: "X", departmentId: null }),
         getJobRoleUsage(actor, { id: role.id }),
         deleteJobRole(actor, { id: role.id }),
       ];

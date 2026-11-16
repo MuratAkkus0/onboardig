@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { ROUTES, W2_TEMPLATES_CONFIG } from "@/config/app";
+import { filterRolesForDepartment, keepFittingRoleId } from "@/lib/domain/job-role-fit";
 import { ALL_DEPARTMENTS } from "@/lib/validation/templates";
 import type { OrgOptions } from "@/server/services/org";
 import { NONE_VALUE, type TemplateFormState } from "./types";
@@ -93,6 +94,9 @@ function TemplateFormFields({
   const [teamId, setTeamId] = useState(values.teamId || NONE_VALUE);
   const [jobRoleId, setJobRoleId] = useState(values.jobRoleId || NONE_VALUE);
   const teamChoices = options.teams.filter((team) => team.departmentId === departmentId);
+  const roleDepartmentId =
+    departmentId === "" || departmentId === ALL_DEPARTMENTS ? null : departmentId;
+  const roleChoices = filterRolesForDepartment(options.jobRoles, roleDepartmentId);
   const teamsAvailable = departmentId !== "" && departmentId !== ALL_DEPARTMENTS;
 
   return (
@@ -145,6 +149,15 @@ function TemplateFormFields({
                   onValueChange={(next) => {
                     setDepartmentId(next);
                     setTeamId(NONE_VALUE);
+                    const nextDepartment = next === ALL_DEPARTMENTS ? null : next;
+                    setJobRoleId(
+                      (current) =>
+                        keepFittingRoleId(
+                          options.jobRoles,
+                          current === NONE_VALUE ? null : current,
+                          nextDepartment,
+                        ) ?? NONE_VALUE,
+                    );
                   }}
                 >
                   <SelectTrigger {...control} className="w-full">
@@ -195,7 +208,7 @@ function TemplateFormFields({
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value={NONE_VALUE}>{t("jobRoleNone")}</SelectItem>
-                    {options.jobRoles.map((role) => (
+                    {roleChoices.map((role) => (
                       <SelectItem key={role.id} value={role.id}>
                         {role.name}
                       </SelectItem>

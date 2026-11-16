@@ -22,6 +22,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { LOCALES, ROLES, ROUTES, W1_ORG_CONFIG } from "@/config/app";
+import { filterRolesForDepartment, keepFittingRoleId } from "@/lib/domain/job-role-fit";
 import { requiredFieldsFor, type RoleBoundField } from "@/lib/validation/users";
 import type { Locale } from "@/server/auth/types";
 import type { OrgOptions } from "@/server/services/org";
@@ -102,6 +103,24 @@ export function UserForm({
   const required = new Set<RoleBoundField>(requiredFieldsFor(values.role));
   const set = <K extends keyof Values>(key: K, value: Values[K]) =>
     setValues((current) => ({ ...current, [key]: value }));
+  const departmentOfTeam = (teamId: string): string | null =>
+    orgOptions.teams.find((team) => team.id === teamId)?.departmentId ?? null;
+  const roleChoices = filterRolesForDepartment(
+    orgOptions.jobRoles,
+    departmentOfTeam(values.teamId),
+  );
+  // Changing the team may make the chosen role unfit; clear it then.
+  const changeTeam = (teamId: string) =>
+    setValues((current) => ({
+      ...current,
+      teamId,
+      jobRoleId:
+        keepFittingRoleId(
+          orgOptions.jobRoles,
+          current.jobRoleId === NONE ? null : current.jobRoleId,
+          departmentOfTeam(teamId),
+        ) ?? NONE,
+    }));
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -151,7 +170,12 @@ export function UserForm({
   ) => (
     <FormField label={label} error={options?.error} description={options?.description}>
       {(control) => (
-        <Select value={values[name]} onValueChange={(next) => set(name, next as never)}>
+        <Select
+          value={values[name]}
+          onValueChange={(next) =>
+            name === "teamId" ? changeTeam(next) : set(name, next as never)
+          }
+        >
           <SelectTrigger {...control} className="w-full">
             <SelectValue placeholder={t("select")} />
           </SelectTrigger>
@@ -285,7 +309,7 @@ export function UserForm({
             "jobRoleId",
             <>
               <SelectItem value={NONE}>{t("none")}</SelectItem>
-              {orgOptions.jobRoles.map((role) => (
+              {roleChoices.map((role) => (
                 <SelectItem key={role.id} value={role.id}>
                   {role.name}
                 </SelectItem>

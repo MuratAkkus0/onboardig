@@ -28,6 +28,13 @@ import { W1_ORG_CONFIG } from "@/config/app";
 import type { ActionResult } from "@/lib/action-result";
 import { useActionErrorDescriber, type ActionError } from "./use-action-error";
 
+const NONE = W1_ORG_CONFIG.noneValue;
+
+function initialDepartment(field: OrgNameDialogProps["departmentField"]): string {
+  if (!field) return "";
+  return field.initialId === "" && field.noneLabel ? NONE : field.initialId;
+}
+
 export interface OrgNameValues {
   name: string;
   departmentId: string;
@@ -42,7 +49,10 @@ interface OrgNameDialogProps {
   departmentField?: {
     label: string;
     options: { id: string; name: string }[];
+    /** Empty string selects the "none" option (only when `noneLabel` is set). */
     initialId: string;
+    /** Adds an optional first entry (e.g. company-wide); it submits as an empty departmentId. */
+    noneLabel?: string;
   };
   onSubmit: (values: OrgNameValues) => Promise<ActionResult<unknown>>;
 }
@@ -62,7 +72,7 @@ export function OrgNameDialog({
   const describe = useActionErrorDescriber();
   const [open, setOpen] = useState(false);
   const [name, setName] = useState(initialName);
-  const [departmentId, setDepartmentId] = useState(departmentField?.initialId ?? "");
+  const [departmentId, setDepartmentId] = useState(initialDepartment(departmentField));
   const [error, setError] = useState<ActionError | null>(null);
   const [pending, startTransition] = useTransition();
 
@@ -70,7 +80,7 @@ export function OrgNameDialog({
     setOpen(next);
     if (next) {
       setName(initialName);
-      setDepartmentId(departmentField?.initialId ?? "");
+      setDepartmentId(initialDepartment(departmentField));
       setError(null);
     }
   }
@@ -78,7 +88,10 @@ export function OrgNameDialog({
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     startTransition(async () => {
-      const result = await onSubmit({ name, departmentId });
+      const result = await onSubmit({
+        name,
+        departmentId: departmentId === NONE ? "" : departmentId,
+      });
       if (result.ok) {
         toast.success(t("toast.saved"));
         setOpen(false);
@@ -133,6 +146,9 @@ export function OrgNameDialog({
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
+                    {departmentField.noneLabel ? (
+                      <SelectItem value={NONE}>{departmentField.noneLabel}</SelectItem>
+                    ) : null}
                     {departmentField.options.map((option) => (
                       <SelectItem key={option.id} value={option.id}>
                         {option.name}

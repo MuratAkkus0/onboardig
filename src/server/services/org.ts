@@ -1,5 +1,5 @@
 import "server-only";
-import { asc, count, eq, inArray, or, type SQL } from "drizzle-orm";
+import { and, asc, count, eq, inArray, isNotNull, isNull, ne, or, type SQL } from "drizzle-orm";
 import {
   createDepartmentSchema,
   createJobRoleSchema,
@@ -16,6 +16,7 @@ import {
   type UpdateJobRoleInput,
   type UpdateTeamInput,
 } from "@/lib/validation/org";
+import { roleFitsDepartment } from "@/lib/domain/job-role-fit";
 import { assertPermission } from "@/server/auth/permissions";
 import type { Actor } from "@/server/auth/types";
 import { db, type DbExecutor, type Tx } from "@/server/db/client";
@@ -44,7 +45,17 @@ export interface DepartmentWithTeams {
 export interface JobRoleItem {
   id: string;
   name: string;
+  /** Null = company-wide role. */
+  departmentId: string | null;
+  departmentName: string | null;
   userCount: number;
+}
+
+export interface JobRoleOption {
+  id: string;
+  name: string;
+  /** Null = company-wide role. */
+  departmentId: string | null;
 }
 
 export interface TeamUsage {
@@ -54,6 +65,8 @@ export interface TeamUsage {
 }
 
 export interface DepartmentUsage extends TeamUsage {
+  /** Job roles bound to the department; they count as usage. */
+  jobRoles: OrgEntry[];
   /** Teams of the department that no user and no template references. */
   emptyTeams: OrgEntry[];
 }
@@ -63,10 +76,11 @@ export type JobRoleUsage = TeamUsage;
 export interface OrgOptions {
   departments: OrgEntry[];
   teams: { id: string; name: string; departmentId: string }[];
-  jobRoles: OrgEntry[];
+  jobRoles: JobRoleOption[];
 }
 
 const NAME_TAKEN = "org.errors.nameTaken";
+const ROLE_NOT_IN_DEPARTMENT = "org.errors.jobRoleNotInDepartment";
 
 /** Unique violations on the name columns become CONFLICT with a readable reason; the rest as usual. */
 function rethrowNameError(e: unknown): never {
@@ -123,7 +137,7 @@ async function departmentUsageInTx(
     .where(eq(teams.departmentId, departmentId))
     .orderBy(asc(teams.name), asc(teams.id));
   const teamIds = departmentTeams.map((team) => team.id);
-  const [departmentUsers, departmentTemplates] = await Promise.all([
+  const [departmentUsers, departmentTemplates, departmentRoles] = await Promise.all([
     usersOfTeams(executor, teamIds),
     templatesWhere(
       executor,
@@ -131,6 +145,11 @@ async function departmentUsageInTx(
         ? or(eq(templates.departmentId, departmentId), inArray(templates.teamId, teamIds))
         : eq(templates.departmentId, departmentId),
     ),
+    executor
+      .select({ id: jobRoles.id, name: jobRoles.name })
+      .from(jobRoles)
+      .where(eq(jobRoles.departmentId, departmentId))
+      .orderBy(asc(jobRoles.name), asc(jobRoles.id)),
   ]);
   const referencedTeamIds = new Set<string>();
   if (teamIds.length > 0) {
@@ -149,9 +168,11 @@ async function departmentUsageInTx(
     }
   }
   return {
-    used: departmentUsers.length > 0 || departmentTemplates.length > 0,
+    used:
+      departmentUsers.length > 0 || departmentTemplates.length > 0 || departmentRoles.length > 0,
     users: departmentUsers,
     templates: departmentTemplates,
+    jobRoles: departmentRoles,
     emptyTeams: departmentTeams.filter((team) => !referencedTeamIds.has(team.id)),
   };
 }
@@ -172,8 +193,37 @@ async function jobRoleUsageInTx(executor: DbExecutor, jobRoleId: string): Promis
   };
 }
 
-function inUse(usage: TeamUsage): AppError {
-  return new AppError("IN_USE", { users: usage.users, templates: usage.templates });
+function inUse(usage: TeamUsage | DepartmentUsage): AppError {
+  return new AppError("IN_USE", {
+    users: usage.users,
+    templates: usage.templates,
+    ...("jobRoles" in usage ? { jobRoles: usage.jobRoles } : {}),
+  });
+}
+
+/**
+ * Verifies, inside the caller's transaction, that the job role exists (else `onMissing`) and
+ * fits the target department (else VALIDATION on field `jobRoleId`). The role row is locked
+ * FOR SHARE so a concurrent department change of the role serializes with the write.
+ */
+export async function assertJobRoleFitsDepartmentInTx(
+  tx: Tx,
+  jobRoleId: string,
+  departmentId: string | null,
+  onMissing: () => AppError,
+): Promise<void> {
+  const [role] = await tx
+    .select({ departmentId: jobRoles.departmentId })
+    .from(jobRoles)
+    .where(eq(jobRoles.id, jobRoleId))
+    .for("share");
+  if (!role) throw onMissing();
+  if (!roleFitsDepartment(role, departmentId)) {
+    throw new AppError("VALIDATION", {
+      reasonKey: ROLE_NOT_IN_DEPARTMENT,
+      fieldErrors: { jobRoleId: [ROLE_NOT_IN_DEPARTMENT] },
+    });
+  }
 }
 
 // ---- departments ----
@@ -259,7 +309,8 @@ export async function getDepartmentUsage(
 
 /**
  * Admin: deletes an unused department together with its (then necessarily empty) teams.
- * @throws AppError IN_USE with `{ users, templates }` while people or templates reference it
+ * @throws AppError IN_USE with `{ users, templates, jobRoles }` while people, templates or job
+ *   roles reference it
  */
 export async function deleteDepartment(actor: Actor, input: OrgIdInput): Promise<void> {
   assertPermission(actor, "org.manage");
@@ -310,7 +361,11 @@ export async function createTeam(actor: Actor, input: CreateTeamInput): Promise<
   }
 }
 
-async function assertTeamMovable(tx: Tx, teamId: string): Promise<void> {
+async function assertTeamMovable(
+  tx: Tx,
+  teamId: string,
+  targetDepartmentId: string,
+): Promise<void> {
   const referencing = await templatesWhere(tx, eq(templates.teamId, teamId));
   if (referencing.length > 0) {
     throw new AppError("IN_USE", {
@@ -318,11 +373,31 @@ async function assertTeamMovable(tx: Tx, teamId: string): Promise<void> {
       templates: referencing,
     });
   }
+  // Users keep the department of their team, so a department-bound role must not be left behind.
+  const boundUsers = await tx
+    .select({ id: users.id, firstName: users.firstName, lastName: users.lastName })
+    .from(users)
+    .innerJoin(jobRoles, eq(jobRoles.id, users.jobRoleId))
+    .where(
+      and(
+        eq(users.teamId, teamId),
+        isNotNull(jobRoles.departmentId),
+        ne(jobRoles.departmentId, targetDepartmentId),
+      ),
+    )
+    .orderBy(asc(users.lastName), asc(users.firstName), asc(users.id));
+  if (boundUsers.length > 0) {
+    throw new AppError("IN_USE", {
+      reasonKey: "org.errors.teamHasRoleBoundUsers",
+      users: boundUsers.map((row) => ({ id: row.id, name: userLabel(row) })),
+    });
+  }
 }
 
 /**
  * Admin: renames a team and/or moves it to another department (users derive their department
- * from the team). A move is refused while a template references the team.
+ * from the team). A move is refused while a template references the team or while members hold
+ * a job role bound to the old department.
  */
 export async function updateTeam(actor: Actor, input: UpdateTeamInput): Promise<OrgEntry> {
   assertPermission(actor, "org.manage");
@@ -342,7 +417,7 @@ export async function updateTeam(actor: Actor, input: UpdateTeamInput): Promise<
           .where(eq(departments.id, data.departmentId))
           .for("share");
         if (!target) throw new AppError("NOT_FOUND");
-        await assertTeamMovable(tx, data.id);
+        await assertTeamMovable(tx, data.id, data.departmentId);
       }
       const [row] = await tx
         .update(teams)
@@ -393,42 +468,134 @@ export async function deleteTeam(actor: Actor, input: OrgIdInput): Promise<void>
 export async function listJobRoles(actor: Actor): Promise<JobRoleItem[]> {
   assertPermission(actor, "org.manage");
   const [roleRows, userCounts] = await Promise.all([
-    db.select().from(jobRoles).orderBy(asc(jobRoles.name), asc(jobRoles.id)),
+    db
+      .select({ role: jobRoles, departmentName: departments.name })
+      .from(jobRoles)
+      .leftJoin(departments, eq(departments.id, jobRoles.departmentId)),
     db.select({ jobRoleId: users.jobRoleId, total: count() }).from(users).groupBy(users.jobRoleId),
   ]);
   const countByRole = new Map(userCounts.map((row) => [row.jobRoleId, row.total]));
-  return roleRows.map((role) => ({
-    id: role.id,
-    name: role.name,
-    userCount: countByRole.get(role.id) ?? 0,
-  }));
+  return roleRows
+    .map(({ role, departmentName }) => ({
+      id: role.id,
+      name: role.name,
+      departmentId: role.departmentId,
+      departmentName,
+      userCount: countByRole.get(role.id) ?? 0,
+    }))
+    .sort(
+      (a, b) =>
+        Number(a.departmentId !== null) - Number(b.departmentId !== null) ||
+        (a.departmentName ?? "").localeCompare(b.departmentName ?? "") ||
+        a.name.localeCompare(b.name) ||
+        a.id.localeCompare(b.id),
+    );
 }
 
+async function assertDepartmentExistsInTx(tx: Tx, departmentId: string): Promise<void> {
+  const [department] = await tx
+    .select({ id: departments.id })
+    .from(departments)
+    .where(eq(departments.id, departmentId))
+    .for("share");
+  if (!department) throw new AppError("NOT_FOUND");
+}
+
+/** Admin: `departmentId` null creates a company-wide role. */
 export async function createJobRole(actor: Actor, input: CreateJobRoleInput): Promise<OrgEntry> {
   assertPermission(actor, "org.manage");
   const data = createJobRoleSchema.parse(input);
   try {
-    const [row] = await db.insert(jobRoles).values({ name: data.name }).returning();
-    if (!row) throw new AppError("INTERNAL");
-    logger.info({ action: "org.jobRole.create", entityId: row.id, actorId: actor.id }, "mutation");
-    return { id: row.id, name: row.name };
+    return await db.transaction(async (tx) => {
+      if (data.departmentId) await assertDepartmentExistsInTx(tx, data.departmentId);
+      const [row] = await tx
+        .insert(jobRoles)
+        .values({ name: data.name, departmentId: data.departmentId })
+        .returning();
+      if (!row) throw new AppError("INTERNAL");
+      logger.info(
+        { action: "org.jobRole.create", entityId: row.id, actorId: actor.id },
+        "mutation",
+      );
+      return { id: row.id, name: row.name };
+    });
   } catch (e) {
     return rethrowNameError(e);
   }
 }
 
+/** Templates and users of the role that would no longer fit `departmentId` (non-null). */
+async function jobRoleMismatchesInTx(
+  tx: Tx,
+  jobRoleId: string,
+  departmentId: string,
+): Promise<TeamUsage> {
+  const [mismatchingTemplates, mismatchingUsers] = await Promise.all([
+    templatesWhere(
+      tx,
+      and(
+        eq(templates.jobRoleId, jobRoleId),
+        or(isNull(templates.departmentId), ne(templates.departmentId, departmentId)),
+      ),
+    ),
+    tx
+      .select({ id: users.id, firstName: users.firstName, lastName: users.lastName })
+      .from(users)
+      .leftJoin(teams, eq(teams.id, users.teamId))
+      .where(
+        and(
+          eq(users.jobRoleId, jobRoleId),
+          or(isNull(teams.departmentId), ne(teams.departmentId, departmentId)),
+        ),
+      )
+      .orderBy(asc(users.lastName), asc(users.firstName), asc(users.id)),
+  ]);
+  return {
+    used: mismatchingTemplates.length > 0 || mismatchingUsers.length > 0,
+    users: mismatchingUsers.map((row) => ({ id: row.id, name: userLabel(row) })),
+    templates: mismatchingTemplates,
+  };
+}
+
+/**
+ * Admin: renames a role and/or changes its department (null = company-wide, always allowed).
+ * @throws AppError IN_USE with `{ users, templates }` (the mismatching ones) when a template or
+ *   user of the role would no longer fit the new department
+ */
 export async function updateJobRole(actor: Actor, input: UpdateJobRoleInput): Promise<OrgEntry> {
   assertPermission(actor, "org.manage");
   const data = updateJobRoleSchema.parse(input);
   try {
-    const [row] = await db
-      .update(jobRoles)
-      .set({ name: data.name, updatedAt: new Date() })
-      .where(eq(jobRoles.id, data.id))
-      .returning();
-    if (!row) throw new AppError("NOT_FOUND");
-    logger.info({ action: "org.jobRole.update", entityId: row.id, actorId: actor.id }, "mutation");
-    return { id: row.id, name: row.name };
+    return await db.transaction(async (tx) => {
+      const [current] = await tx
+        .select({ id: jobRoles.id, departmentId: jobRoles.departmentId })
+        .from(jobRoles)
+        .where(eq(jobRoles.id, data.id))
+        .for("update");
+      if (!current) throw new AppError("NOT_FOUND");
+      if (data.departmentId && data.departmentId !== current.departmentId) {
+        await assertDepartmentExistsInTx(tx, data.departmentId);
+        const mismatches = await jobRoleMismatchesInTx(tx, data.id, data.departmentId);
+        if (mismatches.used) {
+          throw new AppError("IN_USE", {
+            reasonKey: "org.errors.jobRoleDepartmentInUse",
+            users: mismatches.users,
+            templates: mismatches.templates,
+          });
+        }
+      }
+      const [row] = await tx
+        .update(jobRoles)
+        .set({ name: data.name, departmentId: data.departmentId, updatedAt: new Date() })
+        .where(eq(jobRoles.id, data.id))
+        .returning();
+      if (!row) throw new AppError("NOT_FOUND");
+      logger.info(
+        { action: "org.jobRole.update", entityId: row.id, actorId: actor.id },
+        "mutation",
+      );
+      return { id: row.id, name: row.name };
+    });
   } catch (e) {
     return rethrowNameError(e);
   }
@@ -479,7 +646,7 @@ export async function listOrgOptions(actor: Actor): Promise<OrgOptions> {
       .from(teams)
       .orderBy(asc(teams.name), asc(teams.id)),
     db
-      .select({ id: jobRoles.id, name: jobRoles.name })
+      .select({ id: jobRoles.id, name: jobRoles.name, departmentId: jobRoles.departmentId })
       .from(jobRoles)
       .orderBy(asc(jobRoles.name), asc(jobRoles.id)),
   ]);

@@ -15,6 +15,13 @@
       "when": 1794805275260,
       "tag": "0001_page_completion_update_seen",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1794806221529,
+      "tag": "0002_job_role_department",
+      "breakpoints": true
     }
   ]
 }

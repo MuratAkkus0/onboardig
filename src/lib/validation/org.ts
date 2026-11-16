@@ -16,8 +16,16 @@ export const updateTeamSchema = z.object({
   departmentId: idSchema,
 });
 
-export const createJobRoleSchema = z.object({ name: orgNameSchema });
-export const updateJobRoleSchema = z.object({ id: idSchema, name: orgNameSchema });
+/** `departmentId` null = company-wide role. */
+export const createJobRoleSchema = z.object({
+  name: orgNameSchema,
+  departmentId: idSchema.nullable(),
+});
+export const updateJobRoleSchema = z.object({
+  id: idSchema,
+  name: orgNameSchema,
+  departmentId: idSchema.nullable(),
+});
 
 export type OrgIdInput = z.input<typeof orgIdInputSchema>;
 export type CreateDepartmentInput = z.input<typeof createDepartmentSchema>;

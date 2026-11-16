@@ -17,17 +17,27 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import type { JobRoleItem } from "@/server/services/org";
+import type { DepartmentWithTeams, JobRoleItem } from "@/server/services/org";
 import { DeleteEntityDialog } from "./delete-entity-dialog";
 import { OrgNameDialog } from "./org-name-dialog";
 
-export function AddJobRoleButton() {
+type DepartmentOption = Pick<DepartmentWithTeams, "id" | "name">;
+
+export function AddJobRoleButton({ departments }: { departments: DepartmentOption[] }) {
   const t = useTranslations("org.jobRoles");
   return (
     <OrgNameDialog
       title={t("form.createTitle")}
       nameLabel={t("form.nameLabel")}
-      onSubmit={({ name }) => createJobRoleAction({ name })}
+      departmentField={{
+        label: t("form.departmentLabel"),
+        options: departments,
+        initialId: "",
+        noneLabel: t("companyWide"),
+      }}
+      onSubmit={({ name, departmentId }) =>
+        createJobRoleAction({ name, departmentId: departmentId || null })
+      }
       trigger={
         <Button>
           <Plus aria-hidden="true" />
@@ -38,13 +48,20 @@ export function AddJobRoleButton() {
   );
 }
 
-export function JobRoleList({ jobRoles }: { jobRoles: JobRoleItem[] }) {
+export function JobRoleList({
+  jobRoles,
+  departments,
+}: {
+  jobRoles: JobRoleItem[];
+  departments: DepartmentOption[];
+}) {
   const t = useTranslations("org.jobRoles");
   return (
     <Table>
       <TableHeader>
         <TableRow>
           <TableHead>{t("columns.name")}</TableHead>
+          <TableHead>{t("columns.department")}</TableHead>
           <TableHead>{t("columns.members")}</TableHead>
           <TableHead className="w-24 text-right">
             <span className="sr-only">{t("columns.actions")}</span>
@@ -55,6 +72,11 @@ export function JobRoleList({ jobRoles }: { jobRoles: JobRoleItem[] }) {
         {jobRoles.map((role) => (
           <TableRow key={role.id}>
             <TableCell className="font-medium break-words whitespace-normal">{role.name}</TableCell>
+            <TableCell className="break-words whitespace-normal">
+              {role.departmentName ?? (
+                <span className="text-muted-foreground">{t("companyWide")}</span>
+              )}
+            </TableCell>
             <TableCell className="text-muted-foreground">
               {t("members", { count: role.userCount })}
             </TableCell>
@@ -64,7 +86,15 @@ export function JobRoleList({ jobRoles }: { jobRoles: JobRoleItem[] }) {
                   title={t("form.editTitle")}
                   nameLabel={t("form.nameLabel")}
                   initialName={role.name}
-                  onSubmit={({ name }) => updateJobRoleAction({ id: role.id, name })}
+                  departmentField={{
+                    label: t("form.departmentLabel"),
+                    options: departments,
+                    initialId: role.departmentId ?? "",
+                    noneLabel: t("companyWide"),
+                  }}
+                  onSubmit={({ name, departmentId }) =>
+                    updateJobRoleAction({ id: role.id, name, departmentId: departmentId || null })
+                  }
                   trigger={
                     <Button
                       variant="ghost"

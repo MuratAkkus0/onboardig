@@ -126,7 +126,11 @@ export async function runDemoSeed(options: SeedOptions): Promise<SeedResult> {
   }
   const jobRoleIds = new Map<string, string>();
   for (const role of DEMO_JOB_ROLES) {
-    jobRoleIds.set(role.key, (await createJobRole(admin, { name: role.name })).id);
+    const created = await createJobRole(admin, {
+      name: role.name,
+      departmentId: role.departmentKey ? lookup(departmentIds, role.departmentKey) : null,
+    });
+    jobRoleIds.set(role.key, created.id);
   }
 
   // Library: modules and pages (edited under the edit lock, then published)

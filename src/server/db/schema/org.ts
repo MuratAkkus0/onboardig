@@ -33,9 +33,16 @@ export const jobRoles = pgTable(
   "job_roles",
   {
     id: primaryUuid(),
+    /** NULL = company-wide role. */
+    departmentId: uuid("department_id").references(() => departments.id, {
+      onDelete: "restrict",
+    }),
     name: text("name").notNull(),
     createdAt: createdAt(),
     updatedAt: updatedAt(),
   },
-  (t) => [unique("job_roles_name_uq").on(t.name)],
+  (t) => [
+    unique("job_roles_department_name_uq").on(t.departmentId, t.name).nullsNotDistinct(),
+    index("job_roles_department_id_idx").on(t.departmentId),
+  ],
 );

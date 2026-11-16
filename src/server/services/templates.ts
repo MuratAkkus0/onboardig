@@ -24,6 +24,7 @@ import {
 } from "@/lib/validation/templates";
 import { assertPermission } from "@/server/auth/permissions";
 import type { Actor } from "@/server/auth/types";
+import { assertJobRoleFitsDepartmentInTx } from "@/server/services/org";
 import { db, type Tx } from "@/server/db/client";
 import {
   departments,
@@ -205,7 +206,10 @@ interface ResolvedScope {
   jobRoleId: string | null;
 }
 
-/** Maps "all" to null and verifies that department, team and job role exist and fit together. */
+/**
+ * Maps "all" to null and verifies that department, team and job role exist and fit together
+ * (a role must be company-wide or bound to the template department).
+ */
 async function resolveScope(
   tx: Tx,
   data: {
@@ -243,12 +247,12 @@ async function resolveScope(
     }
   }
   if (data.jobRoleId !== null) {
-    const [role] = await tx
-      .select({ id: jobRoles.id })
-      .from(jobRoles)
-      .where(eq(jobRoles.id, data.jobRoleId))
-      .for("share");
-    pick(role);
+    await assertJobRoleFitsDepartmentInTx(
+      tx,
+      data.jobRoleId,
+      departmentId,
+      () => new AppError("NOT_FOUND"),
+    );
   }
   return { departmentId, teamId: data.teamId, jobRoleId: data.jobRoleId };
 }

@@ -445,3 +445,8 @@ Arayüzde rol adı **"Admin"** olarak kalır (HR olarak yeniden adlandırılmaz)
   Admin bir raporu silebilir. Bildiren kullanıcı silinirse rapor kalır, bildiren boş görünür.
 - Ekran görüntüsü yükleme ve "Meine Meldungen" listesi v2.
 - IHK: Projektantrag dışı ek fonksiyon; Soll-Ist karşılaştırmasında "Zusatzfunktion" olarak yazılır.
+
+### v1.1 otonom kararları
+
+- **V-role-1** Rolün departmanı başka bir departmana çevrilirken rolü kullanan tüm şablon ve kullanıcılar kontrol edilir; şirket geneli şablon ve ekipsiz kullanıcı uyumsuz sayılır. Ekip başka departmana taşınırken eski departmana bağlı rolü olan üyeleri varsa taşıma `IN_USE` ile reddedilir. Kullanıcı güncellemesinde uyum kontrolü yalnızca ekip veya rol değişince çalışır (eski kayıtlar ilgisiz düzenlemede bloklanmaz). (otonom karar)
+- **V-role-2** İş rolleri listesi önce şirket geneli, sonra departman adı, sonra rol adına göre sıralanır; demo verisinde Werkstudent/in ve Praktikant/in şirket genelidir. (otonom karar)

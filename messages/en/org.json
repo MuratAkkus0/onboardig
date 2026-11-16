@@ -40,18 +40,21 @@
     "members": "{count, plural, =0 {No people} one {# person} other {# people}}",
     "form": {
       "createTitle": "Add job role",
-      "editTitle": "Rename job role",
-      "nameLabel": "Job role name"
+      "editTitle": "Edit job role",
+      "nameLabel": "Job role name",
+      "departmentLabel": "Department"
     },
     "columns": {
       "name": "Job role",
       "members": "People",
-      "actions": "Actions"
+      "actions": "Actions",
+      "department": "Department"
     },
     "actions": {
       "edit": "Edit job role \"{name}\"",
       "delete": "Delete job role \"{name}\""
-    }
+    },
+    "companyWide": "Company-wide"
   },
   "delete": {
     "checking": "Checking usage …",
@@ -74,10 +77,14 @@
       "description": "It is still in use. Change or remove these links first.",
       "users": "People",
       "templates": "Templates",
-      "close": "Close"
+      "close": "Close",
+      "jobRoles": "Job roles"
     }
   },
   "errors": {
+    "jobRoleNotInDepartment": "The role does not fit the department. Choose a company-wide role or a role of this department.",
+    "jobRoleDepartmentInUse": "The role is used by templates or people outside this department, so it cannot be bound to it:",
+    "teamHasRoleBoundUsers": "People in the team hold roles of the current department, so the team cannot be moved:",
     "nameTaken": "This name is already taken.",
     "teamHasTemplates": "The team is used by templates and therefore cannot be moved to another department:"
   },

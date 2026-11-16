@@ -40,18 +40,21 @@
     "members": "{count, plural, =0 {Keine Personen} one {# Person} other {# Personen}}",
     "form": {
       "createTitle": "Rolle hinzufügen",
-      "editTitle": "Rolle umbenennen",
-      "nameLabel": "Name der Rolle"
+      "editTitle": "Rolle bearbeiten",
+      "nameLabel": "Name der Rolle",
+      "departmentLabel": "Abteilung"
     },
     "columns": {
       "name": "Rolle",
       "members": "Personen",
-      "actions": "Aktionen"
+      "actions": "Aktionen",
+      "department": "Abteilung"
     },
     "actions": {
       "edit": "Rolle „{name}“ bearbeiten",
       "delete": "Rolle „{name}“ löschen"
-    }
+    },
+    "companyWide": "Unternehmensweit"
   },
   "delete": {
     "checking": "Verwendung wird geprüft …",
@@ -74,10 +77,14 @@
       "description": "Der Eintrag wird noch verwendet. Ändere oder entferne zuerst diese Verknüpfungen.",
       "users": "Personen",
       "templates": "Vorlagen",
-      "close": "Schließen"
+      "close": "Schließen",
+      "jobRoles": "Rollen"
     }
   },
   "errors": {
+    "jobRoleNotInDepartment": "Die Rolle passt nicht zur Abteilung. Wähle eine unternehmensweite Rolle oder eine Rolle dieser Abteilung.",
+    "jobRoleDepartmentInUse": "Die Rolle wird von Vorlagen oder Personen anderer Abteilungen verwendet und kann deshalb nicht dieser Abteilung zugeordnet werden:",
+    "teamHasRoleBoundUsers": "Personen des Teams haben Rollen der bisherigen Abteilung, deshalb kann das Team nicht verschoben werden:",
     "nameTaken": "Dieser Name ist bereits vergeben.",
     "teamHasTemplates": "Das Team wird von Vorlagen verwendet und kann deshalb nicht in eine andere Abteilung verschoben werden:"
   },

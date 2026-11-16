@@ -21,6 +21,7 @@ import {
 } from "@/lib/validation/users";
 import { assertPermission } from "@/server/auth/permissions";
 import type { Actor, Locale } from "@/server/auth/types";
+import { assertJobRoleFitsDepartmentInTx } from "@/server/services/org";
 import { db, type DbExecutor, type Tx } from "@/server/db/client";
 import {
   accounts,
@@ -200,6 +201,27 @@ async function assertOrgRefsExist(
   }
 }
 
+/** The job role must be company-wide or bound to the department of the user's team. */
+async function assertJobRoleFitsTeamInTx(
+  tx: Tx,
+  refs: { teamId: string | null; jobRoleId: string | null },
+): Promise<void> {
+  if (!refs.jobRoleId) return;
+  let departmentId: string | null = null;
+  if (refs.teamId) {
+    const [team] = await tx
+      .select({ departmentId: teams.departmentId })
+      .from(teams)
+      .where(eq(teams.id, refs.teamId))
+      // FOR SHARE serializes with updateTeam moving the team to another department.
+      .for("share");
+    departmentId = team?.departmentId ?? null;
+  }
+  await assertJobRoleFitsDepartmentInTx(tx, refs.jobRoleId, departmentId, () =>
+    fieldError("jobRoleId", "validation.invalidValue"),
+  );
+}
+
 /**
  * A lead must be a non-archived team lead or admin, never the user themselves, and must not sit
  * below the user in the lead chain (that would create a cycle). The candidate is locked FOR SHARE
@@ -350,6 +372,7 @@ export async function createUser(
   try {
     created = await db.transaction(async (tx) => {
       await assertOrgRefsExist(tx, data);
+      await assertJobRoleFitsTeamInTx(tx, data);
       if (data.leadId) await assertValidLeadInTx(tx, { userId: null, leadId: data.leadId });
       const [row] = await tx
         .insert(users)
@@ -430,6 +453,9 @@ export async function updateUser(actor: Actor, input: UpdateUserInput): Promise<
         teamId: data.teamId === current.teamId ? null : data.teamId,
         jobRoleId: data.jobRoleId === current.jobRoleId ? null : data.jobRoleId,
       });
+      if (data.teamId !== current.teamId || data.jobRoleId !== current.jobRoleId) {
+        await assertJobRoleFitsTeamInTx(tx, data);
+      }
       const leadChanged = data.leadId !== current.leadId;
       if (leadChanged && data.leadId) {
         await assertValidLeadInTx(tx, { userId: data.id, leadId: data.leadId });

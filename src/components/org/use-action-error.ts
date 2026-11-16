@@ -12,7 +12,7 @@ export interface DescribedError {
   items: string[];
 }
 
-const LIST_KEYS = ["users", "templates", "ledEmployees"] as const;
+const LIST_KEYS = ["users", "templates", "jobRoles", "ledEmployees"] as const;
 
 function namesOf(value: unknown): string[] {
   if (!Array.isArray(value)) return [];
